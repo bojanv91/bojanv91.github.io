@@ -3,9 +3,7 @@ layout: post
 title: "Feature Folders" structure in ASP.NET MVC
 ---
 
-DRAFT
-
-Structuring things around **business concerns** is more convenient and natural way of handling projects than structuring them around **technical concerns**. The [Separation of Concerns](http://deviq.com/separation-of-concerns/) is applied in both methods, not both of them gives the same desired clarity and ease of handling a project. This article focuses on which structure gives better results?<!--excerpt-->
+Structuring files around **business concerns** is more convenient and natural way of handling projects than structuring them around **technical concerns**. The [Separation of Concerns](http://deviq.com/separation-of-concerns/) is applied in both approaches, not both of them gives the same desired clarity and ease of handling a project. This article focuses on which structure gives better results.<!--excerpt-->
 
 Let's think about how do project managers usually request changes in requirements ?
 
@@ -16,7 +14,7 @@ Most of the time developers make modifications related to a single feature (e.g.
 
 Let's see both approaches in examples. 
 
-# Structuring files by technical concerns (horizontal) - the default ASP.NET MVC way
+# Structuring files by technical concerns (horizontal)
 
     Controllers
         CustomersController.cs
@@ -56,7 +54,7 @@ Let's see both approaches in examples.
 
 Now, imagine you have many-many controllers, in addition to the standard N-Layer stuff like repositories, services, DTOs, etc... You will soon notice that things are starting to get messy.
 
-# Structuring files by business concerns (vertical) - alternative (and better) way
+# Structuring files by business concerns (vertical)
 
     Features
         Customers
@@ -91,12 +89,14 @@ Now, imagine you have many-many controllers, in addition to the standard N-Layer
 
 In Visual Studio this looks like following:
 
-![Feature Folders example in ASP.NET MVC](/images/2016-05-26-feature-folders-structure-in-asp-net/image01.png)
+![Feature Folders example in ASP.NET MVC](/images/2016-05-27-feature-folders-structure-in-asp-net/image01.png)
 
 Food for thought:
  
 - What if we put our JavaScript files also in these feature folders?
 - What if one feature folder becomes so demanding on the UI that needs to be a full SPA view/module - can we structure it to use Angular (or React, or whatever)?
+
+Example of single feature evolved as Angular application:
 
     ShoppingCart
         Components
@@ -112,7 +112,7 @@ Food for thought:
 
 # Configuration
 
-To make this work in ASP.NET MVC, the default Razor view engine should be altered with one that makes the distincion of feature folders.
+To make this work in ASP.NET MVC, the default Razor view engine should be replaced with one that makes the distincion of feature folders.
 
     public class Global : HttpApplication
     {

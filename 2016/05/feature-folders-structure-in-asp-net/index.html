@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width" />
     <meta http-equiv="last-modified" content="2016-05-27T11:13:47.3290465+02:00" />
     <meta name="keywords" content="" />
-    <title>Beginners installation guide to Bower on Windows Bojan Veljanovski's Blog</title>
+    <title>&quot;Feature Folders&quot; structure in ASP.NET MVC Bojan Veljanovski's Blog</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
-    <link rel="canonical" href="http://bojanv91.github.io/2015/03/beginners-installation-guide-to-bower-on-windows/" />
+    <link rel="canonical" href="http://bojanv91.github.io/2016/05/feature-folders-structure-in-asp-net/" />
 </head>
 <body class="home blog">
     <div id="page" class="hfeed site">
@@ -41,10 +41,10 @@
 
 
 <div id="post">
-    <h1>Beginners installation guide to Bower on Windows</h1>
+    <h1>&quot;Feature Folders&quot; structure in ASP.NET MVC</h1>
 
     <div class="post-note">
-      posted on 22 Mar 2015
+      posted on 27 May 2016
       
       <div class="addthis_toolbox addthis_default_style" style="float:right;">
         <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
@@ -57,78 +57,168 @@
     
     
         
-    <p><a href="http://www.bower.io/">Bower</a> is a package manger for the web. It makes installing frameworks, libraries and assets easy and straightforward. Automatically resolves package dependencies to other packages. For example, if you install twitter-bootstrap it would automatically install jquery for you, because bootstrap is dependent on jquery. Additionally it gives you version control out of the box for your packages, thus easier installing of updates. So, here is step-by-step guide into installing Bower and prerequisites on Windows. <!--excerpt--> </p>
+    <p>Structuring files around <strong>business concerns</strong> is more convenient and natural way of handling projects than structuring them around <strong>technical concerns</strong>. The <a href="http://deviq.com/separation-of-concerns/">Separation of Concerns</a> is applied in both approaches, not both of them gives the same desired clarity and ease of handling a project. This article focuses on which structure gives better results.<!--excerpt--></p>
 
-<p>Bower installs all packages under a single folder called bower_components, and holds dependency information in a bower.json file (among other project information).</p>
-
-<p><img src="/images/2015-03-22-beginners-installation-guide-to-bower-on-windows/Screenshot_1.png" alt="bower initial folder structure" /></p>
-
-<p>Bower depends on NPM and GIT, so you have to install them first.</p>
-
-<blockquote>
-  <p>Recommendation: Working with Bower is done via command line tool. So, I recommend installing more advanced command line utility in order to get happier with some neat features, as <a href="http://www.hanselman.com/blog/Console2ABetterWindowsCommandPrompt.aspx">Scott Hanselman blogged about Console2</a>.</p>
-</blockquote>
-
-<h1>Installing Bower and it's prerequisites</h1>
-
-<ol>
-<li>Open CMD</li>
-<li><p>Install Chocolatey</p>
-
-<pre><code>@powershell -NoProfile -ExecutionPolicy unrestricted -Command "(iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))) &gt;$null 2&gt;&amp;1" &amp;&amp; SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
-</code></pre></li>
-<li><p>Install GIT (or <a href="http://git-scm.com/downloads">http://git-scm.com/downloads</a>)</p>
-
-<pre><code>choco install git.install 
-</code></pre>
-
-<p>wait until installation is finished  </p>
-
-<pre><code>setx path "%path%;C:\Program Files (x86)\Git\bin\"
-</code></pre></li>
-<li><p>Install NodeJS (or <a href="https://nodejs.org/download/">https://nodejs.org/download/</a>)</p>
-
-<pre><code>choco install nodejs.install
-</code></pre>
-
-<p>wait until installation is finished</p>
-
-<pre><code>setx path "%path%;C:\Program Files\nodejs\"
-setx path "%path%;C:\Users\%username%\AppData\Roaming\npm"
-</code></pre></li>
-<li><p>npm install -g bower</p></li>
-<li>Profit!</li>
-</ol>
-
-<p>If everything went fine you should be able to user "bower" command in CMD.</p>
-
-<p>FAQ</p>
-
-<ol>
-<li><p>What is Chocolatey?<br />
-Chocolatey is a Machine Package Manager, somewhat like apt-get, but built with Windows in mind.</p></li>
-<li><p>What is NodeJS?<br />
-Node.js is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications.</p></li>
-<li><p>What is NPM (Node Package Manager)?<br />
-NPM is a package manager for JavaScript, and is the default for Node.js</p></li>
-<li><p>What is NuGet?<br />
-NuGet is package manager for Microsoft development platform including .NET</p></li>
-<li><p>What is PATH?<br />
-PATH is an environment variable on Unix-like operating systems, DOS, OS/2, and Microsoft Windows, specifying a set of directories where executable programs are located. In our case, we added the locations of GIT and NPM executables in PATH env variable in order to be able to use them directly in CMD.</p></li>
-<li><p>From where bower downloads packages?<br />
-bower install jquery (from registered packages in bower repository)<br />
-bower install git://github.com/user/package.git (from GitHub)<br />
-bower install user/package (from GitHub - with shorthand syntax)  </p></li>
-<li><p>What is the simplest way in order to make my custom package publicly available via Bower?</p>
+<p>Let's think about how do project managers usually request changes in requirements ?</p>
 
 <ul>
-<li>Include bower.json manifest in the root folder</li>
-<li>Push it to GitHub repository</li>
-<li>Profit!  </li>
-</ul></li>
-</ol>
+<li>Change these fields in all these views; all these models; all these controllers, or</li>
+<li>Change these fields in customer registration; shopping cart payment; ...</li>
+</ul>
 
-<p>Having more questions, you can reach me out on twitter @bojanv91 </p>
+<p>Most of the time developers make modifications related to a single feature (e.g. adding new field). Structuring folders around interrelated files can make modification process simpler. The default MVC folder structure violates the rule of <em>"Files that change together should be structured close together"</em>. Structuring by business concerns embraces this important rule.</p>
+
+<p>Let's see both approaches in examples. </p>
+
+<h1>Structuring files by technical concerns (horizontal)</h1>
+
+<pre><code>Controllers
+    CustomersController.cs
+    OrdersController.cs
+    ShoppingCartController.cs
+    ProductsController.cs
+    ...
+Models
+    CustomersEditModel.cs
+    CustomersIndexModel.cs
+    CustomersLoginModel.cs
+    CustomersRegisterModel.cs
+    OrdersDetailsModel.cs
+    OrdersIndexModel.cs
+    ShoppingCartCustomerDetails.cs
+    ShoppingCartIndex.cs
+    ShoppingCartOrdersList.cs
+    ShoppingCartPaymentDetails.cs
+    ...
+Views
+    Customers
+        Edit.cshtml
+        Index.cshtml
+        Login.cshtml
+        Register.cshtml
+    Orders
+        Details.cshtml
+        Index.cshtml
+    ShoppingCart
+        _MiniCart.cshtml
+        CustomerDetails.cshtml
+        Index.cshtml
+        OrdersList.cshtml
+        PaymentDetails.cshtml
+    Products
+        ...
+</code></pre>
+
+<p>Now, imagine you have many-many controllers, in addition to the standard N-Layer stuff like repositories, services, DTOs, etc... You will soon notice that things are starting to get messy.</p>
+
+<h1>Structuring files by business concerns (vertical)</h1>
+
+<pre><code>Features
+    Customers
+        CustomersController.cs
+        Edit.cs
+        Edit.cshtml
+        Index.cs
+        Index.cshtml
+        Login.cs
+        Login.cshtml       
+        Register.cs         
+        Register.cshtml
+    Orders
+        Details.cs
+        Details.cshtml
+        Index.cs
+        Index.cshtml
+        OrdersController.cs
+    ShoppingCart
+        _MiniCart.cshtml
+        CustomerDetails.cs
+        CustomerDetails.cshtml
+        Index.cs
+        Index.cshtml
+        OrdersList.cs
+        OrdersList.cshtml
+        PaymentDetails.cs
+        PaymentDetails.cshtml
+        ShoppingCartController.cs
+    Products
+        ...
+</code></pre>
+
+<p>In Visual Studio this looks like following:</p>
+
+<p><img src="/images/2016-05-27-feature-folders-structure-in-asp-net/image01.png" alt="Feature Folders example in ASP.NET MVC" /></p>
+
+<p>Food for thought:</p>
+
+<ul>
+<li>What if we put our JavaScript files also in these feature folders?</li>
+<li>What if one feature folder becomes so demanding on the UI that needs to be a full SPA view/module - can we structure it to use Angular (or React, or whatever)?</li>
+</ul>
+
+<p>Example of single feature evolved as Angular application:</p>
+
+<pre><code>ShoppingCart
+    Components
+        CartComponent.js
+        CartComponent.css
+        PaymentComponent.js
+        PaymentComponent.css
+        CartContainer.js
+    App.js
+    App.css
+    Index.cshtml
+    ShoppingCartController.cs
+</code></pre>
+
+<h1>Configuration</h1>
+
+<p>To make this work in ASP.NET MVC, the default Razor view engine should be replaced with one that makes the distincion of feature folders.</p>
+
+<pre><code>public class Global : HttpApplication
+{
+    void Application_Start(object sender, EventArgs e)
+    {
+        // ...
+        ViewEngines.Engines.Clear();
+        ViewEngines.Engines.Add(new FeatureFoldersRazorViewEngine());
+    }
+}
+
+public class FeatureFoldersRazorViewEngine : RazorViewEngine
+{
+    public FeatureFoldersRazorViewEngine()
+    {
+        var featureFolderViewLocationFormats = new[]
+        {
+            "~/Features/{1}/{0}.cshtml",
+            "~/Features/{1}/{0}.vbhtml",
+            "~/Features/Shared/{0}.cshtml",
+            "~/Features/Shared/{0}.vbhtml",
+        };
+
+        ViewLocationFormats = featureFolderViewLocationFormats;
+        MasterLocationFormats = featureFolderViewLocationFormats;
+        PartialViewLocationFormats = featureFolderViewLocationFormats;
+    }
+}
+</code></pre>
+
+<h1>Summary</h1>
+
+<p>Structuring files by features (business concerns) makes things easier to find and manage. </p>
+
+<ul>
+<li>You don't step over each other toes with your peers, thus, avoid spending time on fixing merge conflicts. </li>
+<li>You can scale and modify each feature on its own, independently from other features.</li>
+<li>You immediately understand what an application does and where to find necessary files for your given requirement.</li>
+<li>You can easily reuse similar features across projects by simply copying a single folder.</li>
+<li>Time spent on navigation through Solution Explorer to locate interdependent files is drastically reduced since they are all in a single folder. </li>
+</ul>
+
+<p>At our company, we have been using structuring around business concerns on over dozens of projects for more than a year, and due to the high success and productivity boost in our teams, it became our default structure on the presentation layer. But, you may ask - how do we structure our application services and data access? Stay tuned...</p>
+
+<p>Happy coding!  </p>
 
 
     <div id="disqus_thread"></div>
@@ -138,14 +228,14 @@ bower install user/package (from GitHub - with shorthand syntax)  </p></li>
             reload: true,
             config: function () {
                 //this.page.identifier = '';
-                this.page.url = 'http://bojanv91.github.io/2015/03/beginners-installation-guide-to-bower-on-windows/';
+                this.page.url = 'http://bojanv91.github.io/2016/05/feature-folders-structure-in-asp-net/';
                 //this.page.title = '';
             }
         });
     };
 
     var disqus_shortname = 'bojanveljanovski';
-    var disqus_url = 'http://bojanv91.github.io/2015/03/beginners-installation-guide-to-bower-on-windows/';
+    var disqus_url = 'http://bojanv91.github.io/2016/05/feature-folders-structure-in-asp-net/';
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

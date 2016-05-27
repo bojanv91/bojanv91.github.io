@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="last-modified" content="2015-09-29T14:39:24.6238723+02:00" />
+    <meta http-equiv="last-modified" content="2016-05-27T11:13:47.3290465+02:00" />
     <meta name="keywords" content="" />
-    <title>Towards good enough code: Re-factoring a business rule check with the Specification Pattern Bojan Veljanovski's Blog</title>
+    <title>Towards Good Enough Code: Re-factoring a business rule check with the Specification Pattern Bojan Veljanovski's Blog</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
     <link rel="canonical" href="http://bojanv91.github.io/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern/" />
 </head>
@@ -41,10 +41,10 @@
 
 
 <div id="post">
-    <h1>Towards good enough code: Re-factoring a business rule check with the Specification Pattern</h1>
+    <h1>Towards Good Enough Code: Re-factoring a business rule check with the Specification Pattern</h1>
 
     <div class="post-note">
-      posted on 29 сеп 2015
+      posted on 29 Sep 2015
       
       <div class="addthis_toolbox addthis_default_style" style="float:right;">
         <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
@@ -57,7 +57,7 @@
     
     
         
-    <p>The other day, one of my colleges asked me for a code review on a specific part of code that was written and I said let's dig a little deeper into the options that we have. In this article I demonstrate the re-factoring steps in detail that we've taken and eventually employed the <code>Specification Pattern</code> <!--excerpt-->. Have in mind that, I choose a very basic example in order to keep things simple and avoid confusion that can be arouse from domain complexity.</p>
+    <p>The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the <code>Specification Pattern</code> <!--excerpt-->. Have in mind that, I choose a very basic example in order to keep things simple and avoid confusion that can be arouse from domain complexity.</p>
 
 <p>Here is the original code:  </p>
 
@@ -65,9 +65,9 @@
 
 var newCompany = new Company(message.Name, message.CountryId);
 
-//query all companies from database 
+// Query all companies from database 
 var companies = _companyRepository.Query().ToList();
-//check if the newly created company is unique
+// Check if the newly created company is unique
 if (companies.Any(x =&gt; x.Name == newCompany.Name &amp;&amp; x.CountryId == newCompany.CountryId))
     throw new Exception("A company with the same name and country already exists");
 
@@ -75,7 +75,7 @@ session.Save(newCompany);
 //..
 </code></pre>
 
-<p>Here we can see few problems. First all companies are queried from database, that can create performance issues. Another problem is too much operations happening in the <code>If</code> check; thus, making the code harder to read. And the final problem is very plain practice of <code>Exception</code> throwing that can be better, although, I like expressing explicit guard check. Let's tackle these problems one by one in few steps along this article and provide suggested improvements.</p>
+<p>Here, we can see a few problems. First, all companies are queried from the database, and that can create performance issues. Another problem is too much operations happening in the <code>If</code> check line; thus, the lengthy line is making the code harder to read. And, the final problem is very plain practice of <code>Exception</code> throwing. Although, I like expressing explicit guard checks, that code can be better. Let's tackle these problems, one by one, in a few steps along this article and provide some improvement suggestions.</p>
 
 <p>Also, I provide here the <code>tl;dr;</code> version of the code:</p>
 
@@ -93,7 +93,7 @@ session.Save(newCompany);
 
 <h1>How we get there?</h1>
 
-<h2>Step 1 - solve the query performance issues</h2>
+<h2>Step 1 - Solve The Query Performance Issues</h2>
 
 <pre><code>var numberOfSameCompanies = _companyRepository.Query()
     .Where(x =&gt; x.Name == newCompany.Name &amp;&amp; x.CountryId == newCompany.CountryId)
@@ -102,9 +102,9 @@ if (numberOfSameCompanies &gt; 0)
     throw new Exception("A company with the same name and country already exists");
 </code></pre>
 
-<p>The above query retrieves the number of companies satisfying the given <code>where</code> condition. Performance issues solved.</p>
+<p>The query above retrieves the number of companies satisfying the given <code>where</code> condition. Performance issues have been solved.</p>
 
-<h2>Step 2 - make the <code>if</code> condition check explicit</h2>
+<h2>Step 2 - Make The <code>if</code> Condition Check Explicit</h2>
 
 <pre><code>var numberOfSameCompanies = _companyRepository.Query()
     .Where(x =&gt; x.Name == newCompany.Name &amp;&amp; x.CountryId == newCompany.CountryId)
@@ -114,9 +114,9 @@ if (doesCompanyAlreadyExists)
     throw new Exception("A company with the same name and country already exists");
 </code></pre>
 
-<p>By making some conditions explicit, we gain clear understanding about what the code does.</p>
+<p>By setting some explicit conditions, we gain clear understanding of what the code does.</p>
 
-<h2>Step 3 - make the business rule violation explicit</h2>
+<h2>Step 3 - Make The Business Rule Violation Explicit</h2>
 
 <p>Original:</p>
 
@@ -141,11 +141,11 @@ if (doesCompanyAlreadyExists)
 
 <p>Now, it looks better. Anyway, we have still room for improvements.</p>
 
-<h2>Step 4 - encapsulate the business rule check by employing the Specification Pattern</h2>
+<h2>Step 4 - Encapsulate The Business Rule Check By Employing 'The Specification Pattern'</h2>
 
-<p>Specification is a tactical design pattern presented in Eric Evans’ book Domain Driven Design. The <code>Specification Pattern</code> is a way of encapsulating business rule(s) and test it against a candidate object to see if that object satisfies all the requirements expressed in the specification. This pattern fits very good with the Single-Responsibility-Principle (SRP), which states that one class should have only one reason to change. Furthermore, this specification object can be easily unit tested and reused.  </p>
+<p>The 'Specification Pattern' is a tactical design pattern presented in Eric Evans’ book Domain Driven Design. The <code>Specification Pattern</code> is a way of encapsulating business rule(s) and testing it against a candidate object to see if that object satisfies all requirements expressed in a specification. This pattern fits very good with the Single-Responsibility-Principle (SRP), which states that one class should have only one reason to change. Furthermore, this specification object can be easily unit tested and reused.  </p>
 
-<p>Here you can see how it is used:</p>
+<p>Here, you can see how it is used:</p>
 
 <pre><code>var spec = new UniqueCompanySpecification(_companyRepository);
 if (spec.IsSatisfiedBy(newCompany) == false)
@@ -179,7 +179,7 @@ public interface ISpecification&lt;T&gt;
 } 
 </code></pre>
 
-<p>After all re-factoring steps the final code is as follows:</p>
+<p>After all re-factoring steps, the final code is as following:</p>
 
 <pre><code>//..
 
@@ -195,17 +195,17 @@ session.Save(newCompany);
 
 <h1>Summary</h1>
 
-<p>In this article I've shown a re-factoring process and usage of the Specification Pattern in order to satisfy an explicit business rule.<br />
+<p>In this article, I've shown a re-factoring process and usage of the Specification Pattern in order to satisfy an explicit business rule.<br />
 The re-factoring steps we took:  </p>
 
 <ol>
-<li>solve the query performance issues</li>
-<li>make the <code>if</code> condition check explicit</li>
-<li>make the business rule violation explicit</li>
-<li>encapsulate the business rule check by employing the Specification Pattern</li>
+<li>Solve the query performance issues</li>
+<li>Make the <code>if</code> condition check explicit</li>
+<li>Make the business rule violation explicit</li>
+<li>Encapsulate the business rule check by employing the Specification Pattern</li>
 </ol>
 
-<p>The Specification Pattern lets you decouple the design of requirements, fulfillment, and validation. Allows you to make your system definitions more clear and declarative, but be careful of the temptations to over-use it.</p>
+<p>The Specification Pattern lets you decouple the design of requirements, fulfillment, and validation. It also allows you to make your system definitions more clear and declarative, but be careful not to fall into temptation to over-use it.</p>
 
 <p><strong>References:</strong></p>
 
@@ -271,10 +271,11 @@ The re-factoring steps we took:  </p>
                 <aside id="archives-4" class="widget widget_archive">
                     <h1 class="widget-title">Archive</h1>
                     <ul class="posts">
-                          <li><a href="/archive#20159">септември, 2015</a></li>
-                          <li><a href="/archive#20153">март, 2015</a></li>
-                          <li><a href="/archive#20151">јануари, 2015</a></li>
-                          <li><a href="/archive#201412">декември, 2014</a></li>
+                          <li><a href="/archive#20165">May, 2016</a></li>
+                          <li><a href="/archive#20159">September, 2015</a></li>
+                          <li><a href="/archive#20153">March, 2015</a></li>
+                          <li><a href="/archive#20151">January, 2015</a></li>
+                          <li><a href="/archive#201412">December, 2014</a></li>
                     </ul>
                 </aside>
             </div>

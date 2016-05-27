@@ -1,4 +1,166 @@
-<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Bojan Veljanovski's notes and thoughts on software</title><link>http://bojanv91.github.io/rss.xml</link><description>Bojan Veljanovski's notes and thoughts on software</description><item><guid isPermaLink="true">http://bojanv91.github.io/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern/</guid><link>http://bojanv91.github.io/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern/</link><title>Towards good enough code: Re-factoring a business rule check with the Specification Pattern</title><description>&lt;p&gt;The other day, one of my colleges asked me for a code review on a specific part of code that was written and I said let's dig a little deeper into the options that we have. In this article I demonstrate the re-factoring steps in detail that we've taken and eventually employed the &lt;code&gt;Specification Pattern&lt;/code&gt; </description><pubDate>Mon, 28 Sep 2015 22:00:00 Z</pubDate><a10:updated>2015-09-28T22:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;The other day, one of my colleges asked me for a code review on a specific part of code that was written and I said let's dig a little deeper into the options that we have. In this article I demonstrate the re-factoring steps in detail that we've taken and eventually employed the &lt;code&gt;Specification Pattern&lt;/code&gt; &lt;!--excerpt--&gt;. Have in mind that, I choose a very basic example in order to keep things simple and avoid confusion that can be arouse from domain complexity.&lt;/p&gt;
+<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Bojan Veljanovski's notes and thoughts on software</title><link>http://bojanv91.github.io/rss.xml</link><description>Bojan Veljanovski's notes and thoughts on software</description><item><guid isPermaLink="true">http://bojanv91.github.io/2016/05/feature-folders-structure-in-asp-net/</guid><link>http://bojanv91.github.io/2016/05/feature-folders-structure-in-asp-net/</link><title>"Feature Folders" structure in ASP.NET MVC</title><description>&lt;p&gt;Structuring files around &lt;strong&gt;business concerns&lt;/strong&gt; is more convenient and natural way of handling projects than structuring them around &lt;strong&gt;technical concerns&lt;/strong&gt;. The &lt;a href="http://deviq.com/separation-of-concerns/"&gt;Separation of Concerns&lt;/a&gt; is applied in both approaches, not both of them gives the same desired clarity and ease of handling a project. This article focuses on which structure gives better results.</description><pubDate>Thu, 26 May 2016 22:00:00 Z</pubDate><a10:updated>2016-05-26T22:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;Structuring files around &lt;strong&gt;business concerns&lt;/strong&gt; is more convenient and natural way of handling projects than structuring them around &lt;strong&gt;technical concerns&lt;/strong&gt;. The &lt;a href="http://deviq.com/separation-of-concerns/"&gt;Separation of Concerns&lt;/a&gt; is applied in both approaches, not both of them gives the same desired clarity and ease of handling a project. This article focuses on which structure gives better results.&lt;!--excerpt--&gt;&lt;/p&gt;
+
+&lt;p&gt;Let's think about how do project managers usually request changes in requirements ?&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Change these fields in all these views; all these models; all these controllers, or&lt;/li&gt;
+&lt;li&gt;Change these fields in customer registration; shopping cart payment; ...&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Most of the time developers make modifications related to a single feature (e.g. adding new field). Structuring folders around interrelated files can make modification process simpler. The default MVC folder structure violates the rule of &lt;em&gt;"Files that change together should be structured close together"&lt;/em&gt;. Structuring by business concerns embraces this important rule.&lt;/p&gt;
+
+&lt;p&gt;Let's see both approaches in examples. &lt;/p&gt;
+
+&lt;h1&gt;Structuring files by technical concerns (horizontal)&lt;/h1&gt;
+
+&lt;pre&gt;&lt;code&gt;Controllers
+    CustomersController.cs
+    OrdersController.cs
+    ShoppingCartController.cs
+    ProductsController.cs
+    ...
+Models
+    CustomersEditModel.cs
+    CustomersIndexModel.cs
+    CustomersLoginModel.cs
+    CustomersRegisterModel.cs
+    OrdersDetailsModel.cs
+    OrdersIndexModel.cs
+    ShoppingCartCustomerDetails.cs
+    ShoppingCartIndex.cs
+    ShoppingCartOrdersList.cs
+    ShoppingCartPaymentDetails.cs
+    ...
+Views
+    Customers
+        Edit.cshtml
+        Index.cshtml
+        Login.cshtml
+        Register.cshtml
+    Orders
+        Details.cshtml
+        Index.cshtml
+    ShoppingCart
+        _MiniCart.cshtml
+        CustomerDetails.cshtml
+        Index.cshtml
+        OrdersList.cshtml
+        PaymentDetails.cshtml
+    Products
+        ...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, imagine you have many-many controllers, in addition to the standard N-Layer stuff like repositories, services, DTOs, etc... You will soon notice that things are starting to get messy.&lt;/p&gt;
+
+&lt;h1&gt;Structuring files by business concerns (vertical)&lt;/h1&gt;
+
+&lt;pre&gt;&lt;code&gt;Features
+    Customers
+        CustomersController.cs
+        Edit.cs
+        Edit.cshtml
+        Index.cs
+        Index.cshtml
+        Login.cs
+        Login.cshtml       
+        Register.cs         
+        Register.cshtml
+    Orders
+        Details.cs
+        Details.cshtml
+        Index.cs
+        Index.cshtml
+        OrdersController.cs
+    ShoppingCart
+        _MiniCart.cshtml
+        CustomerDetails.cs
+        CustomerDetails.cshtml
+        Index.cs
+        Index.cshtml
+        OrdersList.cs
+        OrdersList.cshtml
+        PaymentDetails.cs
+        PaymentDetails.cshtml
+        ShoppingCartController.cs
+    Products
+        ...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In Visual Studio this looks like following:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="http://bojanv91.github.io/images/2016-05-27-feature-folders-structure-in-asp-net/image01.png" alt="Feature Folders example in ASP.NET MVC" /&gt;&lt;/p&gt;
+
+&lt;p&gt;Food for thought:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;What if we put our JavaScript files also in these feature folders?&lt;/li&gt;
+&lt;li&gt;What if one feature folder becomes so demanding on the UI that needs to be a full SPA view/module - can we structure it to use Angular (or React, or whatever)?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Example of single feature evolved as Angular application:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ShoppingCart
+    Components
+        CartComponent.js
+        CartComponent.css
+        PaymentComponent.js
+        PaymentComponent.css
+        CartContainer.js
+    App.js
+    App.css
+    Index.cshtml
+    ShoppingCartController.cs
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1&gt;Configuration&lt;/h1&gt;
+
+&lt;p&gt;To make this work in ASP.NET MVC, the default Razor view engine should be replaced with one that makes the distincion of feature folders.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class Global : HttpApplication
+{
+    void Application_Start(object sender, EventArgs e)
+    {
+        // ...
+        ViewEngines.Engines.Clear();
+        ViewEngines.Engines.Add(new FeatureFoldersRazorViewEngine());
+    }
+}
+
+public class FeatureFoldersRazorViewEngine : RazorViewEngine
+{
+    public FeatureFoldersRazorViewEngine()
+    {
+        var featureFolderViewLocationFormats = new[]
+        {
+            "~/Features/{1}/{0}.cshtml",
+            "~/Features/{1}/{0}.vbhtml",
+            "~/Features/Shared/{0}.cshtml",
+            "~/Features/Shared/{0}.vbhtml",
+        };
+
+        ViewLocationFormats = featureFolderViewLocationFormats;
+        MasterLocationFormats = featureFolderViewLocationFormats;
+        PartialViewLocationFormats = featureFolderViewLocationFormats;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1&gt;Summary&lt;/h1&gt;
+
+&lt;p&gt;Structuring files by features (business concerns) makes things easier to find and manage. &lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;You don't step over each other toes with your peers, thus, avoid spending time on fixing merge conflicts. &lt;/li&gt;
+&lt;li&gt;You can scale and modify each feature on its own, independently from other features.&lt;/li&gt;
+&lt;li&gt;You immediately understand what an application does and where to find necessary files for your given requirement.&lt;/li&gt;
+&lt;li&gt;You can easily reuse similar features across projects by simply copying a single folder.&lt;/li&gt;
+&lt;li&gt;Time spent on navigation through Solution Explorer to locate interdependent files is drastically reduced since they are all in a single folder. &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;At our company, we have been using structuring around business concerns on over dozens of projects for more than a year, and due to the high success and productivity boost in our teams, it became our default structure on the presentation layer. But, you may ask - how do we structure our application services and data access? Stay tuned...&lt;/p&gt;
+
+&lt;p&gt;Happy coding!  &lt;/p&gt;
+</a10:content></item><item><guid isPermaLink="true">http://bojanv91.github.io/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern/</guid><link>http://bojanv91.github.io/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern/</link><title>Towards Good Enough Code: Re-factoring a business rule check with the Specification Pattern</title><description>&lt;p&gt;The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the &lt;code&gt;Specification Pattern&lt;/code&gt; </description><pubDate>Mon, 28 Sep 2015 22:00:00 Z</pubDate><a10:updated>2015-09-28T22:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the &lt;code&gt;Specification Pattern&lt;/code&gt; &lt;!--excerpt--&gt;. Have in mind that, I choose a very basic example in order to keep things simple and avoid confusion that can be arouse from domain complexity.&lt;/p&gt;
 
 &lt;p&gt;Here is the original code:  &lt;/p&gt;
 
@@ -6,9 +168,9 @@
 
 var newCompany = new Company(message.Name, message.CountryId);
 
-//query all companies from database 
+// Query all companies from database 
 var companies = _companyRepository.Query().ToList();
-//check if the newly created company is unique
+// Check if the newly created company is unique
 if (companies.Any(x =&amp;gt; x.Name == newCompany.Name &amp;amp;&amp;amp; x.CountryId == newCompany.CountryId))
     throw new Exception("A company with the same name and country already exists");
 
@@ -16,7 +178,7 @@ session.Save(newCompany);
 //..
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Here we can see few problems. First all companies are queried from database, that can create performance issues. Another problem is too much operations happening in the &lt;code&gt;If&lt;/code&gt; check; thus, making the code harder to read. And the final problem is very plain practice of &lt;code&gt;Exception&lt;/code&gt; throwing that can be better, although, I like expressing explicit guard check. Let's tackle these problems one by one in few steps along this article and provide suggested improvements.&lt;/p&gt;
+&lt;p&gt;Here, we can see a few problems. First, all companies are queried from the database, and that can create performance issues. Another problem is too much operations happening in the &lt;code&gt;If&lt;/code&gt; check line; thus, the lengthy line is making the code harder to read. And, the final problem is very plain practice of &lt;code&gt;Exception&lt;/code&gt; throwing. Although, I like expressing explicit guard checks, that code can be better. Let's tackle these problems, one by one, in a few steps along this article and provide some improvement suggestions.&lt;/p&gt;
 
 &lt;p&gt;Also, I provide here the &lt;code&gt;tl;dr;&lt;/code&gt; version of the code:&lt;/p&gt;
 
@@ -34,7 +196,7 @@ session.Save(newCompany);
 
 &lt;h1&gt;How we get there?&lt;/h1&gt;
 
-&lt;h2&gt;Step 1 - solve the query performance issues&lt;/h2&gt;
+&lt;h2&gt;Step 1 - Solve The Query Performance Issues&lt;/h2&gt;
 
 &lt;pre&gt;&lt;code&gt;var numberOfSameCompanies = _companyRepository.Query()
     .Where(x =&amp;gt; x.Name == newCompany.Name &amp;amp;&amp;amp; x.CountryId == newCompany.CountryId)
@@ -43,9 +205,9 @@ if (numberOfSameCompanies &amp;gt; 0)
     throw new Exception("A company with the same name and country already exists");
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;The above query retrieves the number of companies satisfying the given &lt;code&gt;where&lt;/code&gt; condition. Performance issues solved.&lt;/p&gt;
+&lt;p&gt;The query above retrieves the number of companies satisfying the given &lt;code&gt;where&lt;/code&gt; condition. Performance issues have been solved.&lt;/p&gt;
 
-&lt;h2&gt;Step 2 - make the &lt;code&gt;if&lt;/code&gt; condition check explicit&lt;/h2&gt;
+&lt;h2&gt;Step 2 - Make The &lt;code&gt;if&lt;/code&gt; Condition Check Explicit&lt;/h2&gt;
 
 &lt;pre&gt;&lt;code&gt;var numberOfSameCompanies = _companyRepository.Query()
     .Where(x =&amp;gt; x.Name == newCompany.Name &amp;amp;&amp;amp; x.CountryId == newCompany.CountryId)
@@ -55,9 +217,9 @@ if (doesCompanyAlreadyExists)
     throw new Exception("A company with the same name and country already exists");
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;By making some conditions explicit, we gain clear understanding about what the code does.&lt;/p&gt;
+&lt;p&gt;By setting some explicit conditions, we gain clear understanding of what the code does.&lt;/p&gt;
 
-&lt;h2&gt;Step 3 - make the business rule violation explicit&lt;/h2&gt;
+&lt;h2&gt;Step 3 - Make The Business Rule Violation Explicit&lt;/h2&gt;
 
 &lt;p&gt;Original:&lt;/p&gt;
 
@@ -82,11 +244,11 @@ if (doesCompanyAlreadyExists)
 
 &lt;p&gt;Now, it looks better. Anyway, we have still room for improvements.&lt;/p&gt;
 
-&lt;h2&gt;Step 4 - encapsulate the business rule check by employing the Specification Pattern&lt;/h2&gt;
+&lt;h2&gt;Step 4 - Encapsulate The Business Rule Check By Employing 'The Specification Pattern'&lt;/h2&gt;
 
-&lt;p&gt;Specification is a tactical design pattern presented in Eric Evans’ book Domain Driven Design. The &lt;code&gt;Specification Pattern&lt;/code&gt; is a way of encapsulating business rule(s) and test it against a candidate object to see if that object satisfies all the requirements expressed in the specification. This pattern fits very good with the Single-Responsibility-Principle (SRP), which states that one class should have only one reason to change. Furthermore, this specification object can be easily unit tested and reused.  &lt;/p&gt;
+&lt;p&gt;The 'Specification Pattern' is a tactical design pattern presented in Eric Evans’ book Domain Driven Design. The &lt;code&gt;Specification Pattern&lt;/code&gt; is a way of encapsulating business rule(s) and testing it against a candidate object to see if that object satisfies all requirements expressed in a specification. This pattern fits very good with the Single-Responsibility-Principle (SRP), which states that one class should have only one reason to change. Furthermore, this specification object can be easily unit tested and reused.  &lt;/p&gt;
 
-&lt;p&gt;Here you can see how it is used:&lt;/p&gt;
+&lt;p&gt;Here, you can see how it is used:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;var spec = new UniqueCompanySpecification(_companyRepository);
 if (spec.IsSatisfiedBy(newCompany) == false)
@@ -120,7 +282,7 @@ public interface ISpecification&amp;lt;T&amp;gt;
 } 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;After all re-factoring steps the final code is as follows:&lt;/p&gt;
+&lt;p&gt;After all re-factoring steps, the final code is as following:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;//..
 
@@ -136,17 +298,17 @@ session.Save(newCompany);
 
 &lt;h1&gt;Summary&lt;/h1&gt;
 
-&lt;p&gt;In this article I've shown a re-factoring process and usage of the Specification Pattern in order to satisfy an explicit business rule.&lt;br /&gt;
+&lt;p&gt;In this article, I've shown a re-factoring process and usage of the Specification Pattern in order to satisfy an explicit business rule.&lt;br /&gt;
 The re-factoring steps we took:  &lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;solve the query performance issues&lt;/li&gt;
-&lt;li&gt;make the &lt;code&gt;if&lt;/code&gt; condition check explicit&lt;/li&gt;
-&lt;li&gt;make the business rule violation explicit&lt;/li&gt;
-&lt;li&gt;encapsulate the business rule check by employing the Specification Pattern&lt;/li&gt;
+&lt;li&gt;Solve the query performance issues&lt;/li&gt;
+&lt;li&gt;Make the &lt;code&gt;if&lt;/code&gt; condition check explicit&lt;/li&gt;
+&lt;li&gt;Make the business rule violation explicit&lt;/li&gt;
+&lt;li&gt;Encapsulate the business rule check by employing the Specification Pattern&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;The Specification Pattern lets you decouple the design of requirements, fulfillment, and validation. Allows you to make your system definitions more clear and declarative, but be careful of the temptations to over-use it.&lt;/p&gt;
+&lt;p&gt;The Specification Pattern lets you decouple the design of requirements, fulfillment, and validation. It also allows you to make your system definitions more clear and declarative, but be careful not to fall into temptation to over-use it.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;References:&lt;/strong&gt;&lt;/p&gt;
 
