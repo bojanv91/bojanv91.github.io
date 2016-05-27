@@ -3,7 +3,7 @@ layout: post
 title: "Feature Folders" structure in ASP.NET MVC
 ---
 
-Structuring files around **business concerns** is more convenient and natural way of handling projects than structuring them around **technical concerns**. The [Separation of Concerns](http://deviq.com/separation-of-concerns/) is applied in both approaches, not both of them gives the same desired clarity and ease of handling a project. This article focuses on which structure gives better results.<!--excerpt-->
+Structuring files around **business concerns** is more convenient and natural way of handling projects than structuring them around **technical concerns**. The [Separation of Concerns](http://deviq.com/separation-of-concerns/) is applied in both approaches, but not both of them gives the same desired clarity and ease of handling a project. This article focuses on which structure gives better results.<!--excerpt-->
 
 Let's think about how do project managers usually request changes in requirements ?
 
