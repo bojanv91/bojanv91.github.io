@@ -5,16 +5,16 @@ title: "Feature Folders" structure in ASP.NET MVC
 
 DRAFT
 
-Structuring things around **business concerns** is more convenient and natural than structuring them around **technical concerns**. In both ways, [Separation of Concerns](http://deviq.com/separation-of-concerns/) is applied, but from which point of view a better structure is achieved at this level?<!--excerpt-->
+Structuring things around **business concerns** is more convenient and natural way of handling projects than structuring them around **technical concerns**. The [Separation of Concerns](http://deviq.com/separation-of-concerns/) is applied in both methods, not both of them gives the same desired clarity and ease of handling a project. This article focuses on which structure gives better results?<!--excerpt-->
 
-How changing requirements usually come from project managers?
+Let's think about how do project managers usually request changes in requirements ?
 
 - Change these fields in all these views; all these models; all these controllers, or
 - Change these fields in customer registration; shopping cart payment; ...
 
-Most of the time developers make modifications scoped to a single feature (e.g. adding new field). Structuring the related files under single folder can make this simpler. By applying the rule *"Files that change together should be structured close together"*, we can easily see the default MVC folder structure violates it. That is why structuring by business concerns is extremelly important aspect.
+Most of the time developers make modifications related to a single feature (e.g. adding new field). Structuring folders around interrelated files can make modification process simpler. The default MVC folder structure violates the rule of *"Files that change together should be structured close together"*. Structuring by business concerns embraces this important rule.
 
-Let's see both examples. 
+Let's see both approaches in examples. 
 
 # Structuring files by technical concerns (horizontal) - the default ASP.NET MVC way
 
@@ -54,7 +54,7 @@ Let's see both examples.
         Products
             ...
 
-Now, imagine you have many-many controllers, plus the standard N-Layer stuff like repositories, services, DTOs... things are starting to get messy.
+Now, imagine you have many-many controllers, in addition to the standard N-Layer stuff like repositories, services, DTOs, etc... You will soon notice that things are starting to get messy.
 
 # Structuring files by business concerns (vertical) - alternative (and better) way
 
@@ -112,7 +112,7 @@ Food for thought:
 
 # Configuration
 
-To make this work in ASP.NET MVC, the default Razor view engine should be replaced with one that makes the distincion of feature folders.
+To make this work in ASP.NET MVC, the default Razor view engine should be altered with one that makes the distincion of feature folders.
 
     public class Global : HttpApplication
     {
@@ -146,12 +146,12 @@ To make this work in ASP.NET MVC, the default Razor view engine should be replac
 
 Structuring files by features (business concerns) makes things easier to find and manage. 
 
-- You don't step over each other toes with your peers, thus spending time fixing merge conflicts. 
-- You can scale and modify each feature on it's own, independent from other features.
-- You immediately understand what the application does and where to find the needed files for your given requirement.
-- You can easily reuse similar features across projects by simply copying single folder.
-- The needed navigation thru Solution Explorer is drastically reduced as everything important for your requirement resides in single folder. 
+- You don't step over each other toes with your peers, thus, avoid spending time on fixing merge conflicts. 
+- You can scale and modify each feature on its own, independently from other features.
+- You immediately understand what an application does and where to find necessary files for your given requirement.
+- You can easily reuse similar features across projects by simply copying a single folder.
+- Time spent on navigation through Solution Explorer to locate interdependent files is drastically reduced since they are all in a single folder. 
 
-At our company we use this style of structure on over dozen projects for more than a year, and due the high success and productivity boost that it gave to our teams - this became our default structure on the presentation layer. But, you may ask - how do we structure our application services and data access? Stay tuned...
+At our company, we have been using structuring around business concerns on over dozens of projects for more than a year, and due to the high success and productivity boost in our teams, it became our default structure on the presentation layer. But, you may ask - how do we structure our application services and data access? Stay tuned...
 
 Happy coding!  
