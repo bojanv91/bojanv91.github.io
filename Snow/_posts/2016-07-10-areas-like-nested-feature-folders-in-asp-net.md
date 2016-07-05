@@ -19,23 +19,18 @@ In the previous article I blogged about how to work with feature folders in ASP.
         {
             // ...
             ViewEngines.Engines.Clear();
-            ViewEngines.Engines.Add(new FeatureFoldersRazorViewEngine());
+            ViewEngines.Engines.Add(new FeatureFoldersRazorViewEngine(rootNamespace: typeof(Global).Namespace));
         }
     }
     
     public class FeatureFoldersRazorViewEngine : RazorViewEngine
     {
         //This needs to be initialized to the root namespace of your MVC project.
-        private static readonly string RootNamespace = "VERT.WebApp";   // TODO: Change the namespace to your MVC project
+        private static string _rootNamespace; // e.g. VERT.WebApp
 
-        private static string GetPath(ControllerContext controllerContext, string viewName)
+        public FeatureFoldersRazorViewEngine(string rootNamespace)
         {
-            var controllerType = controllerContext.Controller.GetType();
-            //TODO: Add caching
-            var featureFolder = "~" + controllerType.Namespace.Replace(RootNamespace, string.Empty).Replace(".", "/");
-
-            var path = featureFolder + "/" + viewName + ".cshtml";
-            return path;
+            _rootNamespace = rootNamespace;
         }
 
         public override ViewEngineResult FindView(ControllerContext controllerContext, string viewName, string masterName, bool useCache)
@@ -44,6 +39,15 @@ In the previous article I blogged about how to work with feature folders in ASP.
             return VirtualPathProvider.FileExists(path)
                 ? new ViewEngineResult(CreateView(controllerContext, path, null), this)
                 : new ViewEngineResult(new[] { path });
+        }
+
+        private static string GetPath(ControllerContext controllerContext, string viewName)
+        {
+            var controllerType = controllerContext.Controller.GetType();
+            var featureFolder = controllerType.Namespace
+                .Replace(_rootNamespace, string.Empty)
+                .Replace(".", "/");
+            return $"~{featureFolder}/{viewName}.cshtml";
         }
 
         public override ViewEngineResult FindPartialView(ControllerContext controllerContext, string partialViewName, bool useCache)
@@ -115,16 +119,18 @@ Keep an eye on the namespaces where these controllers are placed.
         }
     }
 
-## Finally, check how this works in your browser
+## Finally, open how this works in your browser
 
+    http://localhost:port/                  -> Public/Home/Index.cshtml
+    http://localhost:port/Home              -> Public/Home/Index.cshtml
+    http://localhost:port/Home/Index        -> Public/Home/Index.cshtml
+    http://localhost:port/Admin             -> Admin/Home/Index.cshtml
+    http://localhost:port/Admin/Home        -> Admin/Home/Index.cshtml
+    http://localhost:port/Admin/Home/Index  -> Admin/Home/Index.cshtml
 
-
---------
 # Summary
 
 In previous article you read the story behind feature folders and how to make it work in your ASP.NET MVC application.
 In this article you read how to configure this approach to work with areas-like nested feature folders.
-
-For us, this approach works like a charm.
 
 Happy coding!  
