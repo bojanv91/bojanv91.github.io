@@ -3,21 +3,22 @@ layout: post
 title: Areas-like Nested Feature Folders in ASP.NET MVC 
 ---
 
-In the previous article I blogged about how to work with feature folders in ASP.NET MVC. In this article I focus on how to do the very same thing but support almost unlimited nesting of feature folders. This is needed in order to support Areas-like folder structure in your application.
+In my [previous article](/2016/05/feature-folders-structure-in-asp-net/) I blogged about how to work with feature folders in ASP.NET MVC. In this article I focus on how to do the very same thing but with Areas support by nesting the feature folders. This is also a nice option if you want to do plugin-based work. 
 
-# Here is the structure to be supported
+## This is the Web MVC structure I want to support
 
 ![Areas-like Nested Feature Folders in ASP.NET MVC](/images/2016-07-10-areas-like-nested-feature-folders-in-asp-net/image01.png)
 
-# Configuring your project
+## Configuring your project
 
-## First, to make this work in ASP.NET MVC, the default Razor view engine should be replaced with one that makes the distincion of feature folders.
+### First, you must replace the default Razor view engine with one that can distinguish nested feature folders.
 
     public class Global : HttpApplication
     {
         void Application_Start(object sender, EventArgs e)
         {
-            // ...
+            // Code omitted for clarity
+
             ViewEngines.Engines.Clear();
             ViewEngines.Engines.Add(new FeatureFoldersRazorViewEngine(rootNamespace: typeof(Global).Namespace));
         }
@@ -25,8 +26,8 @@ In the previous article I blogged about how to work with feature folders in ASP.
     
     public class FeatureFoldersRazorViewEngine : RazorViewEngine
     {
-        //This needs to be initialized to the root namespace of your MVC project.
-        private static string _rootNamespace; // e.g. VERT.WebApp
+        // This needs to be initialized to the root namespace of your MVC project.
+        private static string _rootNamespace; // e.g. BooUniversity.Delivery.WebMvc
 
         public FeatureFoldersRazorViewEngine(string rootNamespace)
         {
@@ -59,30 +60,48 @@ In the previous article I blogged about how to work with feature folders in ASP.
         }
     }
 
-## Second, create base controllers for each big feature folder, so in the routing you can make distinction via the namespaces (similar to how Areas work by default)
+### Second, create base controllers for each area-like-feature, so later you can specify which route configuration is bound to which namespace
 
-For example, for *Administration* big feature folder, create new controller and put it inside the *Administration* folder. All other controllers should inherit this base controller.
+For example, for *Admin* area feature folder, create new base controller and put it in the *Features/Admin* folder. All controllers in the Admin big-feature folder must inherit from this base controller.
 
-    namespace VERT.WebApp.Features.Administration
+    namespace BooUniversity.Delivery.WebMvc.Features.Admin
     {
-        public abstract class AdministrationMvcController : BaseMvcController
+        public abstract class AdminMvcController : BaseMvcController
         {
         }
     }
 
 For *Public* do the same thing.
 
-    namespace VERT.WebApp.Features.Public
+    namespace BooUniversity.Delivery.WebMvc.Features.Public
     {
         public abstract class PublicMvcController : BaseMvcController
         {
-
         }
     }
 
 Keep an eye on the namespaces where these controllers are placed.
 
-## Third, configure the routing
+    // Features/Admin/Home/
+    namespace BooUniversity.Delivery.WebMvc.Features.Admin.Home
+    {
+        public class HomeController : AdminMvcController
+        {
+            public ActionResult Index() => View();  // Features/Admin/Home/Index.cshtml
+        }
+    }
+
+    // Features/Public/Home/
+    namespace BooUniversity.Delivery.WebMvc.Features.Public.Home
+    {
+        public class HomeController : PublicMvcController
+        {
+            public ActionResult Index() => View();  // Features/Public/Home/Index.cshtml
+        }
+    }
+
+
+### Third, create routes for each area-feature
 
     public class RouteConfig
     {
@@ -90,11 +109,11 @@ Keep an eye on the namespaces where these controllers are placed.
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            var routeAdministration = routes.MapRoute(
-                name: "Administration",
-                url: "Administration/{controller}/{action}/{id}",
+            var routeAdmin = routes.MapRoute(
+                name: "Admin",
+                url: "Admin/{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
-                namespaces: ReflectionUtil.GetNamespacesForInheritedClassesOf<AdministrationMvcController>()
+                namespaces: ReflectionUtil.GetNamespacesForInheritedClassesOf<AdminMvcController>()
             );
 
             var routePublic = routes.MapRoute(
@@ -119,18 +138,17 @@ Keep an eye on the namespaces where these controllers are placed.
         }
     }
 
-## Finally, open how this works in your browser
+### Finally, run your app and try out some routes to see how it works
 
-    http://localhost:port/                  -> Public/Home/Index.cshtml
-    http://localhost:port/Home              -> Public/Home/Index.cshtml
-    http://localhost:port/Home/Index        -> Public/Home/Index.cshtml
-    http://localhost:port/Admin             -> Admin/Home/Index.cshtml
-    http://localhost:port/Admin/Home        -> Admin/Home/Index.cshtml
-    http://localhost:port/Admin/Home/Index  -> Admin/Home/Index.cshtml
+    http://localhost:port/                 -> Public/Home/Index.cshtml
+    http://localhost:port/Home             -> Public/Home/Index.cshtml
+    http://localhost:port/Home/Index       -> Public/Home/Index.cshtml
+    http://localhost:port/Admin            -> Admin/Home/Index.cshtml
+    http://localhost:port/Admin/Home       -> Admin/Home/Index.cshtml
+    http://localhost:port/Admin/Home/Index -> Admin/Home/Index.cshtml
 
-# Summary
+## Summary
 
-In previous article you read the story behind feature folders and how to make it work in your ASP.NET MVC application.
-In this article you read how to configure this approach to work with areas-like nested feature folders.
+TODO
 
 Happy coding!  
