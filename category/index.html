@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="last-modified" content="2016-05-27T11:29:45.5726196+02:00" />
+    <meta http-equiv="last-modified" content="2016-08-22T02:21:16.8222251+02:00" />
     <meta name="keywords" content="" />
     <title> Bojan Veljanovski's Blog</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
@@ -15,7 +15,7 @@
         <header id="masthead" class="site-header fancy-container lightgreen" role="banner">
             <hgroup>
                 <h1 class="site-title"><a href="/" title="bojanv91" rel="home">Bojan's Blog</a></h1>
-                <h2><small>Notes on software development</small></h2>
+                <h2><small>My notes on software development</small></h2>
 				<div>
 					<img style="width:120px;" src="/stylesheets/images/profile.jpg" />
 					<p class="site-description">CTO at HASELT</p>
@@ -124,7 +124,21 @@ _gaq.push(['_trackPageview']);
         });
 
         prettyPrint();
+        fixPage_feature_folders();
       });
+
+        function fixPage_feature_folders() {
+            var isCorrectPage = window.location.href.indexOf("feature-folders-structure-in-asp-net");
+            if(!isCorrectPage)
+                return;
+
+            var $left = $("#post pre.prettyprint").eq(0);
+            var $right =  $("#post pre.prettyprint").eq(1);
+
+            var $wrapLeft = $left.wrap("<div style='width:50%;float:left;'></div>");
+            var $wrapRight = $right.wrap("<div style='width:50%;float:left;'></div>");
+            $wrapRight.parent().after("<div style='clear:both;'></div>");
+        }
     </script>
 </body>
 </html>

@@ -19,7 +19,7 @@
         <header id="masthead" class="site-header fancy-container lightgreen" role="banner">
             <hgroup>
                 <h1 class="site-title"><a href="/" title="bojanv91" rel="home">Bojan's Blog</a></h1>
-                <h2><small>Notes on software development</small></h2>
+                <h2><small>My notes on software development</small></h2>
 				<div>
 					<img style="width:120px;" src="/stylesheets/images/profile.jpg" />
 					<p class="site-description">CTO at HASELT</p>
@@ -102,7 +102,21 @@
         });
 
         prettyPrint();
+        fixPage_feature_folders();
       });
+
+        function fixPage_feature_folders() {
+            var isCorrectPage = window.location.href.indexOf("feature-folders-structure-in-asp-net");
+            if(!isCorrectPage)
+                return;
+
+            var $left = $("#post pre.prettyprint").eq(0);
+            var $right =  $("#post pre.prettyprint").eq(1);
+
+            var $wrapLeft = $left.wrap("<div style='width:50%;float:left;'></div>");
+            var $wrapRight = $right.wrap("<div style='width:50%;float:left;'></div>");
+            $wrapRight.parent().after("<div style='clear:both;'></div>");
+        }
     </script>
 </body>
 </html>

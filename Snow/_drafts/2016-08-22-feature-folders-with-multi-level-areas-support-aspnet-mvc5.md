@@ -1,11 +1,11 @@
 ---
 layout: post
-title: Areas-like Nested Feature Folders in ASP.NET MVC 
+title: Feature Folders Project Structure with Multi-Level Areas Support (ASP.NET MVC5)
 ---
 
-In my [previous article](/2016/05/feature-folders-structure-in-asp-net/) I blogged about how to work with feature folders in ASP.NET MVC. In this article I focus on how to do the very same thing but with Areas support by nesting the feature folders. This is also a nice option if you want to do plugin-based work. 
+In my [Feature Folders Project Structure in ASP.NET MVC5](/2016/05/feature-folders-structure-in-asp-net/) I've written about the need of feature folders and how to use them ASP.NET MVC5. In this article I cover how to do the very same thing but with Areas-like support by nesting the feature folders. This is also a nice option if you want to do plugin-based work. 
 
-## This is the Web MVC structure I want to support
+## This is the ASP.NET MVC5 structure we want to support
 
 ![Areas-like Nested Feature Folders in ASP.NET MVC](/images/2016-07-10-areas-like-nested-feature-folders-in-asp-net/image01.png)
 
@@ -18,7 +18,7 @@ In my [previous article](/2016/05/feature-folders-structure-in-asp-net/) I blogg
         void Application_Start(object sender, EventArgs e)
         {
             // Code omitted for clarity
-
+    
             ViewEngines.Engines.Clear();
             ViewEngines.Engines.Add(new FeatureFoldersRazorViewEngine(rootNamespace: typeof(Global).Namespace));
         }
@@ -28,12 +28,12 @@ In my [previous article](/2016/05/feature-folders-structure-in-asp-net/) I blogg
     {
         // This needs to be initialized to the root namespace of your MVC project.
         private static string _rootNamespace; // e.g. BooUniversity.Delivery.WebMvc
-
+    
         public FeatureFoldersRazorViewEngine(string rootNamespace)
         {
             _rootNamespace = rootNamespace;
         }
-
+    
         public override ViewEngineResult FindView(ControllerContext controllerContext, string viewName, string masterName, bool useCache)
         {
             var path = GetPath(controllerContext, viewName);
@@ -41,7 +41,7 @@ In my [previous article](/2016/05/feature-folders-structure-in-asp-net/) I blogg
                 ? new ViewEngineResult(CreateView(controllerContext, path, null), this)
                 : new ViewEngineResult(new[] { path });
         }
-
+    
         private static string GetPath(ControllerContext controllerContext, string viewName)
         {
             var controllerType = controllerContext.Controller.GetType();
@@ -50,7 +50,7 @@ In my [previous article](/2016/05/feature-folders-structure-in-asp-net/) I blogg
                 .Replace(".", "/");
             return $"~{featureFolder}/{viewName}.cshtml";
         }
-
+    
         public override ViewEngineResult FindPartialView(ControllerContext controllerContext, string partialViewName, bool useCache)
         {
             var path = GetPath(controllerContext, partialViewName);
@@ -90,7 +90,7 @@ Keep an eye on the namespaces where these controllers are placed.
             public ActionResult Index() => View();  // Features/Admin/Home/Index.cshtml
         }
     }
-
+    
     // Features/Public/Home/
     namespace BooUniversity.Delivery.WebMvc.Features.Public.Home
     {
@@ -108,14 +108,14 @@ Keep an eye on the namespaces where these controllers are placed.
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
+    
             var routeAdmin = routes.MapRoute(
                 name: "Admin",
                 url: "Admin/{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
                 namespaces: ReflectionUtil.GetNamespacesForInheritedClassesOf<AdminMvcController>()
             );
-
+    
             var routePublic = routes.MapRoute(
                 name: "Public",
                 url: "{controller}/{action}/{id}",
@@ -124,7 +124,7 @@ Keep an eye on the namespaces where these controllers are placed.
             );
         }
     }
-
+    
     // A help hand with reflection
     public static class ReflectionUtil
     {
@@ -147,8 +147,3 @@ Keep an eye on the namespaces where these controllers are placed.
     http://localhost:port/Admin/Home       -> Admin/Home/Index.cshtml
     http://localhost:port/Admin/Home/Index -> Admin/Home/Index.cshtml
 
-## Summary
-
-TODO
-
-Happy coding!  
