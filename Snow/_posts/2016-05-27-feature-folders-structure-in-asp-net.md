@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Feature Folders Project Structure in ASP.NET MVC5
+title: Feature by Folder Project Structure in ASP.NET MVC5
 ---
 
 Structuring your files around **business concerns** is more natural way of handling projects than structuring them around **technical concerns**. The [Separation of Concerns](https://en.wikipedia.org/wiki/Separation_of_concerns) is applied in both approaches, but not both of them give the same desired clarity and ease for developers. This blogpost focuses on organizing MVC projects around **feature folders**, which represent the business concerns.<!--excerpt-->
@@ -146,11 +146,11 @@ Example of single feature evolved as Angular application/module:
 
 Structuring your files by features (business concerns) makes things easier to find and manage. 
 
+- Time spent on navigation through Solution Explorer to locate interdependent files is drastically reduced since they are all in a single folder.
 - You don't step over each other toes with your peers, thus, avoid spending time on fixing merge conflicts. 
 - You can scale and modify each feature on its own, independently from other features and even use different UI technology.
 - You immediately understand what an application does and where to find necessary files for your given requirement.
 - You can easily reuse similar features across projects by simply copying just a single folder. 
-- Time spent on navigation through Solution Explorer to locate interdependent files is drastically reduced since they are all in a single folder.
 - You can reason much easier about each feature just by looking in a single (feature) folder.
 
 
@@ -176,7 +176,7 @@ To make this work in ASP.NET MVC 5, we should inherit the ``RazorViewEngine`` an
         }
     }
 
-Next, we have to add our newly created ``FeatureFoldersRazorViewEngine`` in our applcation.
+Next, we have to add our newly created ``FeatureFoldersRazorViewEngine`` in our application.
 
     public class Global : HttpApplication
     {
