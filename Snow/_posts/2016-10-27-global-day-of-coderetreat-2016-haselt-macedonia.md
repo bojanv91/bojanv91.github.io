@@ -13,7 +13,7 @@ title: Global Day of Coderetreat 2016 in Skopje, Macedonia
 
 ## Hosting and facilitating
 
-[HASELT](http://www.haselt.com/) hosted, organized and sponsored this year's Coderetreat in Macedonia. [Dalibor Nasevic](dalibornasevic.com), who is a long time facilitator of Coderetreat events, facilitated this year's event too.
+Having the huge enthusiasm about community work and passion in software development and coding, [HASELT](http://www.haselt.com/) supported this year's Coderetreat in Macedonia by providing sponsorship, logistics for organization and space where programmers were gathered. We've had the pleasure to have with us [Dalibor Nasevic](dalibornasevic.com), who is long-time facilitator of Coderetreat events in Macedonia and helped all attendees to make the most out of the event.
 
 ![Global Day of Coderetreat 2016 in Skopje, Macedonia](/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/2.png)
 
