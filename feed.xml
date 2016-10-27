@@ -1,4 +1,79 @@
-<feed xmlns="http://www.w3.org/2005/Atom"><title type="text">Bojan Veljanovski's notes and thoughts on software</title><subtitle type="text">Bojan Veljanovski's notes and thoughts on software</subtitle><id>http://bojanv91.github.io/</id><updated>2016-08-22T02:21:19+02:00</updated><author><name>Bojan Veljanovski</name><uri>http://bojanv91.github.io</uri><email>bojanv91@live.com</email></author><generator>Sandra.Snow Atom Generator</generator><link rel="alternate" href="http://bojanv91.github.io/feed.xml" /><link rel="self" type="text/html" title="Bojan Veljanovski's notes and thoughts on software" href="http://bojanv91.github.io/feed.xml" /><entry><id>http://bojanv91.github.io/2016/05/feature-folders-structure-in-asp-net/</id><title type="text">Feature Folders Project Structure in ASP.NET MVC5</title><summary type="html">&lt;p&gt;Structuring your files around &lt;strong&gt;business concerns&lt;/strong&gt; is more natural way of handling projects than structuring them around &lt;strong&gt;technical concerns&lt;/strong&gt;. The &lt;a href="https://en.wikipedia.org/wiki/Separation_of_concerns"&gt;Separation of Concerns&lt;/a&gt; is applied in both approaches, but not both of them give the same desired clarity and ease for developers. This blogpost focuses on organizing MVC projects around &lt;strong&gt;feature folders&lt;/strong&gt;, which represent the business concerns.</summary><published>2016-05-26T22:00:00Z</published><updated>2016-05-26T22:00:00Z</updated><link rel="alternate" href="http://bojanv91.github.io/2016/05/feature-folders-structure-in-asp-net/" /><content type="html">&lt;p&gt;Structuring your files around &lt;strong&gt;business concerns&lt;/strong&gt; is more natural way of handling projects than structuring them around &lt;strong&gt;technical concerns&lt;/strong&gt;. The &lt;a href="https://en.wikipedia.org/wiki/Separation_of_concerns"&gt;Separation of Concerns&lt;/a&gt; is applied in both approaches, but not both of them give the same desired clarity and ease for developers. This blogpost focuses on organizing MVC projects around &lt;strong&gt;feature folders&lt;/strong&gt;, which represent the business concerns.&lt;!--excerpt--&gt;&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title type="text">Bojan Veljanovski's notes and thoughts on software</title><subtitle type="text">Bojan Veljanovski's notes and thoughts on software</subtitle><id>http://bojanv91.github.io/</id><updated>2016-10-27T11:13:24+02:00</updated><author><name>Bojan Veljanovski</name><uri>http://bojanv91.github.io</uri><email>bojanv91@live.com</email></author><generator>Sandra.Snow Atom Generator</generator><link rel="alternate" href="http://bojanv91.github.io/feed.xml" /><link rel="self" type="text/html" title="Bojan Veljanovski's notes and thoughts on software" href="http://bojanv91.github.io/feed.xml" /><entry><id>http://bojanv91.github.io/2016/10/global-day-of-coderetreat-2016-haselt-macedonia/</id><title type="text">Global Day of Coderetreat 2016 in Skopje, Macedonia</title><summary type="html">&lt;p&gt;&lt;code&gt;#GDCR16&lt;/code&gt; is a day for celebrating passion and software craftsmanship. This year's event in Skopje, Macedonia was a blast! Fresh ideas, new perspectives and great people is everything you need for such an event.</summary><published>2016-10-26T22:00:00Z</published><updated>2016-10-26T22:00:00Z</updated><link rel="alternate" href="http://bojanv91.github.io/2016/10/global-day-of-coderetreat-2016-haselt-macedonia/" /><content type="html">&lt;p&gt;&lt;code&gt;#GDCR16&lt;/code&gt; is a day for celebrating passion and software craftsmanship. This year's event in Skopje, Macedonia was a blast! Fresh ideas, new perspectives and great people is everything you need for such an event.&lt;!--excerpt--&gt; &lt;/p&gt;
+
+&lt;h2&gt;About the event&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href="http://globalday.coderetreat.org/"&gt;Coderetreat&lt;/a&gt; is a one day event that provides developers the opportunity for skills improvement by focusing on software development and &lt;strong&gt;design fundamentals&lt;/strong&gt;. By practicing the basic principles of &lt;strong&gt;modular and object-oriented design&lt;/strong&gt;, participants can improve their ability to write code that &lt;strong&gt;minimizes the cost of change over time&lt;/strong&gt;. It aims to shrink the gap between the code we write under pressure of needing to deliver on time and the perfect code.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="http://bojanv91.github.io/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/6.png" alt="Global Day of Coderetreat 2016 in Skopje, Macedonia" /&gt;&lt;/p&gt;
+
+&lt;h2&gt;Hosting and facilitating&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href="http://www.haselt.com/"&gt;HASELT&lt;/a&gt; hosted, organized and sponsored this year's Coderetreat in Macedonia. &lt;a href="http://bojanv91.github.io/dalibornasevic.com"&gt;Dalibor Nasevic&lt;/a&gt;, who is a long time facilitator of Coderetreat events, facilitated this year's event too.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="http://bojanv91.github.io/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/2.png" alt="Global Day of Coderetreat 2016 in Skopje, Macedonia" /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="http://bojanv91.github.io/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/3.png" alt="Global Day of Coderetreat 2016 in Skopje, Macedonia" /&gt;&lt;/p&gt;
+
+&lt;h2&gt;Sessions&lt;/h2&gt;
+
+&lt;p&gt;Starting early in the morning the facilitator introduced the agenda for the day. There were five sessions of pair programming. After each session, retrospective meetings were held where each pair discussed what they did. After that, participants switched pairs and prepared for the next session.&lt;/p&gt;
+
+&lt;p&gt;The first session was intended to get the participants familiar with the problem, and introduction to &lt;a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"&gt;Conway's Game of Life&lt;/a&gt;. In the second session, "Ping-pong pair programming", the pairs learned the importance of communication when pairing and collaborate together to see other ways of writing code. The third session was "No primitives across method boundaries (input or output)". In the fourth session, "No conditionals", the pairs had to find ways of avoiding conditionals and fewer logical paths. The last session, "Evil pair programming" was designed to practice writing quality tests, where the tester tries to write good tests and the coder writes just enough code to pass tests.&lt;/p&gt;
+
+&lt;p&gt;At the end of all sessions, the participants had the final retrospective with Dalibor. He asked the following questions, to which all participants shared their thoughts:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;What, if anything, did you learn today?&lt;/li&gt;
+&lt;li&gt;What, if anything, surprised you today?&lt;/li&gt;
+&lt;li&gt;What, if anything, will you do differently moving forward?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src="http://bojanv91.github.io/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/4.png" alt="Global Day of Coderetreat 2016 in Skopje, Macedonia" /&gt;&lt;/p&gt;
+
+&lt;h2&gt;Impressions from the event&lt;/h2&gt;
+
+&lt;p&gt;Being able to see so diverse thoughts about designing software was truly inspirational, and the way how people collaborated and shared their ideas was really empowering to everyone, including myself. &lt;/p&gt;
+
+&lt;p&gt;Personally, if I have to choose only a single event that I would like to attend to, Coderetreat would be definitely &lt;em&gt;that&lt;/em&gt; one. &lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Here are impressions shared by my awesome colleagues, the driving force of the whole organization:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;We had an amazing time, meeting developers willing to learn, improve and also share their knowledge with others. We hope that the participants found this event as inspirational and productive as we do.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;and also, the impressions shared by Dalibor who put his energy and enthusiasm guiding the participants during the whole day:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;It was great experience for me being part of another Global Day of Coderetreat and facilitate the local event in Skopje. I am very grateful to Bojan and the rest of the HASELT team for their passion and inspirational energy in organizing and hosting the event. I'm very happy for the attendees too. The ones for who the event is. The ones that chose to spend that Saturday practicing software design with other developers, work in different programming languages, share their knowledge and improve their craft together. Their passion, their positive energy and their enthusiasm. It's great to see how inspirational the event can be for them and what they are going to change on their daily jobs starting Monday.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src="http://bojanv91.github.io/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/5.png" alt="Global Day of Coderetreat 2016 in Skopje, Macedonia" /&gt;&lt;/p&gt;
+
+&lt;h2&gt;What's next?&lt;/h2&gt;
+
+&lt;p&gt;Next, after being part of this very inspirational event, we are encouraged to contribute even more to the local software development community. So, we put ourselves a goal to organize many similar tech events, workshops and regular meet-ups in order to bring the local community even closer, by encouraging discussions, empowering people, sharing experiences and ideas. Stay tuned for more info which is coming, very soon!&lt;/p&gt;
+
+&lt;h2&gt;Additional Reading&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://dalibornasevic.com/posts/74-notes-from-global-day-of-coderetreat-2016-in-skopje"&gt;Dalibor's notes of Global Day of Coderetreat in Skopje&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://leanpub.com/4rulesofsimpledesign/c/gdcr"&gt;Book: Understanding the Four Rules of Simple Design by Corey Haines&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://coderetreat.org/"&gt;http://coderetreat.org/ &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://globalday.coderetreat.org/"&gt;http://globalday.coderetreat.org/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"&gt;Conway's Game of Life&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Dear reader, thanks for investing your time in reading our collective story, and I hope you'll be inspired enough to join us in the next events, which are coming soon. Oh, and don't forget: always be learning, always be coding.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;a href="https://www.facebook.com/HASELTofficial/photos/?tab=album&amp;amp;album_id=666003166900108"&gt;See more pictures here&lt;/a&gt;.&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;This post was originally posted on &lt;a href="http://haselt.com/global-day-of-coderetreat-2016-haselt/"&gt;http://haselt.com&lt;/a&gt;.&lt;/p&gt;
+  
+  &lt;p&gt;A special thanks to my colleague Viktorija Nikolovska for her help with this article.&lt;/p&gt;
+&lt;/blockquote&gt;
+</content></entry><entry><id>http://bojanv91.github.io/2016/05/feature-folders-structure-in-asp-net/</id><title type="text">Feature by Folder Project Structure in ASP.NET MVC5</title><summary type="html">&lt;p&gt;Structuring your files around &lt;strong&gt;business concerns&lt;/strong&gt; is more natural way of handling projects than structuring them around &lt;strong&gt;technical concerns&lt;/strong&gt;. The &lt;a href="https://en.wikipedia.org/wiki/Separation_of_concerns"&gt;Separation of Concerns&lt;/a&gt; is applied in both approaches, but not both of them give the same desired clarity and ease for developers. This blogpost focuses on organizing MVC projects around &lt;strong&gt;feature folders&lt;/strong&gt;, which represent the business concerns.</summary><published>2016-05-26T22:00:00Z</published><updated>2016-05-26T22:00:00Z</updated><link rel="alternate" href="http://bojanv91.github.io/2016/05/feature-folders-structure-in-asp-net/" /><content type="html">&lt;p&gt;Structuring your files around &lt;strong&gt;business concerns&lt;/strong&gt; is more natural way of handling projects than structuring them around &lt;strong&gt;technical concerns&lt;/strong&gt;. The &lt;a href="https://en.wikipedia.org/wiki/Separation_of_concerns"&gt;Separation of Concerns&lt;/a&gt; is applied in both approaches, but not both of them give the same desired clarity and ease for developers. This blogpost focuses on organizing MVC projects around &lt;strong&gt;feature folders&lt;/strong&gt;, which represent the business concerns.&lt;!--excerpt--&gt;&lt;/p&gt;
 
 &lt;p&gt;Most of the time developers make modifications related to a single feature (e.g. adding new fields, changing business rules, adding validation...). Structuring folders around interrelated files can make modification process simpler. The common MVC folder structure violates the rule of &lt;em&gt;"Files that change together should be structured together"&lt;/em&gt;. Structuring by business concerns embraces this very important rule.&lt;/p&gt;
 
@@ -145,11 +220,11 @@ _ViewStart.cshtml
 &lt;p&gt;Structuring your files by features (business concerns) makes things easier to find and manage. &lt;/p&gt;
 
 &lt;ul&gt;
+&lt;li&gt;Time spent on navigation through Solution Explorer to locate interdependent files is drastically reduced since they are all in a single folder.&lt;/li&gt;
 &lt;li&gt;You don't step over each other toes with your peers, thus, avoid spending time on fixing merge conflicts. &lt;/li&gt;
 &lt;li&gt;You can scale and modify each feature on its own, independently from other features and even use different UI technology.&lt;/li&gt;
 &lt;li&gt;You immediately understand what an application does and where to find necessary files for your given requirement.&lt;/li&gt;
 &lt;li&gt;You can easily reuse similar features across projects by simply copying just a single folder. &lt;/li&gt;
-&lt;li&gt;Time spent on navigation through Solution Explorer to locate interdependent files is drastically reduced since they are all in a single folder.&lt;/li&gt;
 &lt;li&gt;You can reason much easier about each feature just by looking in a single (feature) folder.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -176,7 +251,7 @@ _ViewStart.cshtml
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Next, we have to add our newly created &lt;code&gt;FeatureFoldersRazorViewEngine&lt;/code&gt; in our applcation.&lt;/p&gt;
+&lt;p&gt;Next, we have to add our newly created &lt;code&gt;FeatureFoldersRazorViewEngine&lt;/code&gt; in our application.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;public class Global : HttpApplication
 {

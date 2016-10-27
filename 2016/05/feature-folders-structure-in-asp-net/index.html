@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="last-modified" content="2016-08-22T02:21:16.8222251+02:00" />
+    <meta http-equiv="last-modified" content="2016-10-27T11:13:21.0968149+02:00" />
     <meta name="keywords" content="" />
-    <title>Feature Folders Project Structure in ASP.NET MVC5 Bojan Veljanovski's Blog</title>
+    <title>Feature by Folder Project Structure in ASP.NET MVC5 Bojan Veljanovski's Blog</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
     <link rel="canonical" href="http://bojanv91.github.io/2016/05/feature-folders-structure-in-asp-net/" />
 </head>
@@ -41,7 +41,7 @@
 
 
 <div id="post">
-    <h1>Feature Folders Project Structure in ASP.NET MVC5</h1>
+    <h1>Feature by Folder Project Structure in ASP.NET MVC5</h1>
 
     <div class="post-note">
       posted on 27 May 2016
@@ -204,11 +204,11 @@ _ViewStart.cshtml
 <p>Structuring your files by features (business concerns) makes things easier to find and manage. </p>
 
 <ul>
+<li>Time spent on navigation through Solution Explorer to locate interdependent files is drastically reduced since they are all in a single folder.</li>
 <li>You don't step over each other toes with your peers, thus, avoid spending time on fixing merge conflicts. </li>
 <li>You can scale and modify each feature on its own, independently from other features and even use different UI technology.</li>
 <li>You immediately understand what an application does and where to find necessary files for your given requirement.</li>
 <li>You can easily reuse similar features across projects by simply copying just a single folder. </li>
-<li>Time spent on navigation through Solution Explorer to locate interdependent files is drastically reduced since they are all in a single folder.</li>
 <li>You can reason much easier about each feature just by looking in a single (feature) folder.</li>
 </ul>
 
@@ -235,7 +235,7 @@ _ViewStart.cshtml
 }
 </code></pre>
 
-<p>Next, we have to add our newly created <code>FeatureFoldersRazorViewEngine</code> in our applcation.</p>
+<p>Next, we have to add our newly created <code>FeatureFoldersRazorViewEngine</code> in our application.</p>
 
 <pre><code>public class Global : HttpApplication
 {
@@ -310,6 +310,7 @@ _ViewStart.cshtml
                 <aside id="archives-4" class="widget widget_archive">
                     <h1 class="widget-title">Archive</h1>
                     <ul class="posts">
+                          <li><a href="/archive#201610">October, 2016</a></li>
                           <li><a href="/archive#20165">May, 2016</a></li>
                           <li><a href="/archive#20159">September, 2015</a></li>
                           <li><a href="/archive#20153">March, 2015</a></li>
