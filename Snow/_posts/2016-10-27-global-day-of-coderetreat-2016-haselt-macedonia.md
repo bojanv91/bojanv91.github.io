@@ -63,7 +63,7 @@ Next, after being part of this very inspirational event, we are encouraged to co
 
 Dear reader, thanks for investing your time in reading our collective story, and I hope you'll be inspired enough to join us in the next events, which are coming soon. Oh, and don't forget: always be learning, always be coding.
 
-**[See more pictures here](https://www.facebook.com/HASELTofficial/photos/?tab=album&album_id=666003166900108).**.
+**[See more pictures here](https://www.facebook.com/HASELTofficial/photos/?tab=album&album_id=666003166900108).**
 
 > This post was originally posted on [http://haselt.com](http://haselt.com/global-day-of-coderetreat-2016-haselt/).
 > 
