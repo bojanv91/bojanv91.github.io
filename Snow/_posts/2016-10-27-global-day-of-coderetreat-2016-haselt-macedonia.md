@@ -1,6 +1,9 @@
-Global Day of Coderetreat 2016 in Skopje, Macedonia
+---
+layout: post
+title: Global Day of Coderetreat 2016 in Skopje, Macedonia
+---
 
-``#GDCR16`` is a day for celebrating passion and software craftsmanship. This year's event in Skopje, Macedonia was a blast! Fresh ideas, new perspectives and great people is everything you need for such an event.
+``#GDCR16`` is a day for celebrating passion and software craftsmanship. This year's event in Skopje, Macedonia was a blast! Fresh ideas, new perspectives and great people is everything you need for such an event.<!--excerpt--> 
 
 ## About the event
 
@@ -8,21 +11,21 @@ Global Day of Coderetreat 2016 in Skopje, Macedonia
 
 ## Hosting and facilitating
 
-This year's Coderetreat in Macedonia was hosted, organized and sponsored by [HASELT](http://www.haselt.com/), and facilitated by [Dalibor Nasevic](dalibornasevic.com), who is a long time facilitator of Coderetreat events in Macedonia. 
-
 [HASELT](http://www.haselt.com/) hosted, organized and sponsored this year's Coderetreat in Macedonia. [Dalibor Nasevic](dalibornasevic.com), who is a long time facilitator of Coderetreat events, facilitated this year's event too.
-
-Here are some photos from the atmosphere:
 
 ................add photos........................
 
 ## Sessions
 
-Starting early in the morning, the participants were introduced with the agenda and the rules of the competition by the facilitator Dalibor Nasevic. They had 5 sessions in pair programming, and after each session, time for retrospectives and short breaks.
+Starting early in the morning the facilitator introduced the agenda for the day. There were five sessions of pair programming. After each session, retrospective meetings were held where each pair discussed what they did. After that, participants switched pairs and prepared for the next session.
 
 The first session was intended to get the participants familiar with the problem, and introduction to [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). In the second session, "Ping-pong pair programming", the pairs learned the importance of communication when pairing and collaborate together to see other ways of writing code. The third session was "No primitives across method boundaries (input or output)". In the fourth session, "No conditionals", the pairs had to find ways of avoiding conditionals and fewer logical paths. The last session, "Evil pair programming" was designed to practice writing quality tests, where the tester tries to write good tests and the coder writes just enough code to pass tests.
 
-At the end of the sessions, the participants had the final retrospective with the facilitator and shared their thoughts about what did they learn, what surprised them the most and what they would do differently.
+At the end of all sessions, the participants had the final retrospective with Dalibor. He asked the following questions, to which all participants shared their thoughts:
+
+- What, if anything, did you learn today?
+- What, if anything, surprised you today?
+- What, if anything, will you do differently moving forward?
 
 ## Impressions from the event
 
@@ -42,7 +45,7 @@ Personally, if I have to choose only a single event that I would like to attend 
 
 Next, after being part of this very inspirational event, we are encouraged to contribute even more to the local software development community. So, we put ourselves a goal to organize many similar tech events, workshops and regular meet-ups in order to bring the local community even closer, by encouraging discussions, empowering people, sharing experiences and ideas. Stay tuned for more info which is coming, very soon!
 
-## Additional References
+## Additional Reading
 
 - [Book: Understanding the Four Rules of Simple Design by Corey Haines](https://leanpub.com/4rulesofsimpledesign/c/gdcr)
 - [http://coderetreat.org/ ](http://coderetreat.org/)
