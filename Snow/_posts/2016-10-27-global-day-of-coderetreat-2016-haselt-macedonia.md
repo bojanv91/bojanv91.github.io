@@ -67,4 +67,4 @@ Dear reader, thanks for investing your time in reading our collective story, and
 
 > This post was originally posted on [http://haselt.com](http://haselt.com/global-day-of-coderetreat-2016-haselt/).
 > 
-> A special thanks to my colleague Viktorija Nikolovska for her help with this article.
+> A special thanks to my colleague [Viktorija Nikolovska](https://www.linkedin.com/in/viktorijanikolovska) for her help with this article.
