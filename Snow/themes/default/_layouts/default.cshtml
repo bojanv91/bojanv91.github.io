@@ -107,7 +107,7 @@
 
         function fixPage_feature_folders() {
             var isCorrectPage = window.location.href.indexOf("feature-folders-structure-in-asp-net");
-            if(!isCorrectPage)
+            if(isCorrectPage == -1)
                 return;
 
             var $left = $("#post pre.prettyprint").eq(0);

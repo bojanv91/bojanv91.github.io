@@ -1,4 +1,45 @@
-<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Bojan Veljanovski's notes and thoughts on software</title><link>http://bojanv91.github.io/rss.xml</link><description>Bojan Veljanovski's notes and thoughts on software</description><item><guid isPermaLink="true">http://bojanv91.github.io/2016/12/vs2016-extensions/</guid><link>http://bojanv91.github.io/2016/12/vs2016-extensions/</link><title>Extensions I use with Visual Studio 2015</title><description>&lt;p&gt;Rich IDEs are a great asset to enhance productivity in writing and reading code. &lt;/p&gt;
+<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Bojan Veljanovski's notes and thoughts on software</title><link>http://bojanv91.github.io/rss.xml</link><description>Bojan Veljanovski's notes and thoughts on software</description><item><guid isPermaLink="true">http://bojanv91.github.io/2017/01/snippet-fix-razor-views-compilation/</guid><link>http://bojanv91.github.io/2017/01/snippet-fix-razor-views-compilation/</link><title>Snippet: Fix Razor Views Compilation in ASP.NET MVC</title><description>&lt;p&gt;Errors in Razor Views by default are detected and displayed during runtime. In the past this has caused us issues in production where end-clients were hit by these errors instead us detecting them earlier. There is an obvious but inconvenient fix to prevent this from happening. </description><pubDate>Thu, 26 Jan 2017 23:00:00 Z</pubDate><a10:updated>2017-01-26T23:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;Errors in Razor Views by default are detected and displayed during runtime. In the past this has caused us issues in production where end-clients were hit by these errors instead us detecting them earlier. There is an obvious but inconvenient fix to prevent this from happening. &lt;!--excerpt--&gt;&lt;/p&gt;
+
+&lt;h2&gt;How to fix the problem?&lt;/h2&gt;
+
+&lt;p&gt;You need to compile the razor views, so such errors can be detected during compile time instead of runtime. &lt;/p&gt;
+
+&lt;p&gt;To do that, in &lt;code&gt;.csproj&lt;/code&gt; add following piece of code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;Project&amp;gt;
+    ..
+    &amp;lt;PropertyGroup&amp;gt;
+        &amp;lt;MvcBuildViews&amp;gt;true&amp;lt;/MvcBuildViews&amp;gt;
+        ..
+    &amp;lt;/PropertyGroup&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You'll think this is enough and ASP.NET MVC is smart to do it's job, but nope, &lt;strong&gt;it will not simply work&lt;/strong&gt;. Why? Read more &lt;a href="http://stackoverflow.com/questions/4725387/mvcbuildviews-not-working-correctly/4732019#4732019"&gt;here&lt;/a&gt;.
+Short story to working view compilation functionality is to add the following piece of code too in your &lt;code&gt;.csproj&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'"&amp;gt;
+    &amp;lt;AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" /&amp;gt;
+&amp;lt;/Target&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That's it. Not it works.&lt;/p&gt;
+
+&lt;h2&gt;But it slows down the build time?&lt;/h2&gt;
+
+&lt;p&gt;Oh, just to mention that Razor Views compilation is slow process, so you might want to trigger it before making deployments or in CI (&lt;code&gt;Release&lt;/code&gt;), instead of slowing down the whole build process while you are coding (&lt;code&gt;Debug&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;The target conditions are the solution:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'"&amp;gt;
+    ..
+    &amp;lt;MvcBuildViews&amp;gt;false&amp;lt;/MvcBuildViews&amp;gt;
+&amp;lt;/PropertyGroup&amp;gt;
+&amp;lt;PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'"&amp;gt;
+    ..
+    &amp;lt;MvcBuildViews&amp;gt;true&amp;lt;/MvcBuildViews&amp;gt;
+&amp;lt;/PropertyGroup&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+</a10:content></item><item><guid isPermaLink="true">http://bojanv91.github.io/2016/12/vs2016-extensions/</guid><link>http://bojanv91.github.io/2016/12/vs2016-extensions/</link><title>Extensions I use with Visual Studio 2015</title><description>&lt;p&gt;Rich IDEs are a great asset to enhance productivity in writing and reading code. &lt;/p&gt;
 
 &lt;p&gt;Visual Studio 2015 as a rich IDE helps a lot when navigating through code and files, refactoring, smart searching classes/methods/properties and much more. But still there are some useful or improved functionalities not baked in, that can be easily found as extensions.</description><pubDate>Fri, 30 Dec 2016 23:00:00 Z</pubDate><a10:updated>2016-12-30T23:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;Rich IDEs are a great asset to enhance productivity in writing and reading code. &lt;/p&gt;
 
