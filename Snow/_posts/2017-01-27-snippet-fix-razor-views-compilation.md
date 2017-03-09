@@ -25,7 +25,7 @@ Short story to working view compilation functionality is to add the following pi
         <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
     </Target>
 
-That's it. Not it works.
+That's it. Now it works.
 
 ## But it slows down the build time?
 

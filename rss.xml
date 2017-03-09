@@ -1,4 +1,34 @@
-<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Bojan Veljanovski's notes and thoughts on software</title><link>http://bojanv91.github.io/rss.xml</link><description>Bojan Veljanovski's notes and thoughts on software</description><item><guid isPermaLink="true">http://bojanv91.github.io/2017/01/snippet-fix-razor-views-compilation/</guid><link>http://bojanv91.github.io/2017/01/snippet-fix-razor-views-compilation/</link><title>Snippet: Fix Razor Views Compilation in ASP.NET MVC</title><description>&lt;p&gt;Errors in Razor Views by default are detected and displayed during runtime. In the past this has caused us issues in production where end-clients were hit by these errors instead us detecting them earlier. There is an obvious but inconvenient fix to prevent this from happening. </description><pubDate>Thu, 26 Jan 2017 23:00:00 Z</pubDate><a10:updated>2017-01-26T23:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;Errors in Razor Views by default are detected and displayed during runtime. In the past this has caused us issues in production where end-clients were hit by these errors instead us detecting them earlier. There is an obvious but inconvenient fix to prevent this from happening. &lt;!--excerpt--&gt;&lt;/p&gt;
+<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Bojan Veljanovski's notes and thoughts on software</title><link>http://bojanv91.github.io/rss.xml</link><description>Bojan Veljanovski's notes and thoughts on software</description><item><guid isPermaLink="true">http://bojanv91.github.io/2017/03/visual-studio-2017-notes/</guid><link>http://bojanv91.github.io/2017/03/visual-studio-2017-notes/</link><title>Visual Studio 2017 Notes</title><description>&lt;p&gt;Visual Studio 2017 has shipped. In this post I highlight the top changes from my perspective and the list of all useful extensions I've installed.</description><pubDate>Wed, 08 Mar 2017 23:00:00 Z</pubDate><a10:updated>2017-03-08T23:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;Visual Studio 2017 has shipped. In this post I highlight the top changes from my perspective and the list of all useful extensions I've installed.&lt;!--excerpt--&gt;&lt;/p&gt;
+
+&lt;p&gt;For VS2015 extensions, check my &lt;a href="http://bojanv91.github.io/2016/12/vs2016-extensions/"&gt;older post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Top 5 Highlights From My Perspective&lt;/h2&gt;
+
+&lt;p&gt;To see all new features and changes, check the &lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes"&gt;VS2017 release notes&lt;/a&gt;. Here is my top list:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#csharpvb"&gt;Support for C# 7&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#coding-convention-support-via-editorconfig"&gt;Support for Coding Convention via EditorConfig. Finally!&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#dotnetcore"&gt;Stable tools support for .NET Core and ASP.NET Core&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#debug"&gt;Improved Exception Helper for Debugging&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#a-idbetternav-aimproved-code-navigation"&gt;Improved Code Navigation via "Richer Omnibar"&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Extensions&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://vsrefactoringessentials.com/"&gt;Refactoring Essentials&lt;/a&gt;. C# analyzers and refactoring proposals.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.AddNewFile"&gt;Add New File&lt;/a&gt;. Create any type of files via standard templates without touching the mouse. Mapped to Ctrl+Shift+A.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.OpenCommandLine"&gt;Open Command Line&lt;/a&gt;. Opens CMD in current solution directory. Mapped to Alt+Space.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.PowerCommandsforVisualStudio"&gt;PowerCommands is a set of useful extensions for the Visual Studio IDE&lt;/a&gt;. Besides the defaults, I've turned on "Format document on save" option. &lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.TimeStampMargin"&gt;Time Stamp Margin&lt;/a&gt;. Adds timestamps in the output dialog.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=TomEnglert.ResXManager"&gt;ResXManager&lt;/a&gt;. Manage localization of all ResX-Based resources in one place. Shows all resources of a solution and let's you edit the strings and their localizations in a well-arranged data grid.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.ProjectFileTools"&gt;Project File Tools&lt;/a&gt;. Provides Intellisense and other tooling for XML based project files such as .csproj and .vbproj files.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.VuejsPack-18329"&gt;Vue.js Pack 2017&lt;/a&gt;. Intellisense for Vue.js.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.AureliaPack"&gt;Aurelia Pack&lt;/a&gt;. A snippet pack to make you more productive working with the Aurelia JavaScript framework.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=frhagn.Typewriter"&gt;Typewriter&lt;/a&gt;. Typewriter generates TypeScript files from c# code files using TypeScript Templates. This allows you to create fully typed TypeScript representations of server side API that automatically updates when you make changes to your C# code.&lt;/li&gt;
+&lt;/ul&gt;
+</a10:content></item><item><guid isPermaLink="true">http://bojanv91.github.io/2017/01/snippet-fix-razor-views-compilation/</guid><link>http://bojanv91.github.io/2017/01/snippet-fix-razor-views-compilation/</link><title>Snippet: Fix Razor Views Compilation in ASP.NET MVC</title><description>&lt;p&gt;Errors in Razor Views by default are detected and displayed during runtime. In the past this has caused us issues in production where end-clients were hit by these errors instead us detecting them earlier. There is an obvious but inconvenient fix to prevent this from happening. </description><pubDate>Thu, 26 Jan 2017 23:00:00 Z</pubDate><a10:updated>2017-01-26T23:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;Errors in Razor Views by default are detected and displayed during runtime. In the past this has caused us issues in production where end-clients were hit by these errors instead us detecting them earlier. There is an obvious but inconvenient fix to prevent this from happening. &lt;!--excerpt--&gt;&lt;/p&gt;
 
 &lt;h2&gt;How to fix the problem?&lt;/h2&gt;
 
@@ -22,7 +52,7 @@ Short story to working view compilation functionality is to add the following pi
 &amp;lt;/Target&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;That's it. Not it works.&lt;/p&gt;
+&lt;p&gt;That's it. Now it works.&lt;/p&gt;
 
 &lt;h2&gt;But it slows down the build time?&lt;/h2&gt;
 

@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width" />
     <meta http-equiv="last-modified" content="2017-03-09T11:02:49.3277436+01:00" />
     <meta name="keywords" content="" />
-    <title> Bojan Veljanovski's Blog</title>
+    <title>Visual Studio 2017 Notes Bojan Veljanovski's Blog</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
-    <link rel="canonical" href="http://bojanv91.github.io/about/" />
+    <link rel="canonical" href="http://bojanv91.github.io/2017/03/visual-studio-2017-notes/" />
 </head>
 <body class="home blog">
     <div id="page" class="hfeed site">
@@ -39,20 +39,86 @@
                 <div id="content" role="main">
                   
 
-  <header>
-  <div class="head-inner">
-    <h1>About me</h1>
-  </div>
-  </header>
 
-  <div class="fancy-container lightblue">
+<div id="post">
+    <h1>Visual Studio 2017 Notes</h1>
 
-	<p>Code always wins.</p>
-	
-    <p>I try to write something more about me in the future... </p>
+    <div class="post-note">
+      posted on 09 Mar 2017
+      
+      <div class="addthis_toolbox addthis_default_style" style="float:right;">
+        <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+        <a class="addthis_button_tweet"></a>
+        <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+        <a class="addthis_button_linkedin_counter"></a>
+        <a class="addthis_counter addthis_pill_style"></a>
+      </div>
+    </div>
+    
+    
+        
+    <p>Visual Studio 2017 has shipped. In this post I highlight the top changes from my perspective and the list of all useful extensions I've installed.<!--excerpt--></p>
 
-  </div>
+<p>For VS2015 extensions, check my <a href="/2016/12/vs2016-extensions/">older post</a>.</p>
 
+<h2>Top 5 Highlights From My Perspective</h2>
+
+<p>To see all new features and changes, check the <a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes">VS2017 release notes</a>. Here is my top list:</p>
+
+<ul>
+<li><a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#csharpvb">Support for C# 7</a></li>
+<li><a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#coding-convention-support-via-editorconfig">Support for Coding Convention via EditorConfig. Finally!</a>.</li>
+<li><a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#dotnetcore">Stable tools support for .NET Core and ASP.NET Core</a>.</li>
+<li><a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#debug">Improved Exception Helper for Debugging</a>.</li>
+<li><a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#a-idbetternav-aimproved-code-navigation">Improved Code Navigation via "Richer Omnibar"</a>.</li>
+</ul>
+
+<h2>Extensions</h2>
+
+<ul>
+<li><a href="http://vsrefactoringessentials.com/">Refactoring Essentials</a>. C# analyzers and refactoring proposals.</li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.AddNewFile">Add New File</a>. Create any type of files via standard templates without touching the mouse. Mapped to Ctrl+Shift+A.</li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.OpenCommandLine">Open Command Line</a>. Opens CMD in current solution directory. Mapped to Alt+Space.</li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.PowerCommandsforVisualStudio">PowerCommands is a set of useful extensions for the Visual Studio IDE</a>. Besides the defaults, I've turned on "Format document on save" option. </li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.TimeStampMargin">Time Stamp Margin</a>. Adds timestamps in the output dialog.</li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=TomEnglert.ResXManager">ResXManager</a>. Manage localization of all ResX-Based resources in one place. Shows all resources of a solution and let's you edit the strings and their localizations in a well-arranged data grid.</li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.ProjectFileTools">Project File Tools</a>. Provides Intellisense and other tooling for XML based project files such as .csproj and .vbproj files.</li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.VuejsPack-18329">Vue.js Pack 2017</a>. Intellisense for Vue.js.</li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.AureliaPack">Aurelia Pack</a>. A snippet pack to make you more productive working with the Aurelia JavaScript framework.</li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=frhagn.Typewriter">Typewriter</a>. Typewriter generates TypeScript files from c# code files using TypeScript Templates. This allows you to create fully typed TypeScript representations of server side API that automatically updates when you make changes to your C# code.</li>
+</ul>
+
+
+    <div id="disqus_thread"></div>
+<script>
+    var reset_disqus = function(){
+        DISQUS.reset({
+            reload: true,
+            config: function () {
+                //this.page.identifier = '';
+                this.page.url = 'http://bojanv91.github.io/2017/03/visual-studio-2017-notes/';
+                //this.page.title = '';
+            }
+        });
+    };
+
+    var disqus_shortname = 'bojanveljanovski';
+    var disqus_url = 'http://bojanv91.github.io/2017/03/visual-studio-2017-notes/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    window.addEventListener('orientationchange', reset_disqus);
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5496f95f11cffc27"></script>
+
+</div>
                 </div>
                 <!-- #content -->
             </div>
