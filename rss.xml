@@ -1,4 +1,238 @@
-<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Bojan Veljanovski's notes and thoughts on software</title><link>http://bojanv91.github.io/rss.xml</link><description>Bojan Veljanovski's notes and thoughts on software</description><item><guid isPermaLink="true">http://bojanv91.github.io/2017/03/visual-studio-2017-notes/</guid><link>http://bojanv91.github.io/2017/03/visual-studio-2017-notes/</link><title>Visual Studio 2017 Notes</title><description>&lt;p&gt;Visual Studio 2017 has shipped. In this post I highlight the top changes from my perspective and the list of all useful extensions I've installed.</description><pubDate>Wed, 08 Mar 2017 23:00:00 Z</pubDate><a10:updated>2017-03-08T23:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;Visual Studio 2017 has shipped. In this post I highlight the top changes from my perspective and the list of all useful extensions I've installed.&lt;!--excerpt--&gt;&lt;/p&gt;
+<rss xmlns:a10="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Code with Bojan - notes on software development</title><link>http://bojanv91.github.io/rss.xml</link><description>Code with Bojan - notes on software development</description><item><guid isPermaLink="true">http://bojanv91.github.io/2017/07/refactoring-a-feature-envy-code/</guid><link>http://bojanv91.github.io/2017/07/refactoring-a-feature-envy-code/</link><title>Refactoring a Feature Envy code</title><description>&lt;p&gt;Recently, in a design review meeting the following question was raised: &lt;em&gt;When refactoring, why sometimes do we put an if-condition statement in a temporary variable, and sometimes in a method in a dependent class?&lt;/em&gt;
+This is a wonderful question! It opened a discussion spanning across multiple topics, including coupling, domain leaking, encapsulation, and the tell don't ask principle. &lt;/p&gt;
+
+&lt;p&gt;Ultimately, checking the &lt;a href="https://blog.codinghorror.com/code-smells/"&gt;code smells taxonomy&lt;/a&gt;, we identified the code segment in question is a smell called &lt;em&gt;feature envy&lt;/em&gt;.</description><pubDate>Fri, 28 Jul 2017 22:00:00 Z</pubDate><a10:updated>2017-07-28T22:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;Recently, in a design review meeting the following question was raised: &lt;em&gt;When refactoring, why sometimes do we put an if-condition statement in a temporary variable, and sometimes in a method in a dependent class?&lt;/em&gt;
+This is a wonderful question! It opened a discussion spanning across multiple topics, including coupling, domain leaking, encapsulation, and the tell don't ask principle. &lt;/p&gt;
+
+&lt;p&gt;Ultimately, checking the &lt;a href="https://blog.codinghorror.com/code-smells/"&gt;code smells taxonomy&lt;/a&gt;, we identified the code segment in question is a smell called &lt;em&gt;feature envy&lt;/em&gt;.&lt;!--excerpt--&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Feature envy&lt;/strong&gt; is a code smell describing when an object accesses fields of another object in order to perform some action, rather than telling the object to do the action itself.&lt;/p&gt;
+
+&lt;p&gt;Let's examine the following [simplified] code segment, and try to refactor it. 
+For better context, it addresses the requirement: An active user can pay a pending order. For reporting purposes the order tracks when and who paid it.&lt;/p&gt;
+
+&lt;h2&gt;v1 - [simplified] original code segment&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;public class PayOrderRequest
+{
+    public Guid OrderId { get; set; }
+}
+
+public class PayOrderHandler : BaseCommandHandler&amp;lt;PayOrderRequest&amp;gt;
+{
+    public void Handle(PayOrderRequest request)
+    {
+        var currentUser = Session.Load&amp;lt;User&amp;gt;(LoggedInUserId);
+        var order = Session.Load&amp;lt;Order&amp;gt;(request.OrderId);
+
+        // checks if the order can be paid by the currently logged in user
+        if (order.Status == OrderStatus.Pending &amp;amp;&amp;amp; currentUser.Status == UserStatus.Active) 
+        {
+            // pay the order, and record related information
+            order.Status = OrderStatus.Completed;
+            order.PaidByUserId = currentUser.Id;
+            order.PaidOnUtc = DateTime.UtcNow;
+
+            Session.Store(order);
+        }
+        else
+        {
+            throw new CoreException($"{currentUser.Name} cannot pay this order.");
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The problem with this code, and the reason it is considered a code smell, is because it breaks encapsulation. &lt;/p&gt;
+
+&lt;p&gt;The domain logic for performing the paying action on the order object, is leaked out of the order object, into the command handler method. The command handler should only coordinate the workflow, and the order object should be responsible for dealing with the business logic.&lt;/p&gt;
+
+&lt;p&gt;Besides breaking encapsulation, it also makes the paying order functionality  harder to unit test. This method depends on the database via the session object, and to the provider of the currently logged in user object. Writing a unit test for this, means that we need to write mocks for both services. If we refactor it, fixing the encapsulation, we'll see that writing unit tests will be a much easier task to do.&lt;/p&gt;
+
+&lt;p&gt;Let's observe how can we improve this piece of code, one refactoring step at a time.&lt;/p&gt;
+
+&lt;h2&gt;v2 - introduce temporary inline variable for the precondition&lt;/h2&gt;
+
+&lt;p&gt;Let's introduce &lt;code&gt;canOrderByPaid&lt;/code&gt; boolean variable which will hold the result of the precondition for paying an order.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/* Code removed for clarity */
+
+bool canOrderByPaid = order.Status == OrderStatus.Pending &amp;amp;&amp;amp; currentUser.Status == UserStatus.Active;
+if (canOrderByPaid)
+{
+    order.Status = OrderStatus.Completed;
+    order.PaidByUserId = currentUser.Id;
+    order.PaidOnUtc = DateTime.UtcNow;
+
+    Session.Store(order);
+}
+else
+{
+    throw new CoreException($"{currentUser.Name} cannot pay this order.");
+}
+
+/* Code removed for clarity */
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It's better to create a temporary inline variable to describe more complex condition checks, and use it in the if-condition statement, rather than having bloated if-condition statement with a comment above, describing what it does.&lt;/p&gt;
+
+&lt;h2&gt;v3 - encapsulate the precondition in the order object&lt;/h2&gt;
+
+&lt;p&gt;Now it makes sense to encapsulate the the precondition for paying an order, in the order object itself.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;if (order.CanBePaidBy(user)) 
+{
+    order.Status = OrderStatus.Completed;
+    order.PaidByUserId = currentUser.Id;
+    order.PaidOnUtc = DateTime.UtcNow;
+    Session.Store(order);
+}
+else
+{
+    throw new CoreException($"{currentUser.Name} cannot pay this order.");
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The order class:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class Order
+{
+    /* Code removed for clarity */
+
+    public bool CanBePaidBy(User user) 
+        =&amp;gt; Status == OrderStatus.Pending &amp;amp;&amp;amp; user.Status == UserStatus.Active;
+
+    /* Code removed for clarity */
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;With this change, we eliminated coupling from the command handler to the properties of order and user classes (e.g. &lt;code&gt;order.Status&lt;/code&gt;, &lt;code&gt;user.Status&lt;/code&gt;). Imagine in more complex cases, how much direct coupling will be reduced only by following good encapsulation.&lt;/p&gt;
+
+&lt;h2&gt;v4 - encapsulate the actual action too&lt;/h2&gt;
+
+&lt;p&gt;Following the same way how we encapsulated the paying precondition, we'll encapsulate the actual paying action too.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;if (order.CanBePaidBy(user))
+{
+    order.Pay(user);
+
+    Session.Store(order);
+}
+else
+    throw new CoreException($"User {currentUser.Name} cannot pay this order.");
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The order class:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class Order
+{
+    /* Code removed for clarity */
+
+    public void Pay(User payer) 
+    {
+        order.Status = OrderStatus.Completed;
+        order.PaidByUserId = payer.Id;
+        order.PaidOnUtc = DateTime.UtcNow;
+    }
+
+    /* Code removed for clarity */
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;v5 - natural final changes&lt;/h2&gt;
+
+&lt;p&gt;Observing the refactoring changes in previous steps, this final refactoring change comes natural.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;order.Pay(user);
+
+Session.Store(order);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The order class:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class Order
+{
+    /* Code removed for clarity */
+
+    public void Pay(User payer) 
+    {
+        if (!CanBePaidBy(user))
+            throw new CoreException($"User {payer.Name} cannot pay this order.");
+
+        order.Status = OrderStatus.Completed;
+        order.PaidByUserId = payer.Id;
+        order.PaidOnUtc = DateTime.UtcNow;
+    }
+
+    /* Code removed for clarity */
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;The resulting refactored code&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;public class PayOrderRequest
+{
+    public Guid OrderId { get; set; }
+}
+
+public class PayOrderHandler : BaseCommandHandler&amp;lt;PayOrderRequest&amp;gt;
+{
+    public void Handle(PayOrderRequest request)
+    {
+        var currentUser = Session.Load&amp;lt;User&amp;gt;(LoggedInUserId);
+        var order = Session.Load&amp;lt;Order&amp;gt;(request.OrderId);
+
+        order.Pay(user);
+
+        Session.Store(order);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The order class:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class Order
+{
+    /* Code removed for clarity */
+    public OrderStatus Status { get; private set; }
+    public Guid PaidByUserId { get; private set; }
+    public DateTime PaidOnUtc { get; private set; }
+
+    public void Pay(User payer) 
+    {
+        if (!CanBePaidBy(user))
+            throw new CoreException($"User {payer.Name} cannot pay this order.");
+
+        order.Status = OrderStatus.Completed;
+        order.PaidByUserId = payer.Id;
+        order.PaidOnUtc = DateTime.UtcNow;
+    }
+
+    public bool CanBePaidBy(User user) 
+        =&amp;gt; Status == OrderStatus.Pending &amp;amp;&amp;amp; user.Status == UserStatus.Active;
+
+    /* Code removed for clarity */
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;Summary&lt;/h2&gt;
+
+&lt;p&gt;We made it to the end. Let's summarize the benefits we achieved out of this refactoring session:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The command handler &lt;strong&gt;stops asking&lt;/strong&gt; for details, now it &lt;strong&gt;tells&lt;/strong&gt; the order what to do, providing necessary dependencies, and does not care about the details it does. &lt;strong&gt;Tell Don't Ask Principle&lt;/strong&gt; fulfilled.&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;high coupling&lt;/strong&gt; from the command handler to the fields in user and order classes is &lt;strong&gt;eliminated&lt;/strong&gt;. Less coupling, more sanity.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;Order&lt;/code&gt; class is not a bag of public set properties anymore, called a data class. Now it has cohesive behavior, &lt;strong&gt;encapsulating the actions it can perform&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Domain logic&lt;/strong&gt; for paying &lt;strong&gt;is not leaked&lt;/strong&gt; in other classes anymore. Now it's located in the responsible class itself. So, only by seeing the &lt;code&gt;Order&lt;/code&gt; class we can understand what it can do. No need to open other related classes. Other classes now may be only "users" of this class, calling methods to perform some action/behavior.&lt;/li&gt;
+&lt;li&gt;Paying functionality now can be easily &lt;strong&gt;unit tested&lt;/strong&gt;, without having to deal with special mocking techniques. Less mocks, better tests.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Rule of thumb:&lt;/strong&gt; Where ever you see a method uses fields of another class extensively, in order to perform some action, consider moving the action in &lt;em&gt;that&lt;/em&gt; class itself.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;If there is interest out there, I might write more about practical refactoring topics and software design from my everyday life.&lt;/p&gt;
+</a10:content></item><item><guid isPermaLink="true">http://bojanv91.github.io/2017/03/visual-studio-2017-notes/</guid><link>http://bojanv91.github.io/2017/03/visual-studio-2017-notes/</link><title>Visual Studio 2017 Notes</title><description>&lt;p&gt;Visual Studio 2017 has shipped. In this post I highlight the top changes from my perspective and the list of all useful extensions I've installed.</description><pubDate>Wed, 08 Mar 2017 23:00:00 Z</pubDate><a10:updated>2017-03-08T23:00:00Z</a10:updated><a10:content type="html">&lt;p&gt;Visual Studio 2017 has shipped. In this post I highlight the top changes from my perspective and the list of all useful extensions I've installed.&lt;!--excerpt--&gt;&lt;/p&gt;
 
 &lt;p&gt;For VS2015 extensions, check my &lt;a href="http://bojanv91.github.io/2016/12/vs2016-extensions/"&gt;older post&lt;/a&gt;.&lt;/p&gt;
 

@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="last-modified" content="2017-03-09T11:02:49.3277436+01:00" />
-    <meta name="keywords" content="" />
-    <title> Bojan Veljanovski's Blog</title>
+    <meta http-equiv="last-modified" content="2017-07-29T15:02:39.7675531+02:00" />
+    <meta name="keywords" content="refactoring" />
+    <title> | Code with Bojan</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
     <link rel="canonical" href="http://bojanv91.github.io/" />
 </head>
@@ -14,12 +14,8 @@
     <div id="page" class="hfeed site">
         <header id="masthead" class="site-header fancy-container lightgreen" role="banner">
             <hgroup>
-                <h1 class="site-title"><a href="/" title="bojanv91" rel="home">Bojan's Blog</a></h1>
-                <h2><small>My notes on software development</small></h2>
-				<div>
-					<img style="width:120px;" src="/stylesheets/images/profile.jpg" />
-					<p class="site-description">CTO at HASELT</p>
-				</div>
+                <h1 class="site-title"><a href="/" title="bojanv91" rel="home">Code with Bojan</a></h1>
+                <h2><small>Notes on software development</small></h2>
             </hgroup>
             <nav role="navigation" class="site-navigation main-navigation">
                 <h1 class="assistive-text">Menu</h1>
@@ -32,6 +28,37 @@
                         <li><a href="/rss.xml">RSS</a> / <a href="/feed.xml">Atom</a></li>
                     </ul>
                 </div>
+                <aside id="text-5" class="widget widget_text">
+                    <b class="widget-title">Follow</b>
+                    <div class="textwidget logos">
+                        <a href="https://twitter.com/bojanv91" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://twitter.com']);"><img src="/stylesheets/images/twitter.png"></a>
+                        <a href="https://www.linkedin.com/in/bojanv91" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://www.linkedin.com']);"><img src="/stylesheets/images/linkedin.png"></a>
+                        <a href="https://github.com/bojanv91" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://github.com']);"><img src="/stylesheets/images/github.png"></a>
+                    </div>
+                </aside>
+                <!--aside id="text-8" class="widget widget_text">
+                    <h1 class="widget-title">Other sites</h1>
+                    <div class="textwidget">
+                        <a href="http://csharptube.com/" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://csharptube.com']);">csharptube.com</a><br />
+                        <a href="http://thisisparrot.com/" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://thisisparrot.com']);">Parrot</a><br />
+                        <a href="http://shitprogrammerswrite.com/" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://shitprogrammerswrite.com']);">Shit programmers write</a><br />
+                    </div>
+                </aside-->
+                <aside id="archives-4" class="widget widget_archive">
+                    <b class="widget-title">Archive</b>
+                    <ul class="posts">
+                          <li><a href="/archive#20177">July, 2017</a></li>
+                          <li><a href="/archive#20173">March, 2017</a></li>
+                          <li><a href="/archive#20171">January, 2017</a></li>
+                          <li><a href="/archive#201612">December, 2016</a></li>
+                          <li><a href="/archive#201610">October, 2016</a></li>
+                          <li><a href="/archive#20165">May, 2016</a></li>
+                          <li><a href="/archive#20159">September, 2015</a></li>
+                          <li><a href="/archive#20153">March, 2015</a></li>
+                          <li><a href="/archive#20151">January, 2015</a></li>
+                          <li><a href="/archive#201412">December, 2014</a></li>
+                    </ul>
+                </aside>
             </nav>
         </header>
         <div id="main">
@@ -41,86 +68,119 @@
   <ul class="posts">
     <li class="fancy-container lightblue">
       <h1>
+        <a href="/2017/07/refactoring-a-feature-envy-code/">Refactoring a Feature Envy code</a> 
+        <span>
+          posted on 29 Jul 2017
+           | <a href="/category/refactoring">refactoring</a>
+        </span>
+      </h1> 
+      
+      <p>Recently, in a design review meeting the following question was raised: <em>When refactoring, why sometimes do we put an if-condition statement in a temporary variable, and sometimes in a method in a dependent class?</em>
+This is a wonderful question! It opened a discussion spanning across multiple topics, including coupling, domain leaking, encapsulation, and the tell don't ask principle. </p>
+
+<p>Ultimately, checking the <a href="https://blog.codinghorror.com/code-smells/">code smells taxonomy</a>, we identified the code segment in question is a smell called <em>feature envy</em>.
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="/2017/07/refactoring-a-feature-envy-code/">[Read more]</a>
+    </li>
+    <li class="fancy-container lightblue">
+      <h1>
         <a href="/2017/03/visual-studio-2017-notes/">Visual Studio 2017 Notes</a> 
-        <span>posted on 09 Mar 2017</span>
+        <span>
+          posted on 09 Mar 2017
+        </span>
       </h1> 
       
       <p>Visual Studio 2017 has shipped. In this post I highlight the top changes from my perspective and the list of all useful extensions I've installed.
-      <p><a href="/2017/03/visual-studio-2017-notes/">Read more...</a></p>
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="/2017/03/visual-studio-2017-notes/">[Read more]</a>
     </li>
     <li class="fancy-container lightblue">
       <h1>
         <a href="/2017/01/snippet-fix-razor-views-compilation/">Snippet: Fix Razor Views Compilation in ASP.NET MVC</a> 
-        <span>posted on 27 Jan 2017</span>
+        <span>
+          posted on 27 Jan 2017
+        </span>
       </h1> 
       
       <p>Errors in Razor Views by default are detected and displayed during runtime. In the past this has caused us issues in production where end-clients were hit by these errors instead us detecting them earlier. There is an obvious but inconvenient fix to prevent this from happening. 
-      <p><a href="/2017/01/snippet-fix-razor-views-compilation/">Read more...</a></p>
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="/2017/01/snippet-fix-razor-views-compilation/">[Read more]</a>
     </li>
     <li class="fancy-container lightblue">
       <h1>
         <a href="/2016/12/vs2016-extensions/">Extensions I use with Visual Studio 2015</a> 
-        <span>posted on 31 Dec 2016</span>
+        <span>
+          posted on 31 Dec 2016
+        </span>
       </h1> 
       
       <p>Rich IDEs are a great asset to enhance productivity in writing and reading code. </p>
 
 <p>Visual Studio 2015 as a rich IDE helps a lot when navigating through code and files, refactoring, smart searching classes/methods/properties and much more. But still there are some useful or improved functionalities not baked in, that can be easily found as extensions.
-      <p><a href="/2016/12/vs2016-extensions/">Read more...</a></p>
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="/2016/12/vs2016-extensions/">[Read more]</a>
     </li>
     <li class="fancy-container lightblue">
       <h1>
         <a href="/2016/10/global-day-of-coderetreat-2016-haselt-macedonia/">Global Day of Coderetreat 2016 in Skopje, Macedonia</a> 
-        <span>posted on 27 Oct 2016</span>
+        <span>
+          posted on 27 Oct 2016
+        </span>
       </h1> 
       
       <p><code>#GDCR16</code> is a day for celebrating passion and software craftsmanship. This year's event in Skopje, Macedonia was a blast! Fresh ideas, new perspectives and great people is everything you need for such an event.
-      <p><a href="/2016/10/global-day-of-coderetreat-2016-haselt-macedonia/">Read more...</a></p>
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="/2016/10/global-day-of-coderetreat-2016-haselt-macedonia/">[Read more]</a>
     </li>
     <li class="fancy-container lightblue">
       <h1>
         <a href="/2016/05/feature-folders-structure-in-asp-net/">Feature by Folder Project Structure in ASP.NET MVC5</a> 
-        <span>posted on 27 May 2016</span>
+        <span>
+          posted on 27 May 2016
+        </span>
       </h1> 
       
       <p>Structuring your files around <strong>business concerns</strong> is more natural way of handling projects than structuring them around <strong>technical concerns</strong>. The <a href="https://en.wikipedia.org/wiki/Separation_of_concerns">Separation of Concerns</a> is applied in both approaches, but not both of them give the same desired clarity and ease for developers. This blogpost focuses on organizing MVC projects around <strong>feature folders</strong>, which represent the business concerns.
-      <p><a href="/2016/05/feature-folders-structure-in-asp-net/">Read more...</a></p>
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="/2016/05/feature-folders-structure-in-asp-net/">[Read more]</a>
     </li>
     <li class="fancy-container lightblue">
       <h1>
         <a href="/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern/">Towards Good Enough Code: Re-factoring a business rule check with the Specification Pattern</a> 
-        <span>posted on 29 Sep 2015</span>
+        <span>
+          posted on 29 Sep 2015
+        </span>
       </h1> 
       
       <p>The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the <code>Specification Pattern</code> 
-      <p><a href="/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern/">Read more...</a></p>
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern/">[Read more]</a>
     </li>
     <li class="fancy-container lightblue">
       <h1>
         <a href="/2015/03/beginners-installation-guide-to-bower-on-windows/">Beginners installation guide to Bower on Windows</a> 
-        <span>posted on 22 Mar 2015</span>
+        <span>
+          posted on 22 Mar 2015
+        </span>
       </h1> 
       
       <p><a href="http://www.bower.io/">Bower</a> is a package manger for the web. It makes installing frameworks, libraries and assets easy and straightforward. Automatically resolves package dependencies to other packages. For example, if you install twitter-bootstrap it would automatically install jquery for you, because bootstrap is dependent on jquery. Additionally it gives you version control out of the box for your packages, thus easier installing of updates. So, here is step-by-step guide into installing Bower and prerequisites on Windows. 
-      <p><a href="/2015/03/beginners-installation-guide-to-bower-on-windows/">Read more...</a></p>
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="/2015/03/beginners-installation-guide-to-bower-on-windows/">[Read more]</a>
     </li>
     <li class="fancy-container lightblue">
       <h1>
         <a href="/2015/01/getting-started-with-rhino-security-structuremap/">Getting Started with Rhino Security and Structure Map</a> 
-        <span>posted on 11 Jan 2015</span>
+        <span>
+          posted on 11 Jan 2015
+        </span>
       </h1> 
       
       <p>In this posting I will show you how to configure Rhino Security infrastructure to work with StructureMap IoC container and provide to you database schema (for MSSQL and <a href="http://bojanv91.github.io/2014/12/database-development-guidance/">FluentMigrator</a>) that you will need in order Rhino Security to get working. I've struggled some time before I got everything working, so here are my results. :) 
-      <p><a href="/2015/01/getting-started-with-rhino-security-structuremap/">Read more...</a></p>
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="/2015/01/getting-started-with-rhino-security-structuremap/">[Read more]</a>
     </li>
     <li class="fancy-container lightblue">
       <h1>
         <a href="/2014/12/database-development-guidance/">Database Development Guide for .NET dev teams with Fluent Migrator</a> 
-        <span>posted on 12 Dec 2014</span>
+        <span>
+          posted on 12 Dec 2014
+        </span>
       </h1> 
       
       <p>I have been thinking a lot lately about how properly and simply to implement database versioning strategy. These years I've experienced working with different types of database setup and furthermore researched and analyzed some more approaches and tools regarding this topic. In this posting I write about my findings and why I like Fluent Migrator as a help tool in order to get the job done. But first, let's talk about the <em>goals</em> we try to achieve. 
-      <p><a href="/2014/12/database-development-guidance/">Read more...</a></p>
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="/2014/12/database-development-guidance/">[Read more]</a>
     </li>
   </ul> 
 
@@ -139,42 +199,6 @@
                 <!-- #content -->
             </div>
             <!-- #primary .site-content -->
-
-            <div id="secondary" class="widget-area fancy-container lightred" role="complementary">
-                <aside id="text-5" class="widget widget_text">
-                    <h1 class="widget-title">Follow</h1>
-                    <div class="textwidget logos">
-                        <a href="https://twitter.com/bojanv91" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://twitter.com']);"><img src="/stylesheets/images/twitter.png"></a>
-                        <a href="https://www.linkedin.com/in/bojanv91" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://www.linkedin.com']);"><img src="/stylesheets/images/linkedin.png"></a>
-                        <a href="https://github.com/bojanv91" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://github.com']);"><img src="/stylesheets/images/github.png"></a>
-                    </div>
-                </aside>
-                <!--aside id="text-8" class="widget widget_text">
-                    <h1 class="widget-title">Other sites</h1>
-                    <div class="textwidget">
-                        <a href="http://csharptube.com/" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://csharptube.com']);">csharptube.com</a><br />
-                        <a href="http://thisisparrot.com/" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://thisisparrot.com']);">Parrot</a><br />
-                        <a href="http://shitprogrammerswrite.com/" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://shitprogrammerswrite.com']);">Shit programmers write</a><br />
-                    </div>
-                </aside-->
-                <aside id="archives-4" class="widget widget_archive">
-                    <h1 class="widget-title">Archive</h1>
-                    <ul class="posts">
-                          <li><a href="/archive#20173">March, 2017</a></li>
-                          <li><a href="/archive#20171">January, 2017</a></li>
-                          <li><a href="/archive#201612">December, 2016</a></li>
-                          <li><a href="/archive#201610">October, 2016</a></li>
-                          <li><a href="/archive#20165">May, 2016</a></li>
-                          <li><a href="/archive#20159">September, 2015</a></li>
-                          <li><a href="/archive#20153">March, 2015</a></li>
-                          <li><a href="/archive#20151">January, 2015</a></li>
-                          <li><a href="/archive#201412">December, 2014</a></li>
-                    </ul>
-                </aside>
-            </div>
-            <!-- #secondary .widget-area -->
-
-
         </div>
         <!-- #main -->
 

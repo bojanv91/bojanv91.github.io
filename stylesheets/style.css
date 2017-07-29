@@ -410,6 +410,11 @@ img.aligncenter {
     .main-navigation li.current_page_item a, .main-navigation li.current-menu-item a {
     }
 
+.menu {
+    display:inline-block;
+    padding-bottom: 50px;
+}
+
 .menu-toggle {
     cursor: pointer;
 }
@@ -805,7 +810,8 @@ h4, h5, h6 {
 }
 
 #masthead {
-    float: left;
+    float: right;
+    margin-left: 4px;
     width: 21%;
     margin-top: 15px;
     margin-bottom: 0;
@@ -1127,6 +1133,7 @@ ul.posts {
     ul.posts > li > h1 a {
       margin-top: 0;
       text-decoration: none;
+      color: black;
     }
    
     ul.posts > li > h1 span {

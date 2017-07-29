@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width" />
     <meta http-equiv="last-modified" content="@Model.GeneratedDate" />
     <meta name="keywords" content="@keywords" />
-    <title>@RenderSection("PageTitlePrefix", false) Bojan Veljanovski's Blog</title>
+    <title>@RenderSection("PageTitlePrefix", false) | Code with Bojan</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
     @Html.CanonicalUrl()
 </head>
@@ -18,12 +18,8 @@
     <div id="page" class="hfeed site">
         <header id="masthead" class="site-header fancy-container lightgreen" role="banner">
             <hgroup>
-                <h1 class="site-title"><a href="/" title="bojanv91" rel="home">Bojan's Blog</a></h1>
-                <h2><small>My notes on software development</small></h2>
-				<div>
-					<img style="width:120px;" src="/stylesheets/images/profile.jpg" />
-					<p class="site-description">CTO at HASELT</p>
-				</div>
+                <h1 class="site-title"><a href="/" title="bojanv91" rel="home">Code with Bojan</a></h1>
+                <h2><small>Notes on software development</small></h2>
             </hgroup>
             <nav role="navigation" class="site-navigation main-navigation">
                 <h1 class="assistive-text">Menu</h1>
@@ -36,20 +32,8 @@
                         <li><a href="/rss.xml">RSS</a> / <a href="/feed.xml">Atom</a></li>
                     </ul>
                 </div>
-            </nav>
-        </header>
-        <div id="main">
-            <div id="primary" class="site-content">
-                <div id="content" role="main">
-                  @RenderBody()
-                </div>
-                <!-- #content -->
-            </div>
-            <!-- #primary .site-content -->
-
-            <div id="secondary" class="widget-area fancy-container lightred" role="complementary">
                 <aside id="text-5" class="widget widget_text">
-                    <h1 class="widget-title">Follow</h1>
+                    <b class="widget-title">Follow</b>
                     <div class="textwidget logos">
                         <a href="https://twitter.com/bojanv91" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://twitter.com']);"><img src="/stylesheets/images/twitter.png"></a>
                         <a href="https://www.linkedin.com/in/bojanv91" onclick="javascript:_gaq.push(['_trackEvent','outbound-widget','http://www.linkedin.com']);"><img src="/stylesheets/images/linkedin.png"></a>
@@ -65,7 +49,7 @@
                     </div>
                 </aside-->
                 <aside id="archives-4" class="widget widget_archive">
-                    <h1 class="widget-title">Archive</h1>
+                    <b class="widget-title">Archive</b>
                     <ul class="posts">
                     @foreach(var item in Model.MonthYearList)
                     {
@@ -73,10 +57,16 @@
                     }
                     </ul>
                 </aside>
+            </nav>
+        </header>
+        <div id="main">
+            <div id="primary" class="site-content">
+                <div id="content" role="main">
+                  @RenderBody()
+                </div>
+                <!-- #content -->
             </div>
-            <!-- #secondary .widget-area -->
-
-
+            <!-- #primary .site-content -->
         </div>
         <!-- #main -->
 

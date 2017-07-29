@@ -8,11 +8,16 @@
     <li class="fancy-container lightblue">
       <h1>
         <a href="@postPaged.Url">@postPaged.Title</a> 
-        <span>posted on @postPaged.Date.ToString("dd MMM yyyy")</span>
+        <span>
+          posted on @postPaged.Date.ToString("dd MMM yyyy")
+          @foreach (var categoryName in postPaged.Categories) {
+           @:| <a href="/category/@categoryName">@categoryName</a>
+          }
+        </span>
       </h1> 
       @Html.RenderSeries(postPaged)
       @Html.Raw(postPaged.ContentExcerpt)
-      <p><a href="@postPaged.Url">Read more...</a></p>
+      ...<a style="color:black; text-decoration:none; font-weight:bold;" href="@postPaged.Url">[Read more]</a>
     </li>
     }
   </ul> 
