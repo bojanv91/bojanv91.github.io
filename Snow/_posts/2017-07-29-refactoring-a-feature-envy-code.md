@@ -130,9 +130,9 @@ The order class:
 
         public void Pay(User payer) 
         {
-            order.Status = OrderStatus.Completed;
-            order.PaidByUserId = payer.Id;
-            order.PaidOnUtc = DateTime.UtcNow;
+            Status = OrderStatus.Completed;
+            PaidByUserId = payer.Id;
+            PaidOnUtc = DateTime.UtcNow;
         }
 
         /* Code removed for clarity */
@@ -157,9 +157,9 @@ The order class:
             if (!CanBePaidBy(user))
                 throw new CoreException($"User {payer.Name} cannot pay this order.");
 
-            order.Status = OrderStatus.Completed;
-            order.PaidByUserId = payer.Id;
-            order.PaidOnUtc = DateTime.UtcNow;
+            Status = OrderStatus.Completed;
+            PaidByUserId = payer.Id;
+            PaidOnUtc = DateTime.UtcNow;
         }
 
         /* Code removed for clarity */

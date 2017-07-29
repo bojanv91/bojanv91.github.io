@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="last-modified" content="2017-07-29T15:02:39.7675531+02:00" />
+    <meta http-equiv="last-modified" content="2017-07-29T20:49:24.8157492+02:00" />
     <meta name="keywords" content="refactoring" />
     <title>Refactoring a Feature Envy code | Code with Bojan</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
@@ -214,9 +214,9 @@ else
 
     public void Pay(User payer) 
     {
-        order.Status = OrderStatus.Completed;
-        order.PaidByUserId = payer.Id;
-        order.PaidOnUtc = DateTime.UtcNow;
+        Status = OrderStatus.Completed;
+        PaidByUserId = payer.Id;
+        PaidOnUtc = DateTime.UtcNow;
     }
 
     /* Code removed for clarity */
@@ -243,9 +243,9 @@ Session.Store(order);
         if (!CanBePaidBy(user))
             throw new CoreException($"User {payer.Name} cannot pay this order.");
 
-        order.Status = OrderStatus.Completed;
-        order.PaidByUserId = payer.Id;
-        order.PaidOnUtc = DateTime.UtcNow;
+        Status = OrderStatus.Completed;
+        PaidByUserId = payer.Id;
+        PaidOnUtc = DateTime.UtcNow;
     }
 
     /* Code removed for clarity */

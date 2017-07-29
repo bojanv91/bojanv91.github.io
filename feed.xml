@@ -1,4 +1,4 @@
-<feed xmlns="http://www.w3.org/2005/Atom"><title type="text">Code with Bojan - notes on software development</title><subtitle type="text">Code with Bojan - notes on software development</subtitle><id>http://bojanv91.github.io/</id><updated>2017-07-29T15:02:43+02:00</updated><author><name>Bojan Veljanovski</name><uri>http://bojanv91.github.io</uri><email>bojanv91@live.com</email></author><generator>Sandra.Snow Atom Generator</generator><link rel="alternate" href="http://bojanv91.github.io/feed.xml" /><link rel="self" type="text/html" title="Code with Bojan - notes on software development" href="http://bojanv91.github.io/feed.xml" /><entry><id>http://bojanv91.github.io/2017/07/refactoring-a-feature-envy-code/</id><title type="text">Refactoring a Feature Envy code</title><summary type="html">&lt;p&gt;Recently, in a design review meeting the following question was raised: &lt;em&gt;When refactoring, why sometimes do we put an if-condition statement in a temporary variable, and sometimes in a method in a dependent class?&lt;/em&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title type="text">Code with Bojan - notes on software development</title><subtitle type="text">Code with Bojan - notes on software development</subtitle><id>http://bojanv91.github.io/</id><updated>2017-07-29T20:49:29+02:00</updated><author><name>Bojan Veljanovski</name><uri>http://bojanv91.github.io</uri><email>bojanv91@live.com</email></author><generator>Sandra.Snow Atom Generator</generator><link rel="alternate" href="http://bojanv91.github.io/feed.xml" /><link rel="self" type="text/html" title="Code with Bojan - notes on software development" href="http://bojanv91.github.io/feed.xml" /><entry><id>http://bojanv91.github.io/2017/07/refactoring-a-feature-envy-code/</id><title type="text">Refactoring a Feature Envy code</title><summary type="html">&lt;p&gt;Recently, in a design review meeting the following question was raised: &lt;em&gt;When refactoring, why sometimes do we put an if-condition statement in a temporary variable, and sometimes in a method in a dependent class?&lt;/em&gt;
 This is a wonderful question! It opened a discussion spanning across multiple topics, including coupling, domain leaking, encapsulation, and the tell don't ask principle. &lt;/p&gt;
 
 &lt;p&gt;Ultimately, checking the &lt;a href="https://blog.codinghorror.com/code-smells/"&gt;code smells taxonomy&lt;/a&gt;, we identified the code segment in question is a smell called &lt;em&gt;feature envy&lt;/em&gt;.</summary><published>2017-07-28T22:00:00Z</published><updated>2017-07-28T22:00:00Z</updated><link rel="alternate" href="http://bojanv91.github.io/2017/07/refactoring-a-feature-envy-code/" /><content type="html">&lt;p&gt;Recently, in a design review meeting the following question was raised: &lt;em&gt;When refactoring, why sometimes do we put an if-condition statement in a temporary variable, and sometimes in a method in a dependent class?&lt;/em&gt;
@@ -130,9 +130,9 @@ else
 
     public void Pay(User payer) 
     {
-        order.Status = OrderStatus.Completed;
-        order.PaidByUserId = payer.Id;
-        order.PaidOnUtc = DateTime.UtcNow;
+        Status = OrderStatus.Completed;
+        PaidByUserId = payer.Id;
+        PaidOnUtc = DateTime.UtcNow;
     }
 
     /* Code removed for clarity */
@@ -159,9 +159,9 @@ Session.Store(order);
         if (!CanBePaidBy(user))
             throw new CoreException($"User {payer.Name} cannot pay this order.");
 
-        order.Status = OrderStatus.Completed;
-        order.PaidByUserId = payer.Id;
-        order.PaidOnUtc = DateTime.UtcNow;
+        Status = OrderStatus.Completed;
+        PaidByUserId = payer.Id;
+        PaidOnUtc = DateTime.UtcNow;
     }
 
     /* Code removed for clarity */
