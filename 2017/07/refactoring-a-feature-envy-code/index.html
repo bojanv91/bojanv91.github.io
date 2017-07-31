@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="last-modified" content="2017-07-31T10:12:35.3059368+02:00" />
+    <meta http-equiv="last-modified" content="2017-07-31T12:59:46.9712724+02:00" />
     <meta name="keywords" content="refactoring" />
     <title>Refactoring a Feature Envy code | Code with Bojan</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
@@ -164,7 +164,7 @@ else
 
 <p>Now it makes sense to encapsulate the the precondition for paying an order, in the order object itself.</p>
 
-<pre><code>if (order.CanBePaidBy(user)) 
+<pre><code>if (order.CanBePaidBy(currentUser)) 
 {
     order.Status = OrderStatus.Completed;
     order.PaidByUserId = currentUser.Id;
@@ -196,9 +196,9 @@ else
 
 <p>Following the same way how we encapsulated the paying precondition, we'll encapsulate the actual paying action too.</p>
 
-<pre><code>if (order.CanBePaidBy(user))
+<pre><code>if (order.CanBePaidBy(currentUser))
 {
-    order.Pay(user);
+    order.Pay(currentUser);
 
     Session.Store(order);
 }
@@ -227,7 +227,7 @@ else
 
 <p>Observing the refactoring changes in previous steps, this final refactoring change comes natural.</p>
 
-<pre><code>order.Pay(user);
+<pre><code>order.Pay(currentUser);
 
 Session.Store(order);
 </code></pre>
@@ -240,7 +240,7 @@ Session.Store(order);
 
     public void Pay(User payer) 
     {
-        if (!CanBePaidBy(user))
+        if (!CanBePaidBy(payer))
             throw new CoreException($"User {payer.Name} cannot pay this order.");
 
         Status = OrderStatus.Completed;
@@ -284,7 +284,7 @@ public class PayOrderHandler : BaseCommandHandler&lt;PayOrderRequest&gt;
 
     public void Pay(User payer) 
     {
-        if (!CanBePaidBy(user))
+        if (!CanBePaidBy(payer))
             throw new CoreException($"User {payer.Name} cannot pay this order.");
 
         order.Status = OrderStatus.Completed;

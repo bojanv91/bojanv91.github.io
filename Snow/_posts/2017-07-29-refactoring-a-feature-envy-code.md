@@ -83,7 +83,7 @@ It's better to create a temporary inline variable to describe more complex condi
 
 Now it makes sense to encapsulate the the precondition for paying an order, in the order object itself.
 
-    if (order.CanBePaidBy(user)) 
+    if (order.CanBePaidBy(currentUser)) 
     {
         order.Status = OrderStatus.Completed;
         order.PaidByUserId = currentUser.Id;
@@ -113,9 +113,9 @@ With this change, we eliminated coupling from the command handler to the propert
 
 Following the same way how we encapsulated the paying precondition, we'll encapsulate the actual paying action too.
 
-    if (order.CanBePaidBy(user))
+    if (order.CanBePaidBy(currentUser))
     {
-        order.Pay(user);
+        order.Pay(currentUser);
 
         Session.Store(order);
     }
@@ -142,7 +142,7 @@ The order class:
 
 Observing the refactoring changes in previous steps, this final refactoring change comes natural.
 
-    order.Pay(user);
+    order.Pay(currentUser);
 
     Session.Store(order);
 
@@ -154,7 +154,7 @@ The order class:
 
         public void Pay(User payer) 
         {
-            if (!CanBePaidBy(user))
+            if (!CanBePaidBy(payer))
                 throw new CoreException($"User {payer.Name} cannot pay this order.");
 
             Status = OrderStatus.Completed;
@@ -196,7 +196,7 @@ The order class:
 
         public void Pay(User payer) 
         {
-            if (!CanBePaidBy(user))
+            if (!CanBePaidBy(payer))
                 throw new CoreException($"User {payer.Name} cannot pay this order.");
 
             order.Status = OrderStatus.Completed;
