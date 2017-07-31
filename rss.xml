@@ -182,7 +182,7 @@ public class PayOrderHandler : BaseCommandHandler&amp;lt;PayOrderRequest&amp;gt;
         var currentUser = Session.Load&amp;lt;User&amp;gt;(LoggedInUserId);
         var order = Session.Load&amp;lt;Order&amp;gt;(request.OrderId);
 
-        order.Pay(user);
+        order.Pay(currentUser);
 
         Session.Store(order);
     }

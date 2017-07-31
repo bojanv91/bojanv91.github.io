@@ -179,7 +179,7 @@ The order class:
             var currentUser = Session.Load<User>(LoggedInUserId);
             var order = Session.Load<Order>(request.OrderId);
 
-            order.Pay(user);
+            order.Pay(currentUser);
 
             Session.Store(order);
         }

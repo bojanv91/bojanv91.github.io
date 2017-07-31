@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="last-modified" content="2017-07-29T20:49:24.8157492+02:00" />
+    <meta http-equiv="last-modified" content="2017-07-31T10:12:35.3059368+02:00" />
     <meta name="keywords" content="refactoring" />
     <title>Refactoring a Feature Envy code | Code with Bojan</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
@@ -266,7 +266,7 @@ public class PayOrderHandler : BaseCommandHandler&lt;PayOrderRequest&gt;
         var currentUser = Session.Load&lt;User&gt;(LoggedInUserId);
         var order = Session.Load&lt;Order&gt;(request.OrderId);
 
-        order.Pay(user);
+        order.Pay(currentUser);
 
         Session.Store(order);
     }
