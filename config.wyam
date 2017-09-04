@@ -1,0 +1,16 @@
+#recipe Blog
+
+// Customize your settings and add new ones here
+Settings[Keys.Host] = "bojanv91.github.io";	// BojansNotes.com"
+Settings[BlogKeys.Title] = "Bojan's Notes";
+Settings[BlogKeys.Description] = "Hi, I'm Bojan Veljanovski";
+Settings[BlogKeys.Intro] = "This is my personal blog, where I share notes about my journey in software development and what I'm learning.";
+
+Settings[BlogKeys.CaseInsensitiveTags] = true;
+Settings[BlogKeys.IncludeDateInPostPath] = true;
+Settings[BlogKeys.IndexPageSize] = 3;
+
+// Add any pipeline customizations here
+
+
+//RedirectFrom 
