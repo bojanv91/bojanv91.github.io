@@ -1,6 +1,6 @@
 branches:
   only:
-    - master
+    - documentation
     
 environment:
   access_token:
@@ -33,6 +33,8 @@ on_success:
   - git config --global user.name "Bojan Veljanovski"
   - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
   - git checkout master
+  - git rm -rf .
+  - xcopy ..\output . /E
   # EDIT your domain name or remove if not using a custom domain
   # - echo wyam.io > CNAME
   # EDIT the origin of your repository - have to reset it here because AppVeyor pulls from SSH, but GitHub won't accept SSH pushes
