@@ -118,12 +118,10 @@
                 <div class="post-preview">
                     <a href="/posts/2017/07/refactoring-a-feature-envy-code">
                         <h2 class="post-title">Refactoring a feature envy code</h2>
-                            <h3 class="post-subtitle">A step-by-step session to less coupled code, adhering to the Tell Don&#x27;t Ask principle</h3>
+                            <h3 class="post-subtitle">Towards less coupled code, adhering to the Tell Don&#x27;t Ask principle</h3>
                     </a>
                     <p class="post-meta">Posted on Saturday, July 29, 2017</p>
-<p>Recently, in a design review meeting the following question was raised: <em>When refactoring, why sometimes do we put an if-condition statement in a temporary variable, and sometimes in a method in a dependent class?</em>
-This is a wonderful question! It opened a discussion spanning across multiple topics, including coupling, domain leaking, encapsulation, and the tell don't ask principle.</p>
-<p>Ultimately, checking the <a href="https://blog.codinghorror.com/code-smells/">code smells taxonomy</a>, we identified the code segment in question is a smell called <em>feature envy</em>.</p>                </div>       
+<p>In a design review meeting a colleague asked: <em>Why sometimes we directly manipulate dependent objects fields, and sometimes we put the manipulation logic behind methods in those objects? What are pros/cons in both approaches?</em> This was a great question, because it opened a productive discussion. Checking the <a href="https://blog.codinghorror.com/code-smells/">code smells taxonomy</a>, and analyzing the code under review deeper, we identified it belongs to the <strong>feature envy</strong> code smells category. And this is how we refactored it.</p>                </div>       
                     <hr /> 
                 <div class="post-preview">
                     <a href="/posts/2017/03/visual-studio-2017-notes">
@@ -157,12 +155,12 @@ This is a wonderful question! It opened a discussion spanning across multiple to
             <div>
                     <a role="button" href="/tags/aspnet" class="btn btn-default btn-sm"> asp.net (3)</a>
                     <a role="button" href="/tags/software-design" class="btn btn-default btn-sm"> software design (2)</a>
+                    <a role="button" href="/tags/database-migrations" class="btn btn-default btn-sm"> database migrations (1)</a>
                     <a role="button" href="/tags/tools" class="btn btn-default btn-sm"> tools (1)</a>
-                    <a role="button" href="/tags/meetups" class="btn btn-default btn-sm"> meetups (1)</a>
                     <a role="button" href="/tags/security" class="btn btn-default btn-sm"> security (1)</a>
+                    <a role="button" href="/tags/meetups" class="btn btn-default btn-sm"> meetups (1)</a>
                     <a role="button" href="/tags/refactoring" class="btn btn-default btn-sm"> refactoring (1)</a>
                     <a role="button" href="/tags/code-smells" class="btn btn-default btn-sm"> code smells (1)</a>
-                    <a role="button" href="/tags/database-migrations" class="btn btn-default btn-sm"> database migrations (1)</a>
                     <a role="button" href="/tags/patterns" class="btn btn-default btn-sm"> patterns (1)</a>
             </div>
             <ul class="pager">

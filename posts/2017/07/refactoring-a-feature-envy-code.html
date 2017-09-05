@@ -101,7 +101,7 @@
     
 <div class="post-heading">
     <h1>Refactoring a feature envy code</h1>
-        <h2 class="subheading">A step-by-step session to less coupled code, adhering to the Tell Don&#x27;t Ask principle</h2>
+        <h2 class="subheading">Towards less coupled code, adhering to the Tell Don&#x27;t Ask principle</h2>
     <div class="meta">        
 Published on Saturday, July 29, 2017<br>    </div>
         <div class="tags">
@@ -120,14 +120,14 @@ Published on Saturday, July 29, 2017<br>    </div>
                                 <div id="content" class="col-md-12">
                                         
 
-<p>Recently, in a design review meeting the following question was raised: <em>When refactoring, why sometimes do we put an if-condition statement in a temporary variable, and sometimes in a method in a dependent class?</em>
-This is a wonderful question! It opened a discussion spanning across multiple topics, including coupling, domain leaking, encapsulation, and the tell don't ask principle.</p>
-<p>Ultimately, checking the <a href="https://blog.codinghorror.com/code-smells/">code smells taxonomy</a>, we identified the code segment in question is a smell called <em>feature envy</em>.<!--excerpt--></p>
-<p><strong>Feature envy</strong> is a code smell describing when an object accesses fields of another object in order to perform some action, rather than telling the object to do the action itself.</p>
-<p>Let's examine the following [simplified] code segment, and try to refactor it.
-For better context, it addresses the requirement: An active user can pay a pending order. For reporting purposes the order tracks when and who paid it.</p>
-<h2 id="v1-simplified-original-code-segment">v1 - [simplified] original code segment</h2>
-<pre><code>public class PayOrderRequest
+<p>In a design review meeting a colleague asked: <em>Why sometimes we directly manipulate dependent objects fields, and sometimes we put the manipulation logic behind methods in those objects? What are pros/cons in both approaches?</em> This was a great question, because it opened a productive discussion. Checking the <a href="https://blog.codinghorror.com/code-smells/">code smells taxonomy</a>, and analyzing the code under review deeper, we identified it belongs to the <strong>feature envy</strong> code smells category. And this is how we refactored it.<!--excerpt--></p>
+<p><strong>What is feature envy code?</strong>
+<em>Feature envy</em> is a code smell describing when an object accesses fields of another object to execute some operation, instead of just telling the object what to do.</p>
+<p>Let's analyze the following code segment, and try to refactor it.
+For better context, it addresses the requirement: <em>An active user can pay a pending order. For reporting purposes the order tracks when and who paid it.</em></p>
+<h2 id="original-code-segment-simplified">Original code segment (simplified)</h2>
+<p>Here you can see the original code segment greatly simplified, so it's easier to follow.</p>
+<pre><code class="language-C#">public class PayOrderRequest
 {
     public Guid OrderId { get; set; }
 }
@@ -139,64 +139,59 @@ public class PayOrderHandler : BaseCommandHandler&lt;PayOrderRequest&gt;
         var currentUser = Session.Load&lt;User&gt;(LoggedInUserId);
         var order = Session.Load&lt;Order&gt;(request.OrderId);
 
-        // checks if the order can be paid by the currently logged in user
+        // checks if the order can be paid
         if (order.Status == OrderStatus.Pending &amp;&amp; currentUser.Status == UserStatus.Active) 
         {
             // pay the order, and record related information
             order.Status = OrderStatus.Completed;
             order.PaidByUserId = currentUser.Id;
             order.PaidOnUtc = DateTime.UtcNow;
-
-            Session.Store(order);
         }
         else
         {
             throw new CoreException($&quot;{currentUser.Name} cannot pay this order.&quot;);
         }
+        
+        Session.Store(order);
     }
 }
 </code></pre>
-<p>The problem with this code, and the reason it is considered a code smell, is because it breaks encapsulation.</p>
-<p>The domain logic for performing the paying action on the order object, is leaked out of the order object, into the command handler method. The command handler should only coordinate the workflow, and the order object should be responsible for dealing with the business logic.</p>
-<p>Besides breaking encapsulation, it also makes the paying order functionality  harder to unit test. This method depends on the database via the session object, and to the provider of the currently logged in user object. Writing a unit test for this, means that we need to write mocks for both services. If we refactor it, fixing the encapsulation, we'll see that writing unit tests will be a much easier task to do.</p>
-<p>Let's observe how can we improve this piece of code, one refactoring step at a time.</p>
-<h2 id="v2-introduce-temporary-inline-variable-for-the-precondition">v2 - introduce temporary inline variable for the precondition</h2>
+<p>The core problem with this code is that it breaks encapsulation. The command handler depends too much on the <code>order</code> internals, and forms tight coupling. The <code>order</code> leaked it's domain logic to the command handler, thus it became anemic data-object.</p>
+<p>Besides breaking encapsulation, it also makes the paying order functionality  hard to unit test. The command handler depends on the database via the session object, and to the logged in user provider. Writing a unit test for this, means we need to write mocks for both services. If we refactor it, fixing the encapsulation, we'll see that writing unit tests will be an easier task to do. Besides, why create mocks until deemed necessary?</p>
+<p>Ultimately, the command handler should only coordinate the workflow, and the order object should only deal with the domain logic. They should not mix responsibilities between themselves. But this is not the case we have here.</p>
+<p>Our question is, can the command handler <strong>tell</strong> the <code>order</code> what to do, encapsulating the logic, instead of asking it for too many details? Let's find out.</p>
+<h2 id="step-1-hold-precondition-result-in-an-inline-variable">Step 1 - hold precondition result in an inline variable</h2>
 <p>Let's introduce <code>canOrderByPaid</code> boolean variable which will hold the result of the precondition for paying an order.</p>
-<pre><code>/* Code removed for clarity */
+<pre><code class="language-c#">// Original
+if (order.Status == OrderStatus.Pending &amp;&amp; currentUser.Status == UserStatus.Active) 
+{ ... }
+  
 
+// Refactored (step 1)
 bool canOrderByPaid = order.Status == OrderStatus.Pending &amp;&amp; currentUser.Status == UserStatus.Active;
 if (canOrderByPaid)
-{
-    order.Status = OrderStatus.Completed;
-    order.PaidByUserId = currentUser.Id;
-    order.PaidOnUtc = DateTime.UtcNow;
-
-    Session.Store(order);
-}
-else
-{
-    throw new CoreException($&quot;{currentUser.Name} cannot pay this order.&quot;);
-}
-
-/* Code removed for clarity */
+{ ... }
 </code></pre>
-<p>It's better to create a temporary inline variable to describe more complex condition checks, and use it in the if-condition statement, rather than having bloated if-condition statement with a comment above, describing what it does.</p>
-<h2 id="v3-encapsulate-the-precondition-in-the-order-object">v3 - encapsulate the precondition in the order object</h2>
-<p>Now it makes sense to encapsulate the the precondition for paying an order, in the order object itself.</p>
-<pre><code>if (order.CanBePaidBy(currentUser)) 
-{
-    order.Status = OrderStatus.Completed;
-    order.PaidByUserId = currentUser.Id;
-    order.PaidOnUtc = DateTime.UtcNow;
-    Session.Store(order);
-}
-else
-{
-    throw new CoreException($&quot;{currentUser.Name} cannot pay this order.&quot;);
-}
+<p>It's better to create a inline variable to describe more complex condition checks, and use it in the if-condition statement, than having bloated if-condition statement with a comment above, describing what it does.</p>
+<h2 id="step-2-encapsulate-the-precondition-in-the-order">Step 2 - encapsulate the precondition in the <code>Order</code></h2>
+<p>Now it makes sense to encapsulate the precondition for paying an order, in the order object itself.</p>
+<pre><code class="language-c#">// Original
+if (order.Status == OrderStatus.Pending &amp;&amp; currentUser.Status == UserStatus.Active) 
+{ ... }
+  
+
+// Refactored (step 1)
+bool canOrderByPaid = order.Status == OrderStatus.Pending &amp;&amp; currentUser.Status == UserStatus.Active;
+if (canOrderByPaid)
+{ ... }
+
+
+// Refactored (step 2)
+if (order.CanBePaidBy(currentUser)) 
+{ ... }
 </code></pre>
 <p>The order class:</p>
-<pre><code>public class Order
+<pre><code class="language-c#">public class Order
 {
     /* Code removed for clarity */
 
@@ -206,20 +201,28 @@ else
     /* Code removed for clarity */
 }
 </code></pre>
-<p>With this change, we eliminated coupling from the command handler to the properties of order and user classes (e.g. <code>order.Status</code>, <code>user.Status</code>). Imagine in more complex cases, how much direct coupling will be reduced only by following good encapsulation.</p>
-<h2 id="v4-encapsulate-the-actual-action-too">v4 - encapsulate the actual action too</h2>
-<p>Following the same way how we encapsulated the paying precondition, we'll encapsulate the actual paying action too.</p>
-<pre><code>if (order.CanBePaidBy(currentUser))
+<p>With this change, we eliminated coupling from the command handler to the fields of order and user classes (e.g. <code>order.Status</code>, <code>user.Status</code>). Imagine in more complex cases, how much direct coupling will be reduced only by following good encapsulation.</p>
+<h2 id="step-3-encapsulate-the-actual-operation">Step 3 - encapsulate the actual operation</h2>
+<p>Following the same way how we encapsulated the paying precondition, we'll encapsulate the paying operation.</p>
+<pre><code class="language-c#">// Refactored (step 2)
+if (order.CanBePaidBy(currentUser))
 {
-    order.Pay(currentUser);
-
-    Session.Store(order);
+    order.Status = OrderStatus.Completed;
+    order.PaidByUserId = currentUser.Id;
+    order.PaidOnUtc = DateTime.UtcNow;
 }
+else
+    throw new CoreException($&quot;{currentUser.Name} cannot pay this order.&quot;);
+
+
+// Refactored (step 3)
+if (order.CanBePaidBy(currentUser))
+    order.Pay(currentUser);
 else
     throw new CoreException($&quot;User {currentUser.Name} cannot pay this order.&quot;);
 </code></pre>
 <p>The order class:</p>
-<pre><code>public class Order
+<pre><code class="language-c#">public class Order
 {
     /* Code removed for clarity */
 
@@ -233,14 +236,20 @@ else
     /* Code removed for clarity */
 }
 </code></pre>
-<h2 id="v5-natural-final-changes">v5 - natural final changes</h2>
-<p>Observing the refactoring changes in previous steps, this final refactoring change comes natural.</p>
-<pre><code>order.Pay(currentUser);
+<h2 id="step-4-encapsulate-further">Step 4 - encapsulate further</h2>
+<p>Seeing the refactoring changes in previous steps, this final refactoring change comes natural.</p>
+<pre><code class="language-c#">// Refactored (step 3)
+if (order.CanBePaidBy(currentUser))
+    order.Pay(currentUser);
+else
+    throw new CoreException($&quot;User {currentUser.Name} cannot pay this order.&quot;);
 
-Session.Store(order);
+
+// Refactored (step 4)
+order.Pay(currentUser);
 </code></pre>
 <p>The order class:</p>
-<pre><code>public class Order
+<pre><code class="language-c#">public class Order
 {
     /* Code removed for clarity */
 
@@ -257,8 +266,9 @@ Session.Store(order);
     /* Code removed for clarity */
 }
 </code></pre>
-<h2 id="the-resulting-refactored-code">The resulting refactored code</h2>
-<pre><code>public class PayOrderRequest
+<h2 id="the-final-refactored-code">The final refactored code</h2>
+<p>This is how the final refactored code looks like. Compare it to the original one in the beginning of this session. What key difference can you identify?</p>
+<pre><code class="language-c#">public class PayOrderRequest
 {
     public Guid OrderId { get; set; }
 }
@@ -269,17 +279,18 @@ public class PayOrderHandler : BaseCommandHandler&lt;PayOrderRequest&gt;
     {
         var currentUser = Session.Load&lt;User&gt;(LoggedInUserId);
         var order = Session.Load&lt;Order&gt;(request.OrderId);
-
+        
         order.Pay(currentUser);
-
+        
         Session.Store(order);
     }
 }
 </code></pre>
-<p>The order class:</p>
-<pre><code>public class Order
+<p>And the <code>Order</code> class, encapsulating the domain logic:</p>
+<pre><code class="language-c#">public class Order
 {
     /* Code removed for clarity */
+  
     public OrderStatus Status { get; private set; }
     public Guid PaidByUserId { get; private set; }
     public DateTime PaidOnUtc { get; private set; }
@@ -300,18 +311,17 @@ public class PayOrderHandler : BaseCommandHandler&lt;PayOrderRequest&gt;
     /* Code removed for clarity */
 }
 </code></pre>
-<h2 id="summary">Summary</h2>
-<p>We made it to the end. Let's summarize the benefits we achieved out of this refactoring session:</p>
+<p>You can see we moved the domain logic out of the command handler, and we put it to the <code>Order</code> entity, where it belongs.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>The benefits we achieved from this refactoring session are:</p>
 <ul>
-<li>The command handler <strong>stops asking</strong> for details, now it <strong>tells</strong> the order what to do, providing necessary dependencies, and does not care about the details it does. <strong>Tell Don't Ask Principle</strong> fulfilled.</li>
-<li>The <strong>high coupling</strong> from the command handler to the fields in user and order classes is <strong>eliminated</strong>. Less coupling, more sanity.</li>
-<li>The <code>Order</code> class is not a bag of public set properties anymore, called a data class. Now it has cohesive behavior, <strong>encapsulating the actions it can perform</strong>.</li>
-<li><strong>Domain logic</strong> for paying <strong>is not leaked</strong> in other classes anymore. Now it's located in the responsible class itself. So, only by seeing the <code>Order</code> class we can understand what it can do. No need to open other related classes. Other classes now may be only &quot;users&quot; of this class, calling methods to perform some action/behavior.</li>
-<li>Paying functionality now can be easily <strong>unit tested</strong>, without having to deal with special mocking techniques. Less mocks, better tests.</li>
+<li>The command handler <strong>stops asking</strong> for details (and internals). Now it <strong>tells</strong> what other objects should do. Does not care about the details anymore. With this, we fulfilled the <strong>Tell Don't Ask Principle</strong>.</li>
+<li>The direct <strong>coupling</strong> from the command handler to the fields in user and order classes is <strong>eliminated</strong>. Less coupling, more sanity.</li>
+<li>The <code>Order</code> class is not a bag of public set properties anymore. It's not anemic, it's not a data-class. Now it has cohesive responsibility, <strong>encapsulating the actions it can perform</strong>.</li>
+<li><strong>Domain logic</strong> for paying <strong>is not leaked</strong> in other classes anymore. Now it's located in the responsible class itself. So, only by looking at the <code>Order</code> class we can understand what it can do. No need to open other related classes.</li>
+<li>Paying functionality can be easily <strong>unit tested</strong>, without having to deal with special mocking techniques. Less mocks, better tests.</li>
 </ul>
-<p><strong>Rule of thumb:</strong> Where ever you see a method uses fields of another class extensively, in order to perform some action, consider moving the action in <em>that</em> class itself.</p>
-<hr />
-<p>If there is interest out there, I might write more about practical refactoring topics and software design from my everyday life.</p>
+<p><strong>Rule of thumb:</strong> Where ever you see a method uses fields of another class extensively to perform some action, consider moving the action's logic into <em>that</em> class itself.</p>
 
 
 <div id="disqus_thread"></div>
