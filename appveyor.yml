@@ -38,5 +38,5 @@ on_success:
   # EDIT the origin of your repository - have to reset it here because AppVeyor pulls from SSH, but GitHub won't accept SSH pushes
   - git remote set-url origin https://github.com/bojanv91/bojanv91.github.io.git
   - git add -A
-  - git commit -a -m "Commit from AppVeyor"
+  - git commit -a -m "AppVeyor - deployed latest updates from documentation branch"
   - git push
