@@ -1,2 +1,4 @@
 # Nothing to ignore yet
 .vscode/settings.json
+packages.xml
+output/**/*
