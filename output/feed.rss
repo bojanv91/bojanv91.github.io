@@ -1,0 +1,1081 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+	<channel>
+		<title>Bojan's Notes</title>
+		<link>http://bojanv91.github.io/</link>
+		<description>Hi, I'm Bojan Veljanovski</description>
+		<copyright>2017</copyright>
+		<pubDate>Mon, 04 Sep 2017 23:20:05 GMT</pubDate>
+		<lastBuildDate>Mon, 04 Sep 2017 23:20:05 GMT</lastBuildDate>
+		<item>
+			<title>Refactoring a feature envy code</title>
+			<link>http://bojanv91.github.io/posts/2017/07/refactoring-a-feature-envy-code</link>
+			<description>&lt;p&gt;Recently, in a design review meeting the following question was raised: &lt;em&gt;When refactoring, why sometimes do we put an if-condition statement in a temporary variable, and sometimes in a method in a dependent class?&lt;/em&gt;
+This is a wonderful question! It opened a discussion spanning across multiple topics, including coupling, domain leaking, encapsulation, and the tell don't ask principle.&lt;/p&gt;
+&lt;p&gt;Ultimately, checking the &lt;a href="https://blog.codinghorror.com/code-smells/"&gt;code smells taxonomy&lt;/a&gt;, we identified the code segment in question is a smell called &lt;em&gt;feature envy&lt;/em&gt;.&lt;/p&gt;</description>
+			<guid>http://bojanv91.github.io/posts/2017/07/refactoring-a-feature-envy-code</guid>
+			<pubDate>Sat, 29 Jul 2017 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;Recently, in a design review meeting the following question was raised: &lt;em&gt;When refactoring, why sometimes do we put an if-condition statement in a temporary variable, and sometimes in a method in a dependent class?&lt;/em&gt;
+This is a wonderful question! It opened a discussion spanning across multiple topics, including coupling, domain leaking, encapsulation, and the tell don't ask principle.&lt;/p&gt;
+&lt;p&gt;Ultimately, checking the &lt;a href="https://blog.codinghorror.com/code-smells/"&gt;code smells taxonomy&lt;/a&gt;, we identified the code segment in question is a smell called &lt;em&gt;feature envy&lt;/em&gt;.&lt;!--excerpt--&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Feature envy&lt;/strong&gt; is a code smell describing when an object accesses fields of another object in order to perform some action, rather than telling the object to do the action itself.&lt;/p&gt;
+&lt;p&gt;Let's examine the following [simplified] code segment, and try to refactor it.
+For better context, it addresses the requirement: An active user can pay a pending order. For reporting purposes the order tracks when and who paid it.&lt;/p&gt;
+&lt;h2 id="v1-simplified-original-code-segment"&gt;v1 - [simplified] original code segment&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;public class PayOrderRequest
+{
+    public Guid OrderId { get; set; }
+}
+
+public class PayOrderHandler : BaseCommandHandler&amp;lt;PayOrderRequest&amp;gt;
+{
+    public void Handle(PayOrderRequest request)
+    {
+        var currentUser = Session.Load&amp;lt;User&amp;gt;(LoggedInUserId);
+        var order = Session.Load&amp;lt;Order&amp;gt;(request.OrderId);
+
+        // checks if the order can be paid by the currently logged in user
+        if (order.Status == OrderStatus.Pending &amp;amp;&amp;amp; currentUser.Status == UserStatus.Active) 
+        {
+            // pay the order, and record related information
+            order.Status = OrderStatus.Completed;
+            order.PaidByUserId = currentUser.Id;
+            order.PaidOnUtc = DateTime.UtcNow;
+
+            Session.Store(order);
+        }
+        else
+        {
+            throw new CoreException($&amp;quot;{currentUser.Name} cannot pay this order.&amp;quot;);
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The problem with this code, and the reason it is considered a code smell, is because it breaks encapsulation.&lt;/p&gt;
+&lt;p&gt;The domain logic for performing the paying action on the order object, is leaked out of the order object, into the command handler method. The command handler should only coordinate the workflow, and the order object should be responsible for dealing with the business logic.&lt;/p&gt;
+&lt;p&gt;Besides breaking encapsulation, it also makes the paying order functionality  harder to unit test. This method depends on the database via the session object, and to the provider of the currently logged in user object. Writing a unit test for this, means that we need to write mocks for both services. If we refactor it, fixing the encapsulation, we'll see that writing unit tests will be a much easier task to do.&lt;/p&gt;
+&lt;p&gt;Let's observe how can we improve this piece of code, one refactoring step at a time.&lt;/p&gt;
+&lt;h2 id="v2-introduce-temporary-inline-variable-for-the-precondition"&gt;v2 - introduce temporary inline variable for the precondition&lt;/h2&gt;
+&lt;p&gt;Let's introduce &lt;code&gt;canOrderByPaid&lt;/code&gt; boolean variable which will hold the result of the precondition for paying an order.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/* Code removed for clarity */
+
+bool canOrderByPaid = order.Status == OrderStatus.Pending &amp;amp;&amp;amp; currentUser.Status == UserStatus.Active;
+if (canOrderByPaid)
+{
+    order.Status = OrderStatus.Completed;
+    order.PaidByUserId = currentUser.Id;
+    order.PaidOnUtc = DateTime.UtcNow;
+
+    Session.Store(order);
+}
+else
+{
+    throw new CoreException($&amp;quot;{currentUser.Name} cannot pay this order.&amp;quot;);
+}
+
+/* Code removed for clarity */
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It's better to create a temporary inline variable to describe more complex condition checks, and use it in the if-condition statement, rather than having bloated if-condition statement with a comment above, describing what it does.&lt;/p&gt;
+&lt;h2 id="v3-encapsulate-the-precondition-in-the-order-object"&gt;v3 - encapsulate the precondition in the order object&lt;/h2&gt;
+&lt;p&gt;Now it makes sense to encapsulate the the precondition for paying an order, in the order object itself.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;if (order.CanBePaidBy(currentUser)) 
+{
+    order.Status = OrderStatus.Completed;
+    order.PaidByUserId = currentUser.Id;
+    order.PaidOnUtc = DateTime.UtcNow;
+    Session.Store(order);
+}
+else
+{
+    throw new CoreException($&amp;quot;{currentUser.Name} cannot pay this order.&amp;quot;);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The order class:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class Order
+{
+    /* Code removed for clarity */
+
+    public bool CanBePaidBy(User user) 
+        =&amp;gt; Status == OrderStatus.Pending &amp;amp;&amp;amp; user.Status == UserStatus.Active;
+
+    /* Code removed for clarity */
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With this change, we eliminated coupling from the command handler to the properties of order and user classes (e.g. &lt;code&gt;order.Status&lt;/code&gt;, &lt;code&gt;user.Status&lt;/code&gt;). Imagine in more complex cases, how much direct coupling will be reduced only by following good encapsulation.&lt;/p&gt;
+&lt;h2 id="v4-encapsulate-the-actual-action-too"&gt;v4 - encapsulate the actual action too&lt;/h2&gt;
+&lt;p&gt;Following the same way how we encapsulated the paying precondition, we'll encapsulate the actual paying action too.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;if (order.CanBePaidBy(currentUser))
+{
+    order.Pay(currentUser);
+
+    Session.Store(order);
+}
+else
+    throw new CoreException($&amp;quot;User {currentUser.Name} cannot pay this order.&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The order class:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class Order
+{
+    /* Code removed for clarity */
+
+    public void Pay(User payer) 
+    {
+        Status = OrderStatus.Completed;
+        PaidByUserId = payer.Id;
+        PaidOnUtc = DateTime.UtcNow;
+    }
+
+    /* Code removed for clarity */
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="v5-natural-final-changes"&gt;v5 - natural final changes&lt;/h2&gt;
+&lt;p&gt;Observing the refactoring changes in previous steps, this final refactoring change comes natural.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;order.Pay(currentUser);
+
+Session.Store(order);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The order class:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class Order
+{
+    /* Code removed for clarity */
+
+    public void Pay(User payer) 
+    {
+        if (!CanBePaidBy(payer))
+            throw new CoreException($&amp;quot;User {payer.Name} cannot pay this order.&amp;quot;);
+
+        Status = OrderStatus.Completed;
+        PaidByUserId = payer.Id;
+        PaidOnUtc = DateTime.UtcNow;
+    }
+
+    /* Code removed for clarity */
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="the-resulting-refactored-code"&gt;The resulting refactored code&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;public class PayOrderRequest
+{
+    public Guid OrderId { get; set; }
+}
+
+public class PayOrderHandler : BaseCommandHandler&amp;lt;PayOrderRequest&amp;gt;
+{
+    public void Handle(PayOrderRequest request)
+    {
+        var currentUser = Session.Load&amp;lt;User&amp;gt;(LoggedInUserId);
+        var order = Session.Load&amp;lt;Order&amp;gt;(request.OrderId);
+
+        order.Pay(currentUser);
+
+        Session.Store(order);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The order class:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class Order
+{
+    /* Code removed for clarity */
+    public OrderStatus Status { get; private set; }
+    public Guid PaidByUserId { get; private set; }
+    public DateTime PaidOnUtc { get; private set; }
+
+    public void Pay(User payer) 
+    {
+        if (!CanBePaidBy(payer))
+            throw new CoreException($&amp;quot;User {payer.Name} cannot pay this order.&amp;quot;);
+
+        order.Status = OrderStatus.Completed;
+        order.PaidByUserId = payer.Id;
+        order.PaidOnUtc = DateTime.UtcNow;
+    }
+
+    public bool CanBePaidBy(User user) 
+        =&amp;gt; Status == OrderStatus.Pending &amp;amp;&amp;amp; user.Status == UserStatus.Active;
+
+    /* Code removed for clarity */
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="summary"&gt;Summary&lt;/h2&gt;
+&lt;p&gt;We made it to the end. Let's summarize the benefits we achieved out of this refactoring session:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The command handler &lt;strong&gt;stops asking&lt;/strong&gt; for details, now it &lt;strong&gt;tells&lt;/strong&gt; the order what to do, providing necessary dependencies, and does not care about the details it does. &lt;strong&gt;Tell Don't Ask Principle&lt;/strong&gt; fulfilled.&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;high coupling&lt;/strong&gt; from the command handler to the fields in user and order classes is &lt;strong&gt;eliminated&lt;/strong&gt;. Less coupling, more sanity.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;Order&lt;/code&gt; class is not a bag of public set properties anymore, called a data class. Now it has cohesive behavior, &lt;strong&gt;encapsulating the actions it can perform&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Domain logic&lt;/strong&gt; for paying &lt;strong&gt;is not leaked&lt;/strong&gt; in other classes anymore. Now it's located in the responsible class itself. So, only by seeing the &lt;code&gt;Order&lt;/code&gt; class we can understand what it can do. No need to open other related classes. Other classes now may be only &amp;quot;users&amp;quot; of this class, calling methods to perform some action/behavior.&lt;/li&gt;
+&lt;li&gt;Paying functionality now can be easily &lt;strong&gt;unit tested&lt;/strong&gt;, without having to deal with special mocking techniques. Less mocks, better tests.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Rule of thumb:&lt;/strong&gt; Where ever you see a method uses fields of another class extensively, in order to perform some action, consider moving the action in &lt;em&gt;that&lt;/em&gt; class itself.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;If there is interest out there, I might write more about practical refactoring topics and software design from my everyday life.&lt;/p&gt;
+</content:encoded>
+		</item>
+		<item>
+			<title>Visual Studio 2017 Notes</title>
+			<link>http://bojanv91.github.io/posts/2017/03/visual-studio-2017-notes</link>
+			<description>&lt;p&gt;Visual Studio 2017 has shipped. In this post I highlight the top changes from my perspective and the list of all useful extensions I've installed.&lt;/p&gt;</description>
+			<guid>http://bojanv91.github.io/posts/2017/03/visual-studio-2017-notes</guid>
+			<pubDate>Thu, 09 Mar 2017 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;Visual Studio 2017 has shipped. In this post I highlight the top changes from my perspective and the list of all useful extensions I've installed.&lt;!--excerpt--&gt;&lt;/p&gt;
+&lt;p&gt;For VS2015 extensions, check my &lt;a href="/2016/12/vs2016-extensions/"&gt;older post&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="top-5-highlights-from-my-perspective"&gt;Top 5 Highlights From My Perspective&lt;/h2&gt;
+&lt;p&gt;To see all new features and changes, check the &lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes"&gt;VS2017 release notes&lt;/a&gt;. Here is my top list:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#csharpvb"&gt;Support for C# 7&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#coding-convention-support-via-editorconfig"&gt;Support for Coding Convention via EditorConfig. Finally!&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#dotnetcore"&gt;Stable tools support for .NET Core and ASP.NET Core&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#debug"&gt;Improved Exception Helper for Debugging&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.visualstudio.com/en-us/news/releasenotes/vs2017-relnotes#a-idbetternav-aimproved-code-navigation"&gt;Improved Code Navigation via &amp;quot;Richer Omnibar&amp;quot;&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="extensions"&gt;Extensions&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://vsrefactoringessentials.com/"&gt;Refactoring Essentials&lt;/a&gt;. C# analyzers and refactoring proposals.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.AddNewFile"&gt;Add New File&lt;/a&gt;. Create any type of files via standard templates without touching the mouse. Mapped to Ctrl+Shift+A.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.OpenCommandLine"&gt;Open Command Line&lt;/a&gt;. Opens CMD in current solution directory. Mapped to Alt+Space.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.PowerCommandsforVisualStudio"&gt;PowerCommands is a set of useful extensions for the Visual Studio IDE&lt;/a&gt;. Besides the defaults, I've turned on &amp;quot;Format document on save&amp;quot; option.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.TimeStampMargin"&gt;Time Stamp Margin&lt;/a&gt;. Adds timestamps in the output dialog.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=TomEnglert.ResXManager"&gt;ResXManager&lt;/a&gt;. Manage localization of all ResX-Based resources in one place. Shows all resources of a solution and let's you edit the strings and their localizations in a well-arranged data grid.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.ProjectFileTools"&gt;Project File Tools&lt;/a&gt;. Provides Intellisense and other tooling for XML based project files such as .csproj and .vbproj files.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.VuejsPack-18329"&gt;Vue.js Pack 2017&lt;/a&gt;. Intellisense for Vue.js.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.AureliaPack"&gt;Aurelia Pack&lt;/a&gt;. A snippet pack to make you more productive working with the Aurelia JavaScript framework.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=frhagn.Typewriter"&gt;Typewriter&lt;/a&gt;. Typewriter generates TypeScript files from c# code files using TypeScript Templates. This allows you to create fully typed TypeScript representations of server side API that automatically updates when you make changes to your C# code.&lt;/li&gt;
+&lt;/ul&gt;
+</content:encoded>
+		</item>
+		<item>
+			<title>Fix Razor Views Compilation in ASP.NET MVC</title>
+			<link>http://bojanv91.github.io/posts/2017/01/snippet-fix-razor-views-compilation</link>
+			<description>&lt;p&gt;Errors in Razor Views by default are detected and displayed during runtime. In the past this has caused us issues in production where end-clients were hit by these errors instead us detecting them earlier. There is an obvious but inconvenient fix to prevent this from happening. &lt;/p&gt;</description>
+			<guid>http://bojanv91.github.io/posts/2017/01/snippet-fix-razor-views-compilation</guid>
+			<pubDate>Fri, 27 Jan 2017 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;Errors in Razor Views by default are detected and displayed during runtime. In the past this has caused us issues in production where end-clients were hit by these errors instead us detecting them earlier. There is an obvious but inconvenient fix to prevent this from happening. &lt;!--excerpt--&gt;&lt;/p&gt;
+&lt;h2 id="how-to-fix-the-problem"&gt;How to fix the problem?&lt;/h2&gt;
+&lt;p&gt;You need to compile the razor views, so such errors can be detected during compile time instead of runtime.&lt;/p&gt;
+&lt;p&gt;To do that, in &lt;code&gt;.csproj&lt;/code&gt; add following piece of code:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;Project&amp;gt;
+    ..
+    &amp;lt;PropertyGroup&amp;gt;
+        &amp;lt;MvcBuildViews&amp;gt;true&amp;lt;/MvcBuildViews&amp;gt;
+        ..
+    &amp;lt;/PropertyGroup&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You'll think this is enough and ASP.NET MVC is smart to do it's job, but nope, &lt;strong&gt;it will not simply work&lt;/strong&gt;. Why? Read more &lt;a href="http://stackoverflow.com/questions/4725387/mvcbuildviews-not-working-correctly/4732019#4732019"&gt;here&lt;/a&gt;.
+Short story to working view compilation functionality is to add the following piece of code too in your &lt;code&gt;.csproj&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;Target Name=&amp;quot;MvcBuildViews&amp;quot; AfterTargets=&amp;quot;AfterBuild&amp;quot; Condition=&amp;quot;'$(MvcBuildViews)'=='true'&amp;quot;&amp;gt;
+    &amp;lt;AspNetCompiler VirtualPath=&amp;quot;temp&amp;quot; PhysicalPath=&amp;quot;$(WebProjectOutputDir)&amp;quot; /&amp;gt;
+&amp;lt;/Target&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That's it. Now it works.&lt;/p&gt;
+&lt;h2 id="but-it-slows-down-the-build-time"&gt;But it slows down the build time?&lt;/h2&gt;
+&lt;p&gt;Oh, just to mention that Razor Views compilation is slow process, so you might want to trigger it before making deployments or in CI (&lt;code&gt;Release&lt;/code&gt;), instead of slowing down the whole build process while you are coding (&lt;code&gt;Debug&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;The target conditions are the solution:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;PropertyGroup Condition=&amp;quot;'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'&amp;quot;&amp;gt;
+    ..
+    &amp;lt;MvcBuildViews&amp;gt;false&amp;lt;/MvcBuildViews&amp;gt;
+&amp;lt;/PropertyGroup&amp;gt;
+&amp;lt;PropertyGroup Condition=&amp;quot;'$(Configuration)|$(Platform)' == 'Release|AnyCPU'&amp;quot;&amp;gt;
+    ..
+    &amp;lt;MvcBuildViews&amp;gt;true&amp;lt;/MvcBuildViews&amp;gt;
+&amp;lt;/PropertyGroup&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+</content:encoded>
+		</item>
+		<item>
+			<title>Extensions I use with Visual Studio 2015</title>
+			<link>http://bojanv91.github.io/posts/2016/12/vs2016-extensions</link>
+			<description>&lt;p&gt;Rich IDEs are a great asset to enhance productivity in writing and reading code.&lt;/p&gt;
+&lt;p&gt;Visual Studio 2015 as a rich IDE helps a lot when navigating through code and files, refactoring, smart searching classes/methods/properties and much more. But still there are some useful or improved functionalities not baked in, that can be easily found as extensions.&lt;/p&gt;</description>
+			<guid>http://bojanv91.github.io/posts/2016/12/vs2016-extensions</guid>
+			<pubDate>Sat, 31 Dec 2016 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;Rich IDEs are a great asset to enhance productivity in writing and reading code.&lt;/p&gt;
+&lt;p&gt;Visual Studio 2015 as a rich IDE helps a lot when navigating through code and files, refactoring, smart searching classes/methods/properties and much more. But still there are some useful or improved functionalities not baked in, that can be easily found as extensions.&lt;!--excerpt--&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Here is the list of extensions that I use every day:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://vsrefactoringessentials.com/"&gt;Refactoring Essentials&lt;/a&gt; - Rich free refactoring tool for C#.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://visualstudiogallery.msdn.microsoft.com/3f820e99-6c0d-41db-aa74-a18d9623b1f3"&gt;Add New File&lt;/a&gt; - The fastest and easiest way to add new files to any project.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/jaredpar/EasyMotion"&gt;Easy Motion&lt;/a&gt; - A vim EasyMotion clone for Visual Studio. Instead of moving your hands to the arrow keys or even worse, grabbing the mouse, simple initiate an easy motion search by pressing &lt;code&gt;Shift + Control + ;&lt;/code&gt;. (&lt;em&gt;NOTE: I changed my shortcut to be bound to &lt;code&gt;Ctrl + Shift + F&lt;/code&gt; as I can trigger it only using the left hand.&lt;/em&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=SteveDowerMSFT.IndentGuides"&gt;Indent Guides &lt;/a&gt; - Adds vertical lines at each indent level. It can even add a vertical line to a certain character length (e.g. on 100 characters length so you know visually how long is your line of code).&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=GolanAvraham.ConfigurationTransform"&gt;Configuration Transform&lt;/a&gt; - Automatically transform web.config, app.config or any other config during the build process. Once the transformation is set, it will run on other build machines without the extension.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MatthewJohnsonMSFT.HideMainMenu"&gt;Hide Main Menu&lt;/a&gt; - Automatically hides the Visual Studio main menu when not in use. To show when hidden, press &lt;code&gt;ALT&lt;/code&gt; key.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=mayerwin.RenameVisualStudioWindowTitle"&gt;Rename Visual Studio Window Title &lt;/a&gt; - This lightweight extension allows changing the window title of Visual Studio to include a folder tree with a configurable distance from the solution/project file. (&lt;em&gt;NOTE: The title template I use is:&lt;code&gt;[solutionName] ([configurationName]) - [documentParentPath:2:0]&lt;/code&gt;&lt;/em&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=MadsKristensen.OpenCommandLine"&gt;Open Command Line&lt;/a&gt; - Opens a command line at the root of the project by pressing &lt;code&gt;ALT + Space&lt;/code&gt;. Useful when you need to execute commands from CMD at the current project's directory.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://marketplace.visualstudio.com/items?itemName=TomEnglert.ResXManager"&gt;ResXManager&lt;/a&gt; - Manage localization of all ResX-Based resources in one place. Shows all resources of a solution and lets you edit the strings and their localizations in a well-arranged data grid.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;NOTE: I do evaluate performance hit on Visual Studio itself before I use or recommend an extension. There are some other good extensions too that I don't use because they slow down Visual Studio a lot. Fast and responsive IDE has higher priority than new or improved functionalities on my machine :)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;What extensions do &lt;em&gt;you&lt;/em&gt; use, dear reader?&lt;/p&gt;
+</content:encoded>
+		</item>
+		<item>
+			<title>Global Day of Coderetreat 2016 in Skopje, Macedonia</title>
+			<link>http://bojanv91.github.io/posts/2016/10/global-day-of-coderetreat-2016-haselt-macedonia</link>
+			<description>&lt;p&gt;&lt;code&gt;#GDCR16&lt;/code&gt; is a day for celebrating passion and software craftsmanship. This year's event in Skopje, Macedonia was a blast! Fresh ideas, new perspectives and great people is everything you need for such an event.&lt;/p&gt;</description>
+			<guid>http://bojanv91.github.io/posts/2016/10/global-day-of-coderetreat-2016-haselt-macedonia</guid>
+			<pubDate>Thu, 27 Oct 2016 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;&lt;code&gt;#GDCR16&lt;/code&gt; is a day for celebrating passion and software craftsmanship. This year's event in Skopje, Macedonia was a blast! Fresh ideas, new perspectives and great people is everything you need for such an event.&lt;!--excerpt--&gt;&lt;/p&gt;
+&lt;h2 id="about-the-event"&gt;About the event&lt;/h2&gt;
+&lt;p&gt;&lt;a href="http://globalday.coderetreat.org/"&gt;Coderetreat&lt;/a&gt; is a one day event that provides developers the opportunity for skills improvement by focusing on software development and &lt;strong&gt;design fundamentals&lt;/strong&gt;. By practicing the basic principles of &lt;strong&gt;modular and object-oriented design&lt;/strong&gt;, participants can improve their ability to write code that &lt;strong&gt;minimizes the cost of change over time&lt;/strong&gt;. It aims to shrink the gap between the code we write under pressure of needing to deliver on time and the perfect code.&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/6.png" class="img-fluid" alt="Global Day of Coderetreat 2016 in Skopje, Macedonia" /&gt;&lt;/p&gt;
+&lt;h2 id="hosting-and-facilitating"&gt;Hosting and facilitating&lt;/h2&gt;
+&lt;p&gt;Having the huge enthusiasm about community work and passion in software development and coding, &lt;a href="http://www.haselt.com/"&gt;HASELT&lt;/a&gt; supported this year's Coderetreat in Macedonia by providing sponsorship, logistics for organization and space where programmers were gathered. We've had the pleasure to have with us &lt;a href="dalibornasevic.com"&gt;Dalibor Nasevic&lt;/a&gt;, who is long-time facilitator of Coderetreat events in Macedonia and helped all attendees to make the most out of the event.&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/2.png" class="img-fluid" alt="Global Day of Coderetreat 2016 in Skopje, Macedonia" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/3.png" class="img-fluid" alt="Global Day of Coderetreat 2016 in Skopje, Macedonia" /&gt;&lt;/p&gt;
+&lt;h2 id="sessions"&gt;Sessions&lt;/h2&gt;
+&lt;p&gt;Starting early in the morning the facilitator introduced the agenda for the day. There were five sessions of pair programming. After each session, retrospective meetings were held where each pair discussed what they did. After that, participants switched pairs and prepared for the next session.&lt;/p&gt;
+&lt;p&gt;The first session was intended to get the participants familiar with the problem, and introduction to &lt;a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"&gt;Conway's Game of Life&lt;/a&gt;. In the second session, &amp;quot;Ping-pong pair programming&amp;quot;, the pairs learned the importance of communication when pairing and collaborate together to see other ways of writing code. The third session was &amp;quot;No primitives across method boundaries (input or output)&amp;quot;. In the fourth session, &amp;quot;No conditionals&amp;quot;, the pairs had to find ways of avoiding conditionals and fewer logical paths. The last session, &amp;quot;Evil pair programming&amp;quot; was designed to practice writing quality tests, where the tester tries to write good tests and the coder writes just enough code to pass tests.&lt;/p&gt;
+&lt;p&gt;At the end of all sessions, the participants had the final retrospective with Dalibor. He asked the following questions, to which all participants shared their thoughts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What, if anything, did you learn today?&lt;/li&gt;
+&lt;li&gt;What, if anything, surprised you today?&lt;/li&gt;
+&lt;li&gt;What, if anything, will you do differently moving forward?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/4.png" class="img-fluid" alt="Global Day of Coderetreat 2016 in Skopje, Macedonia" /&gt;&lt;/p&gt;
+&lt;h2 id="impressions-from-the-event"&gt;Impressions from the event&lt;/h2&gt;
+&lt;p&gt;Being able to see so diverse thoughts about designing software was truly inspirational, and the way how people collaborated and shared their ideas was really empowering to everyone, including myself.&lt;/p&gt;
+&lt;p&gt;Personally, if I have to choose only a single event that I would like to attend to, Coderetreat would be definitely &lt;em&gt;that&lt;/em&gt; one.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Here are impressions shared by my awesome colleagues, the driving force of the whole organization:&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote class="blockquote"&gt;
+&lt;p&gt;We had an amazing time, meeting developers willing to learn, improve and also share their knowledge with others. We hope that the participants found this event as inspirational and productive as we do.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;and also, the impressions shared by Dalibor who put his energy and enthusiasm guiding the participants during the whole day:&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote class="blockquote"&gt;
+&lt;p&gt;It was great experience for me being part of another Global Day of Coderetreat and facilitate the local event in Skopje. I am very grateful to Bojan and the rest of the HASELT team for their passion and inspirational energy in organizing and hosting the event. I'm very happy for the attendees too. The ones for who the event is. The ones that chose to spend that Saturday practicing software design with other developers, work in different programming languages, share their knowledge and improve their craft together. Their passion, their positive energy and their enthusiasm. It's great to see how inspirational the event can be for them and what they are going to change on their daily jobs starting Monday.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src="/images/2016-10-27-global-day-of-coderetreat-2016-haselt-macedonia/5.png" class="img-fluid" alt="Global Day of Coderetreat 2016 in Skopje, Macedonia" /&gt;&lt;/p&gt;
+&lt;h2 id="whats-next"&gt;What's next?&lt;/h2&gt;
+&lt;p&gt;Next, after being part of this very inspirational event, we are encouraged to contribute even more to the local software development community. So, we put ourselves a goal to organize many similar tech events, workshops and regular meet-ups in order to bring the local community even closer, by encouraging discussions, empowering people, sharing experiences and ideas. Stay tuned for more info which is coming, very soon!&lt;/p&gt;
+&lt;h2 id="additional-reading"&gt;Additional Reading&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://dalibornasevic.com/posts/74-notes-from-global-day-of-coderetreat-2016-in-skopje"&gt;Dalibor's notes of Global Day of Coderetreat in Skopje&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://leanpub.com/4rulesofsimpledesign/c/gdcr"&gt;Book: Understanding the Four Rules of Simple Design by Corey Haines&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://coderetreat.org/"&gt;http://coderetreat.org/ &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://globalday.coderetreat.org/"&gt;http://globalday.coderetreat.org/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"&gt;Conway's Game of Life&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Dear reader, thanks for investing your time in reading our collective story, and I hope you'll be inspired enough to join us in the next events, which are coming soon. Oh, and don't forget: always be learning, always be coding.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href="https://www.facebook.com/HASELTofficial/photos/?tab=album&amp;amp;album_id=666003166900108"&gt;See more pictures here&lt;/a&gt;.&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote class="blockquote"&gt;
+&lt;p&gt;This post was originally posted on &lt;a href="http://haselt.com/global-day-of-coderetreat-2016-haselt/"&gt;http://haselt.com&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;A special thanks to my colleague &lt;a href="https://www.linkedin.com/in/viktorijanikolovska"&gt;Viktorija Nikolovska&lt;/a&gt; for her help with this article.&lt;/p&gt;
+&lt;/blockquote&gt;
+</content:encoded>
+		</item>
+		<item>
+			<title>Feature by Folder Structure in ASP.NET MVC5</title>
+			<link>http://bojanv91.github.io/posts/2016/05/feature-folders-structure-in-asp-net</link>
+			<description>&lt;p&gt;Structuring your files around &lt;strong&gt;business concerns&lt;/strong&gt; is more natural way of handling projects than structuring them around &lt;strong&gt;technical concerns&lt;/strong&gt;. The &lt;a href="https://en.wikipedia.org/wiki/Separation_of_concerns"&gt;Separation of Concerns&lt;/a&gt; is applied in both approaches, but not both of them give the same desired clarity and ease for developers. This blogpost focuses on organizing MVC projects around &lt;strong&gt;feature folders&lt;/strong&gt;, which represent the business concerns.&lt;/p&gt;</description>
+			<guid>http://bojanv91.github.io/posts/2016/05/feature-folders-structure-in-asp-net</guid>
+			<pubDate>Fri, 27 May 2016 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;Structuring your files around &lt;strong&gt;business concerns&lt;/strong&gt; is more natural way of handling projects than structuring them around &lt;strong&gt;technical concerns&lt;/strong&gt;. The &lt;a href="https://en.wikipedia.org/wiki/Separation_of_concerns"&gt;Separation of Concerns&lt;/a&gt; is applied in both approaches, but not both of them give the same desired clarity and ease for developers. This blogpost focuses on organizing MVC projects around &lt;strong&gt;feature folders&lt;/strong&gt;, which represent the business concerns.&lt;!--excerpt--&gt;&lt;/p&gt;
+&lt;p&gt;Most of the time developers make modifications related to a single feature (e.g. adding new fields, changing business rules, adding validation...). Structuring folders around interrelated files can make modification process simpler. The common MVC folder structure violates the rule of &lt;em&gt;&amp;quot;Files that change together should be structured together&amp;quot;&lt;/em&gt;. Structuring by business concerns embraces this very important rule.&lt;/p&gt;
+&lt;blockquote class="blockquote"&gt;
+&lt;p&gt;Files that change together should be structured together.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="horizontal-technical-vs.vertical-business-folder-structure"&gt;Horizontal (Technical) vs. Vertical (Business) Folder Structure&lt;/h2&gt;
+&lt;p&gt;On the left side you can see the common MVC structure. On the right side you can see the feature folders structure of the very same project.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Styles
+    Shared.css
+    Login.css
+Scripts
+    Login.js
+Controllers
+    CoursesController.cs
+    DepartmentsController.cs
+    EnrollmentsController.cs
+    InstructorsController.cs
+    StudentsController.cs
+    UsersController.cs
+Models  
+    CourseEditModel.cs
+    CourseIndexModel.cs
+    DepartmentEditModel.cs
+    DepartmentIndexModel.cs
+    EnrollmentEditModel.cs
+    EnrollmentIndexModel.cs
+    InstructorEditModel.cs
+    InstructorIndexModel.cs
+    StudentEditModel.cs
+    StudentIndexModel.cs
+    UserLoginModel.cs
+    UserRegisterModel.cs
+    UserForgotPasswordModel.cs
+Views
+    Courses
+        Edit.cshtml
+        Index.cshtml
+    Departments
+        Edit.cshtml
+        Index.cshtml
+    Enrollments
+        Edit.cshtml
+        Index.cshtml
+    Instructors
+        Edit.cshtml
+        Index.cshtml
+    Shared
+        _Layout.cshtml
+    Students
+        Edit.cshtml
+        Index.cshtml
+    Users
+        ForgotPassword.cshtml
+        Login.cshtml
+        Register.cshtml
+_ViewStart.cshtml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div style=""&gt;&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;Features
+    Courses
+        CoursesController.cs
+        Edit.cs
+        Edit.cshtml
+        Index.cs
+        Index.cshtml
+    Departments
+        DepartmentsController.cs
+        Edit.cs
+        Edit.cshtml
+        Index.cs
+        Index.cshtml
+    Enrollments
+        EnrollmentsController.cs
+        Edit.cs
+        Edit.cshtml
+        Index.cs
+        Index.cshtml
+    Instructors
+        InstructorsController.cs
+        Edit.cs
+        Edit.cshtml
+        Index.cs
+        Index.cshtml
+    Shared
+        _Layout.cshtml
+        Shared.css
+    Students
+        StudentsController.cs
+        Edit.cs
+        Edit.cshtml
+        Index.cs
+        Index.cshtml
+    Users
+        UsersController.cs
+        ForgotPassword.cs
+        ForgotPassword.cshtml
+        Login.cs
+        Login.cshtml
+        Login.css
+        Login.js
+        Register.cs
+        Register.cshtml
+_ViewStart.cshtml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When you see this in your IDE (e.g. in Visual Studio), the distinction between the files is even greater, given that there is accompanied file type icon shown besides the filename.&lt;/p&gt;
+&lt;p&gt;Now, imagine you scale in amount of features, in addition to the standard N-Layer stuff like repositories, services, handlers, DTOs, etc... You will soon notice that things are starting to get messy in the technical folders organization. In the feature folders organization, each feature can scale on it's own, thus much easier to manage.&lt;/p&gt;
+&lt;p&gt;Food for thought:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What if we put our CSS and JavaScript files also in these feature folders?&lt;/li&gt;
+&lt;li&gt;What if one feature folder becomes so demanding on the UI that needs to be a full SPA view/module - can we structure it to use Angular?&lt;/li&gt;
+&lt;li&gt;Can we develop one feature UI in Angular, another one in React, all other in classic server-side MVC, and stay sane with our overall project structure?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Example of single feature evolved as Angular application/module:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Features
+    ...
+    ShoppingCart
+        Components
+            CartComponent.js
+            CartComponent.css
+            PaymentComponent.js
+            PaymentComponent.css
+            CartContainer.js
+        App.js
+        App.css
+        Index.cshtml
+        ShoppingCartController.cs
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="benefits-of-using-feature-folders-over-technical-folder-structure"&gt;Benefits of using Feature Folders (over technical folder structure)&lt;/h2&gt;
+&lt;p&gt;Structuring your files by features (business concerns) makes things easier to find and manage.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Time spent on navigation through Solution Explorer to locate interdependent files is drastically reduced since they are all in a single folder.&lt;/li&gt;
+&lt;li&gt;You don't step over each other toes with your peers, thus, avoid spending time on fixing merge conflicts.&lt;/li&gt;
+&lt;li&gt;You can scale and modify each feature on its own, independently from other features and even use different UI technology.&lt;/li&gt;
+&lt;li&gt;You immediately understand what an application does and where to find necessary files for your given requirement.&lt;/li&gt;
+&lt;li&gt;You can easily reuse similar features across projects by simply copying just a single folder.&lt;/li&gt;
+&lt;li&gt;You can reason much easier about each feature just by looking in a single (feature) folder.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="implementing-feature-folders-in-asp.net-mvc-5"&gt;Implementing Feature Folders in ASP.NET MVC 5&lt;/h2&gt;
+&lt;p&gt;To make this work in ASP.NET MVC 5, we should inherit the &lt;code&gt;RazorViewEngine&lt;/code&gt; and change the view location parts to ones that fit our new structure.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class FeatureFoldersRazorViewEngine : RazorViewEngine
+{
+    public FeatureFoldersRazorViewEngine()
+    {
+        var featureFolderViewLocationFormats = new[]
+        {
+            &amp;quot;~/Features/{1}/{0}.cshtml&amp;quot;,
+            &amp;quot;~/Features/{1}/{0}.vbhtml&amp;quot;,
+            &amp;quot;~/Features/Shared/{0}.cshtml&amp;quot;,
+            &amp;quot;~/Features/Shared/{0}.vbhtml&amp;quot;,
+        };
+
+        ViewLocationFormats = featureFolderViewLocationFormats;
+        MasterLocationFormats = featureFolderViewLocationFormats;
+        PartialViewLocationFormats = featureFolderViewLocationFormats;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Next, we have to add our newly created &lt;code&gt;FeatureFoldersRazorViewEngine&lt;/code&gt; in our application.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class Global : HttpApplication
+{
+    void Application_Start(object sender, EventArgs e)
+    {
+        // ...
+        ViewEngines.Engines.Clear();
+        ViewEngines.Engines.Add(new FeatureFoldersRazorViewEngine());
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="summary"&gt;Summary&lt;/h2&gt;
+&lt;p&gt;Structuring our MVC projects following feature folders approach increases the productivity of our dev teams.&lt;/p&gt;
+&lt;p&gt;At our company, we have been using feature folders project structure on over dozens projects for over a year, and due to the high success and productivity boost, it became our default project structure on the presentation layer.&lt;/p&gt;
+</content:encoded>
+		</item>
+		<item>
+			<title>Refactoring business rules with the Specification Pattern</title>
+			<link>http://bojanv91.github.io/posts/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern</link>
+			<description>&lt;p&gt;The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the &lt;code&gt;Specification Pattern&lt;/code&gt; &lt;/p&gt;</description>
+			<guid>http://bojanv91.github.io/posts/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern</guid>
+			<pubDate>Tue, 29 Sep 2015 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the &lt;code&gt;Specification Pattern&lt;/code&gt; &lt;!--excerpt--&gt;. Have in mind that, I choose a very basic example in order to keep things simple and avoid confusion that can be arouse from domain complexity.&lt;/p&gt;
+&lt;p&gt;Here is the original code:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;//..
+
+var newCompany = new Company(message.Name, message.CountryId);
+
+// Query all companies from database 
+var companies = _companyRepository.Query().ToList();
+// Check if the newly created company is unique
+if (companies.Any(x =&amp;gt; x.Name == newCompany.Name &amp;amp;&amp;amp; x.CountryId == newCompany.CountryId))
+	throw new Exception(&amp;quot;A company with the same name and country already exists&amp;quot;);
+
+session.Save(newCompany);
+//..
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Here, we can see a few problems. First, all companies are queried from the database, and that can create performance issues. Another problem is too much operations happening in the &lt;code&gt;If&lt;/code&gt; check line; thus, the lengthy line is making the code harder to read. And, the final problem is very plain practice of &lt;code&gt;Exception&lt;/code&gt; throwing. Although, I like expressing explicit guard checks, that code can be better. Let's tackle these problems, one by one, in a few steps along this article and provide some improvement suggestions.&lt;/p&gt;
+&lt;p&gt;Also, I provide here the &lt;code&gt;tl;dr;&lt;/code&gt; version of the code:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;//..
+
+var newCompany = new Company(message.Name, message.CountryId);
+
+var spec = new UniqueCompanySpecification(_companyRepository);
+if (spec.IsSatisfiedBy(newCompany) == false)
+	throw new CompanyAlreadyExistsException();
+
+session.Save(newCompany);
+//..
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id="how-we-get-there"&gt;How we get there?&lt;/h1&gt;
+&lt;h2 id="step-1-solve-the-query-performance-issues"&gt;Step 1 - Solve The Query Performance Issues&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;var numberOfSameCompanies = _companyRepository.Query()
+	.Where(x =&amp;gt; x.Name == newCompany.Name &amp;amp;&amp;amp; x.CountryId == newCompany.CountryId)
+	.Count();
+if (numberOfSameCompanies &amp;gt; 0)
+	throw new Exception(&amp;quot;A company with the same name and country already exists&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The query above retrieves the number of companies satisfying the given &lt;code&gt;where&lt;/code&gt; condition. Performance issues have been solved.&lt;/p&gt;
+&lt;h2 id="step-2-make-the-if-condition-check-explicit"&gt;Step 2 - Make The &lt;code&gt;if&lt;/code&gt; Condition Check Explicit&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;var numberOfSameCompanies = _companyRepository.Query()
+	.Where(x =&amp;gt; x.Name == newCompany.Name &amp;amp;&amp;amp; x.CountryId == newCompany.CountryId)
+	.Count();
+var doesCompanyAlreadyExists = numberOfSameCompanies &amp;gt; 0;
+if (doesCompanyAlreadyExists)
+	throw new Exception(&amp;quot;A company with the same name and country already exists&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;By setting some explicit conditions, we gain clear understanding of what the code does.&lt;/p&gt;
+&lt;h2 id="step-3-make-the-business-rule-violation-explicit"&gt;Step 3 - Make The Business Rule Violation Explicit&lt;/h2&gt;
+&lt;p&gt;Original:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;throw new Exception(&amp;quot;A company with the same name and country already exists&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Re-factored to:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;throw new CompanyAlreadyExistsException();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And the implementation of the exception:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class CompanyAlreadyExistsException : Exception
+{
+    CompanyAlreadyExistsException () 
+      :base(&amp;quot;A company with the same name and country already exists&amp;quot;)
+    { 
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now, it looks better. Anyway, we have still room for improvements.&lt;/p&gt;
+&lt;h2 id="step-4-encapsulate-the-business-rule-check-by-employing-the-specification-pattern"&gt;Step 4 - Encapsulate The Business Rule Check By Employing 'The Specification Pattern'&lt;/h2&gt;
+&lt;p&gt;The 'Specification Pattern' is a tactical design pattern presented in Eric Evans’ book Domain Driven Design. The &lt;code&gt;Specification Pattern&lt;/code&gt; is a way of encapsulating business rule(s) and testing it against a candidate object to see if that object satisfies all requirements expressed in a specification. This pattern fits very good with the Single-Responsibility-Principle (SRP), which states that one class should have only one reason to change. Furthermore, this specification object can be easily unit tested and reused.&lt;/p&gt;
+&lt;p&gt;Here, you can see how it is used:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;var spec = new UniqueCompanySpecification(_companyRepository);
+if (spec.IsSatisfiedBy(newCompany) == false)
+	throw new CompanyAlreadyExistsException();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And the implementation details:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class UniqueCompanySpecification : ISpecification&amp;lt;Company&amp;gt;
+{
+	readonly ICompanyRepository _companyRepository;
+
+	public UniqueCompanySpecification(ICompanyRepository companyRepository)
+	{
+		_companyRepository = companyRepository;
+	}
+
+	public bool IsSatisfiedBy(Company candidate)
+	{
+		var numberOfSameCompanies = _companyRepository.Query()
+			.Where(x =&amp;gt; x.Name == newCompany.Name &amp;amp;&amp;amp; x.CountryId == newCompany.CountryId)
+			.Count();
+		bool isUnique = numberOfSameCompanies == 0;
+		return isUnique;
+	}
+}
+
+public interface ISpecification&amp;lt;T&amp;gt;
+{
+	bool IsSatisfiedBy(T candidate);
+} 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After all re-factoring steps, the final code is as following:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;//..
+
+var newCompany = new Company(message.Name, message.CountryId);
+
+var spec = new UniqueCompanySpecification(_companyRepository);
+if (spec.IsSatisfiedBy(newCompany) == false)
+	throw new CompanyAlreadyExistsException();
+
+session.Save(newCompany);
+//..
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id="summary"&gt;Summary&lt;/h1&gt;
+&lt;p&gt;In this article, I've shown a re-factoring process and usage of the Specification Pattern in order to satisfy an explicit business rule.&lt;br /&gt;
+The re-factoring steps we took:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Solve the query performance issues&lt;/li&gt;
+&lt;li&gt;Make the &lt;code&gt;if&lt;/code&gt; condition check explicit&lt;/li&gt;
+&lt;li&gt;Make the business rule violation explicit&lt;/li&gt;
+&lt;li&gt;Encapsulate the business rule check by employing the Specification Pattern&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The Specification Pattern lets you decouple the design of requirements, fulfillment, and validation. It also allows you to make your system definitions more clear and declarative, but be careful not to fall into temptation to over-use it.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;References:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://martinfowler.com/apsupp/spec.pdf"&gt;Specification Pattern by Eric Evans and Martin Fowler&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://en.wikipedia.org/wiki/Specification_pattern"&gt;https://en.wikipedia.org/wiki/Specification_pattern&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215"&gt;Book: Domain Driven Design, Tackling Complexity In The Hearth of Software - by Eric Evans&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content:encoded>
+		</item>
+		<item>
+			<title>Getting Started with Rhino Security and Structure Map</title>
+			<link>http://bojanv91.github.io/posts/2015/01/getting-started-with-rhino-security-structuremap</link>
+			<description>&lt;p&gt;In this posting I will show you how to configure Rhino Security infrastructure to work with StructureMap IoC container and provide to you database schema (for MSSQL and &lt;a href="http://bojanv91.github.io/2014/12/database-development-guidance/"&gt;FluentMigrator&lt;/a&gt;) that you will need in order Rhino Security to get working. I've struggled some time before I got everything working, so here are my results. :) &lt;/p&gt;</description>
+			<guid>http://bojanv91.github.io/posts/2015/01/getting-started-with-rhino-security-structuremap</guid>
+			<pubDate>Sun, 11 Jan 2015 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;In this posting I will show you how to configure Rhino Security infrastructure to work with StructureMap IoC container and provide to you database schema (for MSSQL and &lt;a href="http://bojanv91.github.io/2014/12/database-development-guidance/"&gt;FluentMigrator&lt;/a&gt;) that you will need in order Rhino Security to get working. I've struggled some time before I got everything working, so here are my results. :) &lt;!--excerpt--&gt;&lt;/p&gt;
+&lt;blockquote class="blockquote"&gt;
+&lt;p&gt;&lt;a href="https://github.com/ayende/rhino-security"&gt;Rhino Security&lt;/a&gt; is a security framework to provide row level security for NHibernate. Rhino Security is perfect for people who want to set up user and group security in their NHibernate domain models.&lt;/p&gt;
+&lt;blockquote class="blockquote"&gt;
+&lt;p&gt;&lt;a href="https://github.com/ayende/rhino-security"&gt;Rhino Security GitHub repository&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;More details about the architecture and how Rhino Security works behind the scenes can be found &lt;a href="http://ayende.com/blog/2958/a-vision-of-enterprise-platform-security-infrastructure"&gt;here&lt;/a&gt;, &lt;a href="http://ayende.com/blog/3109/rhino-security-overview-part-i"&gt;here&lt;/a&gt; and &lt;a href="http://ayende.com/blog/3113/rhino-security-part-ii-discussing-the-implementation"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;h1 id="action-plan"&gt;Action Plan&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Installing NuGet packages&lt;/li&gt;
+&lt;li&gt;Configuring StructureMap container and registering Rhino.Security into NHibernate&lt;/li&gt;
+&lt;li&gt;Implementing CommonServiceLocator provider for StructureMap&lt;/li&gt;
+&lt;li&gt;User entity that implements Rhino.Security.IUser interface&lt;/li&gt;
+&lt;li&gt;Preparing the database schema&lt;/li&gt;
+&lt;li&gt;Usage DEMO (code samples &lt;a href="https://github.com/bojanv91/RhinoSecurityWithStructureMap"&gt;https://github.com/bojanv91/RhinoSecurityWithStructureMap&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="/images/2015-01-11-getting-started-with-rhino-security-structuremap/rhino-01.png" class="img-fluid" alt="Getting started with Rhino Security and StructureMap" /&gt;&lt;/p&gt;
+&lt;h2 id="installing-nuget-packages"&gt;Installing NuGet packages&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;Install-Package Rhino.Security			
+Install-Package NHibernate
+Install-Package FluentNHibernate
+Install-Package StructureMap
+Install-Package CommonServiceLocator
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;FluentNHibernate provides fluent mapping interface for mapping our domain model entities to table structures via NHibernate.&lt;br /&gt;
+CommonServiceLocator provides abstraction over IoC containers and service locators and contains a shared interface for service location. Rhino Security makes use of it, that is why can be used with any IoC container.&lt;/p&gt;
+&lt;h2 id="configuring-structuremap-container-and-registering-rhino.security-into-nhibernate"&gt;Configuring StructureMap container and registering Rhino.Security into NHibernate&lt;/h2&gt;
+&lt;p&gt;In the following code snippet I have all configuration stuff in one class, called the Bootstrapper. It's purpose is to provide functionality for booting up our application, the starting point. Explanations about what does what are put in comments. If something is still unclear do write me a comment, I'll happily update that part.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate;
+using NHibernate.Cfg;
+using NHibernate.Context;
+using Rhino.Security.Interfaces;
+using Rhino.Security.Services;
+
+namespace RhinoSecurityWithStructureMap
+{
+    public class Bootstrapper
+    {
+        public static void Bootstrap(string connectionString)
+        {
+            var container = new StructureMap.Container();
+            container.Configure(cfg =&amp;gt;
+                {
+                    //NHibernate configurations 
+                    cfg.For&amp;lt;ISessionFactory&amp;gt;().Singleton().Use(() =&amp;gt; CreateSessionFactory(connectionString));
+                    cfg.For&amp;lt;ISession&amp;gt;().Use(context =&amp;gt; GetSession(context));
+
+                    //Rhino Security configurations 
+                    cfg.For&amp;lt;IAuthorizationService&amp;gt;().Use&amp;lt;AuthorizationService&amp;gt;();
+                    cfg.For&amp;lt;IAuthorizationRepository&amp;gt;().Use&amp;lt;AuthorizationRepository&amp;gt;();
+                    cfg.For&amp;lt;IPermissionsBuilderService&amp;gt;().Use&amp;lt;PermissionsBuilderService&amp;gt;();
+                    cfg.For&amp;lt;IPermissionsService&amp;gt;().Use&amp;lt;PermissionsService&amp;gt;();
+                });
+
+            //Setting up StuctureMapServiceLocator as a CommonServiceLocator that Rhino.Security will use for DI
+            Microsoft.Practices.ServiceLocation.ServiceLocator
+                .SetLocatorProvider(() =&amp;gt; new StructureMapServiceLocator(container));
+        }
+
+        private static ISessionFactory CreateSessionFactory(string connectionString)
+        {
+            FluentConfiguration fluentConfig = Fluently.Configure()
+                .Database(MsSqlConfiguration.MsSql2012.ConnectionString(connectionString))          //specifying connection string for Microsoft SQL Server 2012 
+                .Mappings(m =&amp;gt; m.FluentMappings.AddFromAssemblyOf&amp;lt;Bootstrapper&amp;gt;())                  //specifying in which assembly NHibernate should look for entity mappings
+                .CurrentSessionContext(typeof(ThreadStaticSessionContext).AssemblyQualifiedName)    //specifying the session context lifecycle to be initialized per thread
+                .ExposeConfiguration(cfg =&amp;gt;
+                {
+                    Rhino.Security.Security.Configure&amp;lt;User&amp;gt;(cfg, Rhino.Security.SecurityTableStructure.Prefix);
+                });
+
+            return fluentConfig.BuildSessionFactory();
+        }
+
+        private static ISession GetSession(StructureMap.IContext context)
+        {
+            var sessionFactory = context.GetInstance&amp;lt;ISessionFactory&amp;gt;();
+            return sessionFactory.GetCurrentSession();
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="implementing-commonservicelocator-provider-for-structuremap"&gt;Implementing CommonServiceLocator provider for StructureMap&lt;/h2&gt;
+&lt;p&gt;The code is pretty much straightforward. We just implement Microsoft.Practices.ServiceLocation.IServiceLocator interface with the common code that is provided to us by StructureMap IContainer interface, basically this class acts as a wrapper.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class StructureMapServiceLocator : Microsoft.Practices.ServiceLocation.IServiceLocator
+{
+    private readonly IContainer _container;
+
+    public StructureMapServiceLocator(IContainer container)
+    {
+        _container = container;
+    }
+
+    public IEnumerable&amp;lt;TService&amp;gt; GetAllInstances&amp;lt;TService&amp;gt;()
+    {
+        return _container.GetAllInstances&amp;lt;TService&amp;gt;();
+    }
+
+    public IEnumerable&amp;lt;object&amp;gt; GetAllInstances(Type serviceType)
+    {
+        return (IEnumerable&amp;lt;object&amp;gt;)_container.GetAllInstances(serviceType);
+    }
+
+    public TService GetInstance&amp;lt;TService&amp;gt;(string key)
+    {
+        return _container.GetInstance&amp;lt;TService&amp;gt;(key);
+    }
+
+    public TService GetInstance&amp;lt;TService&amp;gt;()
+    {
+        return _container.GetInstance&amp;lt;TService&amp;gt;();
+    }
+
+    public object GetInstance(Type serviceType, string key)
+    {
+        return _container.GetInstance(serviceType, key);
+    }
+
+    public object GetInstance(Type serviceType)
+    {
+        return _container.GetInstance(serviceType);
+    }
+
+    public object GetService(Type serviceType)
+    {
+        return _container.GetInstance(serviceType);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="user-entity-implements-rhino.security.iuser-interface"&gt;User entity implements Rhino.Security.IUser interface&lt;/h2&gt;
+&lt;p&gt;In our domain model we commonly have entity which represents the actual user. Rhino.Security must know which entity is the user entity in order to work. So our User entity must implement Rhino.Security.IUser interface, more precisely only SecurityInfo property from the interface must be implemented.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class User : Rhino.Security.IUser
+{
+	public virtual int Id { get; protected set; }	    
+	public virtual string Username { get; set; }
+    public virtual string PasswordHashed { get; set; }
+
+    public Rhino.Security.SecurityInfo SecurityInfo
+    {
+        get
+        {
+            return new Rhino.Security.SecurityInfo(Username, Id);
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="preparing-the-database-schema"&gt;Preparing the database schema&lt;/h2&gt;
+&lt;p&gt;Schema files can be found in the following links:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/bojanv91/RhinoSecurityWithStructureMap/blob/master/RhinoSecurityWithStructureMap/DatabaseScripts/rhino_security_and_basic_user.sql.sql"&gt;SQL dump&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/bojanv91/RhinoSecurityWithStructureMap/blob/master/RhinoSecurityWithStructureMap/DatabaseScripts/rhino_security_and_basic_user.cs"&gt;Fluent Migrator schema&lt;/a&gt; (&lt;a href="http://bojanv91.github.io/2014/12/database-development-guidance/"&gt;blogpost about how to use Fluent Migrator&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="/images/2015-01-11-getting-started-with-rhino-security-structuremap/rhino-02.png" class="img-fluid" alt="Rhino database schema" /&gt;&lt;/p&gt;
+&lt;h2 id="usage-demo"&gt;Usage DEMO&lt;/h2&gt;
+&lt;p&gt;The full code sample can be found in following github repository: &lt;a href="https://github.com/bojanv91/RhinoSecurityWithStructureMap"&gt;https://github.com/bojanv91/RhinoSecurityWithStructureMap&lt;/a&gt;. Here I provide excerpt code snippets from the actual test code.&lt;/p&gt;
+&lt;p&gt;Setting up user groups, operations and permissions:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;var _authorizationRepository = ServiceLocator.Current.GetInstance&amp;lt;IAuthorizationRepository&amp;gt;();
+var _authorizationService = ServiceLocator.Current.GetInstance&amp;lt;IAuthorizationService&amp;gt;();
+var _permissionsBuilderService = ServiceLocator.Current.GetInstance&amp;lt;IPermissionsBuilderService&amp;gt;();
+var _permissionService = ServiceLocator.Current.GetInstance&amp;lt;IPermissionsService&amp;gt;();
+
+using (var transaction = _session.BeginTransaction())
+{
+    //creating user group 'Admin'
+    _authorizationRepository.CreateUsersGroup(&amp;quot;Admin&amp;quot;);
+
+    //creating operations
+    _authorizationRepository.CreateOperation(&amp;quot;/Content&amp;quot;);
+    _authorizationRepository.CreateOperation(&amp;quot;/Content/Create&amp;quot;);
+    _authorizationRepository.CreateOperation(&amp;quot;/Content/View&amp;quot;);
+    _authorizationRepository.CreateOperation(&amp;quot;/Content/Delete&amp;quot;);
+
+    transaction.Commit();
+}
+
+using (var transaction = _session.BeginTransaction())
+{
+    //adding the LoggedInUser to the 'Admin' users group
+    _authorizationRepository.AssociateUserWith(_loggedInUser, &amp;quot;Admin&amp;quot;);
+
+    //Building 'Allow' permissions for the LoggedInUser, 
+    //by default if not defined as allowed, the operation is denied
+    //For the sake of this example, we say the the users that are in 'Admin' users group can
+    //create and view content, but cannot delete content. 
+    _permissionsBuilderService.Allow(&amp;quot;/Content/Create&amp;quot;).For(&amp;quot;Admin&amp;quot;).OnEverything().DefaultLevel().Save();
+    _permissionsBuilderService.Allow(&amp;quot;/Content/View&amp;quot;).For(&amp;quot;Admin&amp;quot;).OnEverything().DefaultLevel().Save();
+
+    //We can explicitly define 'Deny' permission, but as the default behaviour denies everything 
+    //that is not defined as 'Allow', I am not going to define it. You don't trust me? 
+    //That's why we have tests ;) 
+    //_permissionsBuilderService.Deny(&amp;quot;/Content/Delete&amp;quot;).For(&amp;quot;Admin&amp;quot;).OnEverything().DefaultLevel().Save();
+
+    transaction.Commit();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Test code demonstrating the usage:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public class RhinoTests : IUseFixture&amp;lt;TestFixture&amp;gt;
+{
+    private readonly IAuthorizationService _authorizationService;
+    private readonly User _loggedInUser;
+
+    public RhinoTests() 
+    {
+        _authorizationService = ServiceLocator.Current.GetInstance&amp;lt;IAuthorizationService&amp;gt;();
+        _loggedInUser = TestFixture._loggedInUser;
+    }
+
+    [Fact]
+    public void it_should_allow_content_creation()
+    {
+        bool result = _authorizationService.IsAllowed(_loggedInUser, &amp;quot;/Content/Create&amp;quot;);
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void it_should_allow_content_viewing()
+    {
+        bool result = _authorizationService.IsAllowed(_loggedInUser, &amp;quot;/Content/View&amp;quot;);
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void it_should_deny_content_deletition()
+    {
+        bool result = _authorizationService.IsAllowed(_loggedInUser, &amp;quot;/Content/Delete&amp;quot;);
+        Assert.False(result);
+    }
+
+    public void SetFixture(TestFixture data) { }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;p&gt;Happy coding folks! Having questions or concerns? Shoot me a tweet -&amp;gt; &amp;#64;bojanv91&lt;/p&gt;
+</content:encoded>
+		</item>
+		<item>
+			<title>Database Development Guide for .NET teams with FluentMigrator</title>
+			<link>http://bojanv91.github.io/posts/2014/12/database-development-guidance</link>
+			<description>&lt;p&gt;I have been thinking a lot lately about how properly and simply to implement database versioning strategy. These years I've experienced working with different types of database setup and furthermore researched and analyzed some more approaches and tools regarding this topic. In this posting I write about my findings and why I like Fluent Migrator as a help tool in order to get the job done. But first, let's talk about the &lt;em&gt;goals&lt;/em&gt; we try to achieve. &lt;/p&gt;</description>
+			<guid>http://bojanv91.github.io/posts/2014/12/database-development-guidance</guid>
+			<pubDate>Fri, 12 Dec 2014 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;I have been thinking a lot lately about how properly and simply to implement database versioning strategy. These years I've experienced working with different types of database setup and furthermore researched and analyzed some more approaches and tools regarding this topic. In this posting I write about my findings and why I like Fluent Migrator as a help tool in order to get the job done. But first, let's talk about the &lt;em&gt;goals&lt;/em&gt; we try to achieve. &lt;!--excerpt--&gt;&lt;/p&gt;
+&lt;h1 id="goals"&gt;Goals&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Auditing schema changes&lt;/li&gt;
+&lt;li&gt;Auditing test data changes&lt;/li&gt;
+&lt;li&gt;Keeping schema and test data integrity across machines&lt;/li&gt;
+&lt;li&gt;Versioning via source version control systems&lt;/li&gt;
+&lt;li&gt;DB-provider agnostic migration (MSSQL, PostgreSql, MySql, Oracle)&lt;/li&gt;
+&lt;li&gt;Simple and automated migration strategy (local and in production)&lt;/li&gt;
+&lt;li&gt;New developers on project should not sweat while making the database work on their machines, neither the CI server&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Links to &lt;a href="https://github.com/schambers/fluentmigrator/wiki"&gt;Fluent Migrator&lt;/a&gt; and &lt;a href="https://github.com/bojanv91/DatabaseMigrationsExample"&gt;this guide's project&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In the end - all you just need to do is run MSBuildMigrator.Migrate.bat file and watch your database being deployed, upgraded, downgraded...it will figure out ;) .&lt;/p&gt;
+&lt;h1 id="step-by-step-guide"&gt;Step by step guide&lt;/h1&gt;
+&lt;h2 id="open-visual-studio-and-create-new-class-library-project"&gt;1. Open Visual Studio and create New Class Library Project&lt;/h2&gt;
+&lt;p&gt;&lt;img src="/images/2014-12-12-database-development-guidance/img01.png" class="img-fluid" alt="Open Visual Studio and create New Class Library Project" /&gt;&lt;/p&gt;
+&lt;h2 id="install-package-fluentmigrator"&gt;2. Install-Package FluentMigrator&lt;/h2&gt;
+&lt;p&gt;&lt;img src="/images/2014-12-12-database-development-guidance/img02.png" class="img-fluid" alt="Install-Package FluentMigrator" /&gt;&lt;/p&gt;
+&lt;h2 id="create-new-folder-migrations-to-project-here-we-are-going-to-store-migration-files"&gt;3. Create new folder &amp;quot;Migrations&amp;quot; to project - here we are going to store migration files&lt;/h2&gt;
+&lt;p&gt;&lt;img src="/images/2014-12-12-database-development-guidance/img03.png" class="img-fluid" alt="Create new folder &amp;quot;Migrations&amp;quot; to project - here we are going to store migration files" /&gt;&lt;/p&gt;
+&lt;h2 id="now-lets-create-database-tables-with-migration-files"&gt;4. Now, let's create database tables with migration files&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;[FluentMigrator.Migration(0)]
+public class Baseline : FluentMigrator.Migration
+{
+    public override void Up()
+    {
+        Create.Table(&amp;quot;Category&amp;quot;)
+            .WithColumn(&amp;quot;Id&amp;quot;).AsGuid().NotNullable().PrimaryKey()
+            .WithColumn(&amp;quot;Name&amp;quot;).AsString(255);
+
+        Create.Table(&amp;quot;Product&amp;quot;)
+            .WithColumn(&amp;quot;Id&amp;quot;).AsGuid().NotNullable().PrimaryKey()
+            .WithColumn(&amp;quot;CategoryId&amp;quot;).AsGuid().ForeignKey(&amp;quot;Category&amp;quot;, &amp;quot;Id&amp;quot;)
+            .WithColumn(&amp;quot;Name&amp;quot;).AsString(255)
+            .WithColumn(&amp;quot;Price&amp;quot;).AsDecimal();
+    }
+
+    public override void Down()
+    {
+        Delete.Table(&amp;quot;Product&amp;quot;);
+        Delete.Table(&amp;quot;Category&amp;quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That is all what is needed. In essence a migration is a class which drives from &lt;strong&gt;Migration abstract class&lt;/strong&gt;  and implements &lt;strong&gt;'Up'&lt;/strong&gt; and &lt;strong&gt;'Down'&lt;/strong&gt; methods. Additionally you will also need to define &lt;strong&gt;Migration Attribute&lt;/strong&gt; with unique identifier in order the migration runner to know the order of migration files. I like it how FM API is designed, it really follows the SQL language and how I would write this script in plain SQL.
+Read further &lt;a href="https://github.com/schambers/fluentmigrator/wiki/Migration"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Just for providing more examples I have added one more migration file for adding one more column to Product table for storing image URL.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Migration(201411131100)]
+public class M201411131100_Product_added_column_for_storing_image_url : Migration
+{
+    public override void Up()
+    {
+        Alter.Table(&amp;quot;Product&amp;quot;)
+            .AddColumn(&amp;quot;ImageUrl&amp;quot;).AsString(255);
+    }
+
+    public override void Down()
+    {
+        Delete.Column(&amp;quot;ImageUrl&amp;quot;).FromTable(&amp;quot;Product&amp;quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now this is how everything looks in my solution.&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/2014-12-12-database-development-guidance/img04.png" class="img-fluid" alt="" /&gt;&lt;/p&gt;
+&lt;p&gt;Next, let's initialize the database with our script.&lt;/p&gt;
+&lt;h2 id="creating-migration-runner-msbuild-migrator.bat-and-connectionstrings.config"&gt;5. Creating Migration Runner (MSBuild), Migrator (.BAT) and ConnectionStrings (.CONFIG)&lt;/h2&gt;
+&lt;p&gt;&lt;img src="/images/2014-12-12-database-development-guidance/img05.png" class="img-fluid" alt="" /&gt;&lt;/p&gt;
+&lt;h3 id="msbuildmigrationrunner.proj"&gt;1. MSBuildMigrationRunner.proj&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;	&amp;lt;?xml version=&amp;quot;1.0&amp;quot;?&amp;gt;
+	&amp;lt;Project xmlns=&amp;quot;http://schemas.microsoft.com/developer/msbuild/2003&amp;quot; DefaultTargets=&amp;quot;Migrate&amp;quot;&amp;gt;
+		&amp;lt;PropertyGroup&amp;gt;
+			&amp;lt;DatabaseProvider&amp;gt;&amp;lt;/DatabaseProvider&amp;gt;
+			&amp;lt;ConnectionStringConfigPath&amp;gt;&amp;lt;/ConnectionStringConfigPath&amp;gt;
+			&amp;lt;ConnectionStringName&amp;gt;&amp;lt;/ConnectionStringName&amp;gt;
+			&amp;lt;DataMigrationProjectName&amp;gt;DatabaseMigrationsExample&amp;lt;/DataMigrationProjectName&amp;gt;
+			&amp;lt;DataMigrationProjectRootPath&amp;gt;$(MSBuildProjectDirectory)&amp;lt;/DataMigrationProjectRootPath&amp;gt;
+			&amp;lt;MigratorTasksDirectory&amp;gt;&amp;lt;/MigratorTasksDirectory&amp;gt;
+			
+			&amp;lt;DataMigrationProjectBuildDLL&amp;gt;$(DataMigrationProjectRootPath)\bin\Debug\$(DataMigrationProjectName).dll&amp;lt;/DataMigrationProjectBuildDLL&amp;gt;
+			&amp;lt;DataMigrationProjectCsproj&amp;gt;$(DataMigrationProjectRootPath)\$(DataMigrationProjectName).csproj&amp;lt;/DataMigrationProjectCsproj&amp;gt;
+		&amp;lt;/PropertyGroup&amp;gt;
+	
+		&amp;lt;UsingTask TaskName=&amp;quot;FluentMigrator.MSBuild.Migrate&amp;quot; AssemblyFile=&amp;quot;$(MigratorTasksDirectory)FluentMigrator.MSBuild.dll&amp;quot;/&amp;gt;
+		
+		&amp;lt;Target Name=&amp;quot;Build&amp;quot;&amp;gt;
+			&amp;lt;MSBuild Projects=&amp;quot;$(DataMigrationProjectCsproj)&amp;quot; Properties=&amp;quot;Configuration=Debug&amp;quot;/&amp;gt;
+		&amp;lt;/Target&amp;gt;
+		
+		&amp;lt;Target Name=&amp;quot;Migrate&amp;quot; DependsOnTargets=&amp;quot;Build&amp;quot;&amp;gt;
+			&amp;lt;Message Text=&amp;quot;Starting FluentMigrator Migration&amp;quot;/&amp;gt;
+			&amp;lt;Migrate Database=&amp;quot;$(DatabaseProvider)&amp;quot;
+					 Connection=&amp;quot;$(ConnectionStringName)&amp;quot;
+					 ConnectionStringConfigPath=&amp;quot;$(ConnectionStringConfigPath)&amp;quot;
+					 Target=&amp;quot;$(DataMigrationProjectBuildDLL)&amp;quot;
+					 Output=&amp;quot;True&amp;quot;
+					 Verbose=&amp;quot;True&amp;quot;&amp;gt;
+			&amp;lt;/Migrate&amp;gt;
+		&amp;lt;/Target&amp;gt;
+	
+		&amp;lt;Target Name=&amp;quot;MigratePreview&amp;quot; DependsOnTargets=&amp;quot;Build&amp;quot;&amp;gt;
+			&amp;lt;Message Text=&amp;quot;Previewing FluentMigrator Migration&amp;quot;/&amp;gt;
+			&amp;lt;Migrate Database=&amp;quot;$(DatabaseProvider)&amp;quot;
+					 Connection=&amp;quot;$(ConnectionStringName)&amp;quot;
+					 ConnectionStringConfigPath=&amp;quot;$(ConnectionStringConfigPath)&amp;quot;
+					 Target=&amp;quot;$(DataMigrationProjectBuildDLL)&amp;quot;
+					 Output=&amp;quot;True&amp;quot;
+					 Verbose=&amp;quot;True&amp;quot;
+					 PreviewOnly=&amp;quot;True&amp;quot;&amp;gt;
+			&amp;lt;/Migrate&amp;gt;
+		&amp;lt;/Target&amp;gt;
+	&amp;lt;/Project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="connectionstrings.config"&gt;2. ConnectionStrings.config&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;	&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot; ?&amp;gt;
+	&amp;lt;configuration&amp;gt;
+		&amp;lt;connectionStrings&amp;gt;
+			&amp;lt;clear /&amp;gt;
+			&amp;lt;add name=&amp;quot;Default&amp;quot; connectionString=&amp;quot;Server=###;User ID=###;Password=###;Database=###;&amp;quot;/&amp;gt;
+		&amp;lt;/connectionStrings&amp;gt;
+	&amp;lt;/configuration&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="msbuildmigrator.migrate.bat"&gt;3. MSBuildMigrator.Migrate.bat&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;	C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe MSBuildMigrationRunner.proj /t:Migrate /p:DatabaseProvider=SqlServer2012 /p:ConnectionStringConfigPath=ConnectionStrings.config /p:ConnectionStringName=Default /p:DataMigrationProjectName=DatabaseMigrationsExample /p:DataMigrationProjectRootPath=. /p:MigratorTasksDirectory=..\packages\FluentMigrator.1.3.1.0\tools\
+	pause
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;/t:Migrate - performs Migration&lt;/li&gt;
+&lt;li&gt;/t:MigratePreview - performs previewing of what would happen when migration is called&lt;/li&gt;
+&lt;li&gt;/p:DatabaseProvider=? - specify your database providers name (SqlServer2012, postgres, mysql, oracle, sqlite and other can be found in FluentMigrator documentation)&lt;/li&gt;
+&lt;li&gt;/p:ConnectionStringConfigPath=? - path to connection strings file&lt;/li&gt;
+&lt;li&gt;/p:ConnectionStringName=? - name of the connection string to use from the configuration file&lt;/li&gt;
+&lt;li&gt;/p:DataMigrationProjectName=? - Visual Studio project name where your migration files reside&lt;/li&gt;
+&lt;li&gt;/p:DataMigrationProjectRootPath=? - path to where your Visual Studio migration project resides&lt;/li&gt;
+&lt;li&gt;/p:MigratorTasksDirectory=? - path to FluentMigrator tools folder&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Viola, this is all you need to do. For your project you will need to put the connection string to your database and make changes where needed in the .BAT file, such as database provider and project name as an essential changes. Other config stuff should be pretty common, but if you have different structure than mine, you have full power and control with the flexibility provided here.&lt;/p&gt;
+&lt;h2 id="run-your-msbuildmigrator.migrate.bat-file"&gt;5. Run your MSBuildMigrator.Migrate.bat file&lt;/h2&gt;
+&lt;p&gt;&lt;img src="/images/2014-12-12-database-development-guidance/img06.png" class="img-fluid" alt="" /&gt;&lt;/p&gt;
+&lt;p&gt;Table VersionInfo is used for storing migration metadata.&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/2014-12-12-database-development-guidance/img07.png" class="img-fluid" alt="" /&gt;&lt;/p&gt;
+&lt;p&gt;All of our tables are created.&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/2014-12-12-database-development-guidance/img08.png" class="img-fluid" alt="" /&gt;&lt;/p&gt;
+&lt;p&gt;In VersionInfo table you can see the &amp;quot;commits&amp;quot;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/2014-12-12-database-development-guidance/img09.png" class="img-fluid" alt="" /&gt;&lt;/p&gt;
+&lt;h1 id="rules-of-thumb"&gt;Rules of Thumb&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;First migration is always called &amp;quot;BaseLine&amp;quot; with migration ID: 0. Everything starts from there.&lt;/li&gt;
+&lt;li&gt;Migration unique identification number is composed of current datetime when the migration is being created in format #yyyyMMddhhmm#&lt;br /&gt;
+(example: now is 2014-11-13 10:15, so migration ID would be 201411131015)&lt;/li&gt;
+&lt;li&gt;Migration filename should explain what is being changed - just like how you would write a commit message - in format 'M#yyyyMMddhhmm#_Message.cs'&lt;br /&gt;
+(example: M201411131015_created_all_initial_tables)&lt;/li&gt;
+&lt;li&gt;Class name should follow the exact convention like the filename&lt;br /&gt;
+(example: class M201411131015_created_all_initial_tables { .. }&lt;/li&gt;
+&lt;li&gt;MSBuildMigrationRunner.proj, ConnectionStrings.config, MSBuildMigrator.Migrate.bat are stored in Migration project root folder&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;p&gt;Happy coding folks! Having questions or concerns? Shoot me a tweet -&amp;gt; &amp;#64;bojanv91&lt;/p&gt;
+</content:encoded>
+		</item>
+	</channel>
+</rss>

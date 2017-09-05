@@ -25,15 +25,15 @@ build_script:
 build: off
   
 on_success:
-  # Switch branches to gh-pages, clean the folder, copy everything in from the Wyam output, and commit/push
+  # Switch branches to master, copy everything in from the Wyam output, and commit/push
   # See http://www.appveyor.com/docs/how-to/git-push for more info
   - git config --global credential.helper store
   # EDIT your Git email and name
   - git config --global user.email "bojanv91@live.com"
   - git config --global user.name "Bojan Veljanovski"
   - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
-  - git checkout gh-pages
-  - git rm -rf .
+  - git checkout master
+  - git rm -rf ..\output
   - xcopy ..\output . /E
   # EDIT your domain name or remove if not using a custom domain
   # - echo wyam.io > CNAME
