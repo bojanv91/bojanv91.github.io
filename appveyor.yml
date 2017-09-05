@@ -32,7 +32,7 @@ on_success:
   - git config --global user.email "bojanv91@live.com"
   - git config --global user.name "Bojan Veljanovski"
   - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
-  - git checkout -b branch origin/master
+  - git checkout -b master origin/master
   - git rm -rf .
   - xcopy ..\output . /E
   # EDIT your domain name or remove if not using a custom domain
