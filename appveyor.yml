@@ -22,6 +22,8 @@ install:
 build_script:
   - ..\Wyam\wyam --output ..\output
 
+build: off
+  
 on_success:
   # Switch branches to master, clean the folder, copy everything in from the Wyam output, and commit/push
   # See http://www.appveyor.com/docs/how-to/git-push for more info
