@@ -5,7 +5,7 @@ Title: Extending Select2 with Adapters and Decorators
 
 Starting from version 4.0, the Select2 jQuery plugin uses the adapter pattern as a way for developers to extend its features and behavior. Having implemented very custom select-based components, I can assure you that this is very powerful and useful feature.
 
-Unfortunately, the docs about this feature do not include concrete usage examples, so it's quite difficult to get started, to understand how to use it, and how to build on top of it - especially if you haven't worked with jQuery plugins for a while. So, this article offers usage examples and describes how to use Select2 [adapters and decorators](https://select2.org/advanced/adapters-and-decorators) feature. 
+Unfortunately, the docs about this feature do not include concrete usage examples, so it's quite difficult to get started, to understand how to use it, and how to build on top of it - especially if you haven't worked with jQuery plugins for a while. So, this article offers usage examples and describes how to use Select2 [adapters and decorators](https://select2.org/advanced/adapters-and-decorators) feature.<!--excerpt-->
 
 ## What are adapters and decorators in Select2?
 
