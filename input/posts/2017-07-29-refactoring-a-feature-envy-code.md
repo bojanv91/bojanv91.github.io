@@ -265,7 +265,5 @@ The benefits we achieved from this refactoring session are:
 * **Domain logic** for paying **is not leaked** in other classes anymore. Now it's located in the responsible class itself. So, only by looking at the ``Order`` class we can understand what it can do. No need to open other related classes. 
 * Paying functionality can be easily **unit tested**, without having to deal with special mocking techniques. Less mocks, better tests.
 
-
-
 **Rule of thumb:** Where ever you see a method uses fields of another class extensively to perform some action, consider moving the action's logic into *that* class itself.
 
