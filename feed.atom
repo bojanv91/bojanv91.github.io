@@ -4,12 +4,12 @@
 	<id>http://bojanv91.github.io/</id>
 	<title>Bojan's Notes</title>
 	<rights>2017</rights>
-	<updated>2017-10-24T00:09:19Z</updated>
+	<updated>2017-10-24T00:16:16Z</updated>
 	<subtitle>Hi, I'm Bojan Veljanovski</subtitle>
 	<entry>
 		<link href="http://bojanv91.github.io/posts/2017/10/extending-select2-with-adapters-and-decorators" />
 		<id>http://bojanv91.github.io/posts/2017/10/extending-select2-with-adapters-and-decorators</id>
-		<title>Extending Select2 with Adapters and Decorators</title>
+		<title>Extending Select2 with Adapters</title>
 		<updated>2017-10-24T00:00:00Z</updated>
 		<content>&lt;p&gt;Starting from version 4.0, the Select2 jQuery plugin uses the adapter pattern as a way for developers to extend its features and behavior. Having implemented very custom select-based components, I can assure you that this is very powerful and useful feature.&lt;/p&gt;
 &lt;p&gt;Unfortunately, the docs about this feature do not include concrete usage examples, so it's quite difficult to get started, to understand how to use it, and how to build on top of it - especially if you haven't worked with jQuery plugins for a while. So, this article offers usage examples and describes how to use Select2 &lt;a href="https://select2.org/advanced/adapters-and-decorators"&gt;adapters and decorators&lt;/a&gt; feature.&lt;!--excerpt--&gt;&lt;/p&gt;
@@ -56,7 +56,10 @@
 &lt;/ol&gt;
 &lt;p&gt;At image bellow, the default and desired outcomes are visualized.&lt;/p&gt;
 &lt;p&gt;&lt;img src="/images/2017-10-24-extending-select2-with-adapters-and-decorators/1.png" class="img-fluid" alt="Custom multiple select" /&gt;&lt;/p&gt;
-&lt;p&gt;To make select2 do the desired behavior, two custom adapters need to be written, a &lt;code&gt;SelectionAdapter&lt;/code&gt; and a &lt;code&gt;DropdownAdapter&lt;/code&gt;.  Find the complete solution example on &lt;a href="https://jsfiddle.net/bojanv91/ou7ohLd1/15"&gt;jsFiddle&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;To make select2 do the desired behavior, two custom adapters need to be written, a &lt;code&gt;SelectionAdapter&lt;/code&gt; and a &lt;code&gt;DropdownAdapter&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote class="blockquote"&gt;
+&lt;p&gt;Find the complete solution example on &lt;a href="https://jsfiddle.net/bojanv91/ou7ohLd1/15"&gt;jsFiddle&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Step 1 - create custom selection adapter&lt;/strong&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code class="language-typescript"&gt;$.fn.select2.amd.define(&amp;quot;CustomSelectionAdapter&amp;quot;, [
     &amp;quot;select2/utils&amp;quot;,
