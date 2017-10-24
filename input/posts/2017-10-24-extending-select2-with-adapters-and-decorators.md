@@ -1,6 +1,6 @@
 Tags: [jquery]
 Lead: How to extend Select2 appearance and behavior using its adapters and decorators feature
-Title: Extending Select2 with Adapters and Decorators
+Title: Extending Select2 with Adapters
 ---
 
 Starting from version 4.0, the Select2 jQuery plugin uses the adapter pattern as a way for developers to extend its features and behavior. Having implemented very custom select-based components, I can assure you that this is very powerful and useful feature.
@@ -69,7 +69,9 @@ At image bellow, the default and desired outcomes are visualized.
 
 ![Custom multiple select](/images/2017-10-24-extending-select2-with-adapters-and-decorators/1.png)
 
-To make select2 do the desired behavior, two custom adapters need to be written, a `SelectionAdapter` and a `DropdownAdapter`.  Find the complete solution example on [jsFiddle](https://jsfiddle.net/bojanv91/ou7ohLd1/15).
+To make select2 do the desired behavior, two custom adapters need to be written, a `SelectionAdapter` and a `DropdownAdapter`.
+
+> Find the complete solution example on [jsFiddle](https://jsfiddle.net/bojanv91/ou7ohLd1/15).
 
 **Step 1 - create custom selection adapter**
 
