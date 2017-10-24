@@ -5,8 +5,174 @@
 		<link>http://bojanv91.github.io/</link>
 		<description>Hi, I'm Bojan Veljanovski</description>
 		<copyright>2017</copyright>
-		<pubDate>Mon, 23 Oct 2017 23:50:55 GMT</pubDate>
-		<lastBuildDate>Mon, 23 Oct 2017 23:50:55 GMT</lastBuildDate>
+		<pubDate>Tue, 24 Oct 2017 00:09:19 GMT</pubDate>
+		<lastBuildDate>Tue, 24 Oct 2017 00:09:19 GMT</lastBuildDate>
+		<item>
+			<title>Extending Select2 with Adapters and Decorators</title>
+			<link>http://bojanv91.github.io/posts/2017/10/extending-select2-with-adapters-and-decorators</link>
+			<description>&lt;p&gt;Starting from version 4.0, the Select2 jQuery plugin uses the adapter pattern as a way for developers to extend its features and behavior. Having implemented very custom select-based components, I can assure you that this is very powerful and useful feature.&lt;/p&gt;
+&lt;p&gt;Unfortunately, the docs about this feature do not include concrete usage examples, so it's quite difficult to get started, to understand how to use it, and how to build on top of it - especially if you haven't worked with jQuery plugins for a while. So, this article offers usage examples and describes how to use Select2 &lt;a href="https://select2.org/advanced/adapters-and-decorators"&gt;adapters and decorators&lt;/a&gt; feature.&lt;/p&gt;</description>
+			<guid>http://bojanv91.github.io/posts/2017/10/extending-select2-with-adapters-and-decorators</guid>
+			<pubDate>Tue, 24 Oct 2017 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;Starting from version 4.0, the Select2 jQuery plugin uses the adapter pattern as a way for developers to extend its features and behavior. Having implemented very custom select-based components, I can assure you that this is very powerful and useful feature.&lt;/p&gt;
+&lt;p&gt;Unfortunately, the docs about this feature do not include concrete usage examples, so it's quite difficult to get started, to understand how to use it, and how to build on top of it - especially if you haven't worked with jQuery plugins for a while. So, this article offers usage examples and describes how to use Select2 &lt;a href="https://select2.org/advanced/adapters-and-decorators"&gt;adapters and decorators&lt;/a&gt; feature.&lt;!--excerpt--&gt;&lt;/p&gt;
+&lt;h2 id="what-are-adapters-and-decorators-in-select2"&gt;What are adapters and decorators in Select2?&lt;/h2&gt;
+&lt;p&gt;Adapter, adapts interface of an existing class to another interface. For example replacing the appearance of the selection input element with icon element.&lt;/p&gt;
+&lt;p&gt;Decorator, attach additional responsibilities to an object dynamically. For example adding functional checkboxes in multiple select dropdown items, or dedicated search field in multiple selection dropdown.&lt;/p&gt;
+&lt;p&gt;Select2 has several built-in adapters that can be used, overridden, and modified. You can find them explained in the &lt;a href="https://select2.org/advanced/default-adapters"&gt;advanced section in the docs&lt;/a&gt;, and their source code in the &lt;a href="https://github.com/select2/select2/tree/062c6c3af5f0f39794c34c0a343a3857e587cc97/src/js/select2"&gt;GitHub repository&lt;/a&gt;. For example, here is how &lt;code&gt;SelectionAdapter&lt;/code&gt; is implemented (&lt;a href="https://github.com/select2/select2/blob/062c6c3af5f0f39794c34c0a343a3857e587cc97/src/js/select2/selection/single.js"&gt;link to source file&lt;/a&gt;).&lt;/p&gt;
+&lt;p&gt;From the internal use of the adapters in select2 source code you can actually re-use and adapt their code in your apps. This is the approach that helped me to better understand how to use this feature.&lt;/p&gt;
+&lt;p&gt;You can take total control of the appearance and behavior of select2-based elements in your web apps by learning and exposing the full potential of this feature.&lt;/p&gt;
+&lt;h2 id="defining-and-using-custom-adapters"&gt;Defining and using custom adapters&lt;/h2&gt;
+&lt;p&gt;A Select2 adapter is defined using an AMD module. Adapters can use other adapters or objects (to extend or decorate) by taking AMD module dependencies. Select2 automatically loads modules when the adapters are being constructed.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-typescript"&gt;$.fn.select2.amd.define(&amp;quot;CustomSelectionAdapter&amp;quot;,
+    [
+        &amp;quot;select2/utils&amp;quot;,
+        &amp;quot;select2/selection/multiple&amp;quot;,
+        &amp;quot;select2/selection/placeholder&amp;quot;,
+        &amp;quot;select2/selection/eventRelay&amp;quot;,
+        &amp;quot;select2/selection/single&amp;quot;,
+    ],
+    function (Utils, MultipleSelection, Placeholder, EventRelay, SingleSelection) {
+        // Here goes the code of this custom adapter
+    }
+);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This piece of code defines a custom &lt;code&gt;SelectionAdapter&lt;/code&gt;. It should be executed only once. Usually it is called from application start, just after external libraries (like jQuery, Select2) are loaded, or just before it's first usage, in a lazy-execution way. For single-page applications, the lazy-execution is preferred approach.&lt;/p&gt;
+&lt;p&gt;Custom adapters can be used when constructing select2 elements, by &lt;em&gt;requiring&lt;/em&gt; the AMD module in which they are defined to the select2 configuration API. Bellow is an example where the already defined custom selection adapter is used.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-typescript"&gt;$(htmlElement).select2({
+    data: sampleDataAsArray,
+    selectionAdapter: $.fn.select2.amd.require(&amp;quot;CustomSelectionAdapter&amp;quot;)
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now, the &lt;code&gt;htmlElement&lt;/code&gt; will be transformed to a select2 element with customized &lt;em&gt;selection&lt;/em&gt; interface and behavior, as defined in &lt;code&gt;CustomSelectionAdapter&lt;/code&gt;. Besides customizing the &lt;code&gt;selectionAdapter&lt;/code&gt;, you can customize also the &lt;code&gt;resultsAdapter&lt;/code&gt;, &lt;code&gt;dataAdapter&lt;/code&gt;, &lt;code&gt;ajaxAdapter&lt;/code&gt;, &lt;code&gt;resultsAdapter&lt;/code&gt;, and &lt;code&gt;dropdownAdapter&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id="example-custom-multiple-select"&gt;Example: Custom multiple select&lt;/h2&gt;
+&lt;p&gt;This example demonstrates the full power of adapters and decorators feature. It extends&lt;code&gt;SelectionAdapter&lt;/code&gt; and &lt;code&gt;DropdownAdapter&lt;/code&gt; to fulfil the goals.&lt;/p&gt;
+&lt;p&gt;Default behavior of the multiple select, to be modified is:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Ability to search for items directly from the selection-box.&lt;/li&gt;
+&lt;li&gt;Show selected items in the selection-box.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Desired new behavior:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Ability to search items from a dedicated search box, shown in the dropdown (same as in single select).&lt;/li&gt;
+&lt;li&gt;Show number of selected items out of the total in the selection-box. Also, show arrow icon in the selection-box.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;At image bellow, the default and desired outcomes are visualized.&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/2017-10-24-extending-select2-with-adapters-and-decorators/1.png" class="img-fluid" alt="Custom multiple select" /&gt;&lt;/p&gt;
+&lt;p&gt;To make select2 do the desired behavior, two custom adapters need to be written, a &lt;code&gt;SelectionAdapter&lt;/code&gt; and a &lt;code&gt;DropdownAdapter&lt;/code&gt;.  Find the complete solution example on &lt;a href="https://jsfiddle.net/bojanv91/ou7ohLd1/15"&gt;jsFiddle&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 1 - create custom selection adapter&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-typescript"&gt;$.fn.select2.amd.define(&amp;quot;CustomSelectionAdapter&amp;quot;, [
+    &amp;quot;select2/utils&amp;quot;,
+    &amp;quot;select2/selection/multiple&amp;quot;,
+    &amp;quot;select2/selection/placeholder&amp;quot;,
+    &amp;quot;select2/selection/eventRelay&amp;quot;,
+    &amp;quot;select2/selection/single&amp;quot;,
+  ],
+  function(Utils, MultipleSelection, Placeholder, EventRelay, SingleSelection) {
+
+    // Decorates MultipleSelection with Placeholder
+    let adapter = Utils.Decorate(MultipleSelection, Placeholder);
+    // Decorates adapter with EventRelay - ensures events will continue to fire
+    // e.g. selected, changed
+    adapter = Utils.Decorate(adapter, EventRelay);
+
+    adapter.prototype.render = function() {
+      // Use selection-box from SingleSelection adapter
+      // This implementation overrides the default implementation
+      let $selection = SingleSelection.prototype.render.call(this);
+      return $selection;
+    };
+
+    adapter.prototype.update = function(data) {
+      // copy and modify SingleSelection adapter
+      this.clear();
+
+      let $rendered = this.$selection.find('.select2-selection__rendered');
+      let noItemsSelected = data.length === 0;
+      let formatted = &amp;quot;&amp;quot;;
+
+      if (noItemsSelected) {
+        formatted = this.options.get(&amp;quot;placeholder&amp;quot;) || &amp;quot;&amp;quot;;
+      } else {
+        let itemsData = {
+          selected: data || [],
+          all: this.$element.find(&amp;quot;option&amp;quot;) || []
+        };
+        // Pass selected and all items to display method
+        // which calls templateSelection
+        formatted = this.display(itemsData, $rendered);
+      }
+
+      $rendered.empty().append(formatted);
+      $rendered.prop('title', formatted);
+    };
+
+    return adapter;
+  });
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 2 - create custom dropdown adapter&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-typescript"&gt;$.fn.select2.amd.define(&amp;quot;CustomDropdownAdapter&amp;quot;, [
+    &amp;quot;select2/utils&amp;quot;,
+    &amp;quot;select2/dropdown&amp;quot;,
+    &amp;quot;select2/dropdown/attachBody&amp;quot;,
+    &amp;quot;select2/dropdown/attachContainer&amp;quot;,
+    &amp;quot;select2/dropdown/search&amp;quot;,
+    &amp;quot;select2/dropdown/minimumResultsForSearch&amp;quot;
+  ],
+  function(Utils, Dropdown, AttachBody, AttachContainer, Search, MinimumResultsForSearch) {
+
+    // Decorate Dropdown with Search functionalities
+    let dropdownWithSearch = Utils.Decorate(Dropdown, Search);
+    dropdownWithSearch.prototype.render = function() {
+      // Copy and modify default search render method
+      var $rendered = Dropdown.prototype.render.call(this);
+      // Add ability for a placeholder in the search box
+      let placeholder = this.options.get(&amp;quot;placeholderForSearch&amp;quot;) || &amp;quot;&amp;quot;;
+      var $search = $(
+        '&amp;lt;span class=&amp;quot;select2-search select2-search--dropdown&amp;quot;&amp;gt;' +
+        '&amp;lt;input class=&amp;quot;select2-search__field&amp;quot; placeholder=&amp;quot;' + placeholder + '&amp;quot; type=&amp;quot;search&amp;quot;' +
+        ' tabindex=&amp;quot;-1&amp;quot; autocomplete=&amp;quot;off&amp;quot; autocorrect=&amp;quot;off&amp;quot; autocapitalize=&amp;quot;off&amp;quot;' +
+        ' spellcheck=&amp;quot;false&amp;quot; role=&amp;quot;textbox&amp;quot; /&amp;gt;' +
+        '&amp;lt;/span&amp;gt;'
+      );
+
+      this.$searchContainer = $search;
+      this.$search = $search.find('input');
+
+      $rendered.prepend($search);
+      return $rendered;
+    };
+
+    // Decorate the dropdown+search with necessary containers
+    let adapter = Utils.Decorate(dropdownWithSearch, AttachContainer);
+    adapter = Utils.Decorate(adapter, AttachBody);
+
+    return adapter;
+  });
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 3 - use the defined adapters&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-typescript"&gt;$(&amp;quot;#multipleWithSearch&amp;quot;).select2({
+  data: testData,
+  placeholder: &amp;quot;Select items&amp;quot;,
+  placeholderForSearch: &amp;quot;Filter items&amp;quot;,		// additional placeholder for search box
+  closeOnSelect: false,
+  // Make selection-box similar to single select
+  selectionAdapter: $.fn.select2.amd.require(&amp;quot;CustomSelectionAdapter&amp;quot;),
+  templateSelection: (data) =&amp;gt; {
+    return `Selected ${data.selected.length} out of ${data.all.length}`;
+  },
+  // Add search box in dropdown
+  dropdownAdapter: $.fn.select2.amd.require(&amp;quot;CustomDropdownAdapter&amp;quot;)
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Find the complete solution example on &lt;a href="https://jsfiddle.net/bojanv91/ou7ohLd1/15"&gt;jsFiddle&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="summary"&gt;Summary&lt;/h2&gt;
+&lt;p&gt;This article explains how you can extend Select2 plugin by utilizing its adapters and decorators feature.&lt;/p&gt;
+&lt;p&gt;To create better custom adapters, try to re-use the built-in adapters, and modify them on the go. By doing that you will learn more about select2 internals, thus your custom adapters will be much cleaner and you will have less code to debug.&lt;/p&gt;
+&lt;p&gt;Finally, observe the example code on &lt;a href="https://jsfiddle.net/bojanv91/ou7ohLd1/15"&gt;jsFiddle&lt;/a&gt;, modify it and see how you can further customize select2 as per your needs.&lt;/p&gt;
+&lt;p&gt;NOTE: I use the select2 plugin in my Aurelia apps by wrapping common behavior in custom elements. So far, so good. It's nice that we are able to easily re-use proven components/plugins from other major platforms.&lt;/p&gt;
+</content:encoded>
+		</item>
 		<item>
 			<title>Refactoring a feature envy code</title>
 			<link>http://bojanv91.github.io/posts/2017/07/refactoring-a-feature-envy-code</link>
