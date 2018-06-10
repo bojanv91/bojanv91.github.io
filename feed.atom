@@ -3,9 +3,127 @@
 	<link rel="self" href="http://bojanv91.github.io/" />
 	<id>http://bojanv91.github.io/</id>
 	<title>Bojan's Notes</title>
-	<rights>2017</rights>
-	<updated>2017-10-24T00:16:16Z</updated>
+	<rights>2018</rights>
+	<updated>2018-06-10T03:03:38Z</updated>
 	<subtitle>Hi, I'm Bojan Veljanovski</subtitle>
+	<entry>
+		<link href="http://bojanv91.github.io/posts/2018/06/select-n-1-problem-with-examples" />
+		<id>http://bojanv91.github.io/posts/2018/06/select-n-1-problem-with-examples</id>
+		<title>Select N+1 Problem with Examples</title>
+		<updated>2018-06-10T00:00:00Z</updated>
+		<content>&lt;p&gt;Select N+1 is a data-access performance problem. Any code that iterates thru a collection of elements, and executes additional query for each element, has this problem. Thought, this behavior is avoidable.&lt;/p&gt;
+&lt;p&gt;Let's look at this sample code:&lt;/p&gt;
+&lt;p&gt;&lt;img src="..%5Cimages%5Cdata-model.png" class="img-fluid" alt="1528580795195" /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-c#"&gt;var books = LoadBooks();        // 1st query
+foreach (var book in books)
+{
+    var bookReviews = LoadBookReviews(book.Id);    // 2nd query, called N times
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;LoadBooks()&lt;/code&gt; makes a database query to load books. Then, for each book &lt;code&gt;LoadBookReviews(book.Id)&lt;/code&gt; makes a query to load reviews for the given book. Loading books is one query, plus N additional queries for loading book reviews, results in N+1 database queries, where N is the number of books.&lt;/p&gt;
+&lt;p&gt;If there are 100 loaded books, the above code will call 101 database queries, thus causing performance problems. Imagine if multiple users open the same page at the same time...&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;How does this look in SQL?&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;-- 1st query
+SELECT * FROM Book ...
+
+-- 2nd query, N times
+SELECT * FROM BookReview WHERE BookId = 1    -- BookId = &amp;#64;BookId
+SELECT * FROM BookReview WHERE BookId = 2
+SELECT * FROM BookReview WHERE BookId = 3
+...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="solution-load-necessary-data-before-iterating-through-it"&gt;Solution: Load necessary data before iterating through it&lt;/h2&gt;
+&lt;p&gt;One solution to N+1 problem is to load all necessary data before iterating through it. This way we won't need to execute additional database queries to load child data in for-loops, since we will have that data loaded before.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-c#"&gt;var books = LoadBooks();        // 1st query
+var reviews = LoadBookReviewsFor(books.Select(x =&amp;gt; x.Id)); // 2nd query, called once
+foreach (var book in books)
+{
+    var bookReviews = reviews.FirstOrDefault(x =&amp;gt; x.BookId == book.Id);
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;LoadBooks()&lt;/code&gt; does the same thing as before, where &lt;code&gt;LoadBookReviewsFor(..book ids..)&lt;/code&gt; queries the database to load all book reviews for a given list of books, instead for a single book.&lt;/p&gt;
+&lt;p&gt;In this case, no matter how many books or reviews are there, the code will always call only 2 database queries; thus fixing the N+1 problem.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;How does this look in SQL?&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-sql"&gt;-- 1st query
+SELECT * FROM Book ...
+
+-- 2nd query
+SELECT * FROM BookReview WHERE BookId IN (1, 2, 3, ...)   -- BookId IN &amp;#64;BookIds
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="example-in-entity-framework-with-navigation-properties-and-lazy-loading"&gt;Example in Entity Framework with navigation properties and lazy loading&lt;/h2&gt;
+&lt;p&gt;Bad:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-c#"&gt;var books = dbContext.Books.ToList();    // 1st query
+foreach (var book in books)
+{
+    var bookReviews = book.Reviews.ToList();    // 2nd query, called N times via lazy loading
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Good: refactor to eager loading, using the &lt;strong&gt;Include&lt;/strong&gt; feature.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-c#"&gt;var books = dbContext.Books.Include(x =&amp;gt; x.Reviews).ToList();    // 1st query, batched
+foreach (var book in books)
+{
+    var bookReviews = book.Reviews.ToList();    // in-memory, no additional queries
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;By using &lt;code&gt;.Include(x =&amp;gt; x.Reviews)&lt;/code&gt; in Entity Framework (or &lt;code&gt;.Fetch(x =&amp;gt; x.Reviews)&lt;/code&gt; in NHibernate) we eagerly load related book reviews in a single database query. This approach solves the Select N+1 problem, but opens doors to loading too many objects in memory, especially when we need to load many related collections; in such cases, plain old SQL approach is preferred.&lt;/p&gt;
+&lt;h2 id="example-in-entity-framework-without-navigation-properties"&gt;Example in Entity Framework without navigation properties&lt;/h2&gt;
+&lt;p&gt;Bad:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-c#"&gt;var books = dbContext.Books.ToList();    // 1st query
+foreach (var book in books)
+{
+    // 2nd query, called N times explicitelly 
+    var bookReviews = dbContext.BookReviews.Where(x =&amp;gt; x.BookId == book.Id).ToList();
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Good: &lt;strong&gt;load necessary data before iterating through it&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-c#"&gt;var books = dbContext.Books.ToList();            // 1st query
+var bookIds = books.Select(x =&amp;gt; x.Id).ToArray();
+var allReviews = dbContext.BookReviews           // 2nd query
+    .Where(x =&amp;gt; bookIds.Contains(x.BookId))
+    .ToList();
+
+foreach (var book in books)
+{
+    var bookReviews = allReviews.Where(x =&amp;gt; x.BookId == book.Id); // no additional query
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="example-in-marten-document-database"&gt;Example in Marten document database&lt;/h2&gt;
+&lt;p&gt;Bad:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-c#"&gt;var books = session.Query&amp;lt;Book&amp;gt;().ToList();    // 1st query
+foreach (var book in books)
+{
+    // 2nd query, called N times explicitelly 
+    var bookReviews = session.Query&amp;lt;BookReview&amp;gt;()
+        .Where(x =&amp;gt; x.BookId == book.Id)
+        .ToList(); 
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Good: same approach, &lt;strong&gt;load necessary data before iterating through it&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-c#"&gt;var books = session.Query&amp;lt;Book&amp;gt;().ToList();		// 1st query
+var bookIds = books.Select(x =&amp;gt; x.Id).ToArray();
+var allReviews = session.Query&amp;lt;BookReview&amp;gt;()    // 2nd query
+    .Where(x =&amp;gt; x.BookId.IsOneOf(bookIds))
+    .ToList();								
+
+foreach (var book in books)
+{
+    var bookReviews = allReviews.Where(x =&amp;gt; x.BookId == book.Id); // no additional query
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="summary"&gt;Summary&lt;/h2&gt;
+&lt;p&gt;Select N+1 is a performance problem that can really slow down your application. The more &amp;quot;N&amp;quot; results the application has, the less performant it will be when this problem is not detected and fixed.&lt;/p&gt;
+&lt;p&gt;Here we've seen how to detect such problem and how to fix it. The common approach follows a straightforward practice: &lt;strong&gt;load necessary data before iterating through it.&lt;/strong&gt;&lt;/p&gt;
+</content>
+		<summary>&lt;p&gt;Select N+1 is a data-access performance problem. Any code that iterates thru a collection of elements, and executes additional query for each element, has this problem. Thought, this behavior is avoidable.&lt;/p&gt;</summary>
+	</entry>
 	<entry>
 		<link href="http://bojanv91.github.io/posts/2017/10/extending-select2-with-adapters-and-decorators" />
 		<id>http://bojanv91.github.io/posts/2017/10/extending-select2-with-adapters-and-decorators</id>
