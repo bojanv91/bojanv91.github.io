@@ -1,20 +1,91 @@
 @{
     Layout="_Layout";
     var Published = Model.Get<DateTime>(BlogKeys.Published);   
-    var Tags = Model.Get<string[]>(BlogKeys.Tags) ?? new string[] {};
+    var Tags = Model.Get<string[]>(BlogKeys.Tags)?.OrderBy(x => x).ToArray() ?? new string[] {};
+    var Lead = Model.String(BlogKeys.Lead);
+
+    var PrevPost = Documents[Blog.BlogPosts]
+      .OrderBy(p => p.Get<DateTime>(BlogKeys.Published))
+      .SkipWhile(x => !x.Source.Equals(Model.Source))
+      .FirstOrDefault();
+    var NextPost = Documents[Blog.BlogPosts]
+      .OrderBy(p => p.Get<DateTime>(BlogKeys.Published))
+      .SkipWhile(x => !x.Source.Equals(Model.Source))
+      .Skip(1)
+      .FirstOrDefault();
 }
 
-<h2>@Model.WithoutSettings.String(BlogKeys.Title)</h2>
-<h3>Published @Published.ToShortDateString()</h3>
+<header class="header-section">
+  <div class="intro-header no-img">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+          <div class="post-heading">
+            <h1>@Model.WithoutSettings.String(BlogKeys.Title)</h1>
+            @if (!string.IsNullOrEmpty(Lead))
+            {
+              <span class="post-subheading">@Lead</span>
+            }
+            <span class="post-meta">
+              Posted on @Published.ToShortDateString()
+              @if (Tags != null && Tags.Any())
+              {
+                <text>in </text>
+                @foreach (string tag in Tags){ 
+                  IDocument tagDocument = Documents[Blog.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag)== tag && x.Get<int>(Keys.CurrentPage) == 1); 
+                  if(tagDocument != null) {
+                      <a href="@Context.GetLink(tagDocument)">@tag</a>
+                      @if (tag != Tags.Last())
+                      {
+                        <text>, </text>
+                      }
+                  }
+                }
+              }
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
 
+<div class="row">
+  <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
 
-@foreach (string tag in Tags.OrderBy(x => x)){ 
-    IDocument tagDocument = Documents[Blog.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag)== tag && x.Get<int>(Keys.CurrentPage) == 1); 
-    if(tagDocument != null) {
-        <a href="@Context.GetLink(tagDocument)">@tag</a> 
-    } 
-} 
+    <article role="main" class="blog-post">
+      @RenderBody()
+    </article>
 
-<a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))">Back To posts</a>
+    <!--
+    {% if page.social-share %}
+      {% include social-share.html %}
+    {% endif %}
+    -->
 
-@RenderBody()
+    <ul class="pager blog-pager">
+      @if (PrevPost != null)
+      {
+      <li class="previous">
+        <a href="@Context.GetLink(PrevPost)" data-toggle="tooltip" data-placement="top" title="@PrevPost.WithoutSettings.String(BlogKeys.Title)">&larr; Previous Post</a>
+      </li>
+      }
+      @if (NextPost != null)
+      {
+      <li class="next">
+        <a href="@Context.GetLink(NextPost)" data-toggle="tooltip" data-placement="top" title="@NextPost.WithoutSettings.String(BlogKeys.Title)">Next Post &rarr;</a>
+      </li>
+      }
+    </ul>
+
+    <!--
+    {% if page.comments %}
+      <div class="disqus-comments">
+        {% include disqus.html %}
+      </div>
+        {% include fb-comment.html %}
+    {% endif %}
+    -->
+  </div>
+</div>
+  

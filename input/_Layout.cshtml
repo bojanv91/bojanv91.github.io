@@ -1,46 +1,117 @@
+@{
+    string Title = Model.WithoutSettings.String(BlogKeys.Title);
+    string BlogTitle = Context.String(BlogKeys.Title);
+    string PageTitle = BlogTitle + (string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title);
+
+    List<Tuple<string, string>> pages = Context
+        .Documents[Blog.Pages]
+        .Where(x => x.Bool(BlogKeys.ShowInNavbar, true))
+        .Where(x => x.FilePath(Keys.RelativeFilePath)?.FullPath?.StartsWith("index") == (bool?)false)
+        .Select(x => Tuple.Create(x.WithoutSettings.String(Keys.Title), Context.GetLink(x)))
+        .Where(x => !string.IsNullOrEmpty(x.Item1))
+        .OrderBy(x => x.Item1)
+        .ToList();
+    if(Documents[Blog.Tags].Any())
+    {
+        pages.Insert(0, Tuple.Create("Tags", Context.GetLink("tags/index.html")));
+    }
+    if(Documents[Blog.BlogPosts].Any() && Context.Bool(BlogKeys.GenerateArchive))
+    {
+        pages.Insert(0, Tuple.Create("Archive", Context.GetLink(Context.String(BlogKeys.PostsPath) + "/index.html")));
+    }
+}
+
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>@Model.WithoutSettings.String(BlogKeys.Title)</title>
-    </head>
-    <body>
-        @if(Context.String(BlogKeys.Description) != null)
-        {
-            <a href="@Context.GetLink("/")"><h1>@Context.String(BlogKeys.Description)</h1> </a>
-        }
-        @if(Context.String(BlogKeys.Intro) != null)
-        {            
-            @if(Context.String(BlogKeys.Description) != null)
-            {
-                <hr>
-            }
-            <span>@Context.String(BlogKeys.Intro)</span>
-        }
+  <head>
+    <title>@PageTitle</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="@Context.String(BlogKeys.Description)" />
+    <meta name="application-name" content="@Context.String(BlogKeys.Title)" />
+    <meta name="msapplication-tooltip" content="@Context.String(BlogKeys.Title)" />
+    <meta name="msapplication-starturl" content="@Context.GetLink("/")" />
+    <meta property="og:title" content="@PageTitle" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@Context.GetLink(Model, true)" />
+    <!-- TODO: More social graph meta tags -->
 
-        @{
-            List<Tuple<string, string>> pages = Context
-                .Documents[Blog.Pages]
-                .Where(x => x.Bool(BlogKeys.ShowInNavbar, true))
-                .Where(x => x.FilePath(Keys.RelativeFilePath)?.FullPath?.StartsWith("index") == (bool?)false)
-                .Select(x => Tuple.Create(x.WithoutSettings.String(Keys.Title), Context.GetLink(x)))
-                .Where(x => !string.IsNullOrEmpty(x.Item1))
-                .OrderBy(x => x.Item1)
-                .ToList();
-            if(Documents[Blog.Tags].Any())
-            {
-                pages.Insert(0, Tuple.Create("Tags", Context.GetLink("tags/index.html")));
-            }
-            if(Documents[Blog.BlogPosts].Any() && Context.Bool(BlogKeys.GenerateArchive))
-            {
-                pages.Insert(0, Tuple.Create("Archive", Context.GetLink(Context.String(BlogKeys.PostsPath) + "/index.html")));
-            }
-            foreach(Tuple<string, string> page in pages)
-            {
-                <li><a href="@page.Item2">@page.Item1</a></li>
-            }
-        }
+    @if (Context.String(BlogKeys.RssPath) != null) {
+    <link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink(Context.String(BlogKeys.RssPath))" />
+    }
+    @if (Context.String(BlogKeys.AtomPath) != null) {
+    <link type="application/atom+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink(Context.String(BlogKeys.AtomPath))" />
+    }
+    <link rel="shortcut icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
+    <link rel="icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
 
-        @RenderBody()
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/css/bootstrap-social.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+</head>
+<body>
 
-    </body>
+
+  <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="@Context.GetLink("/")">@BlogTitle</a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="main-navbar">
+        <ul class="nav navbar-nav navbar-right">
+          @foreach(Tuple<string, string> page in pages)
+          {
+              <li><a href="@page.Item2">@page.Item1</a></li>
+          }
+        </ul>
+      </div>
+
+      <div class="avatar-container">
+        <div class="avatar-img-border">
+          <a href="http://daattali.github.io/beautiful-jekyll ">
+            <img class="avatar-img" src="/assets/img/avatar-icon.png">
+        </a>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- 
+  @if(Context.String(BlogKeys.Description) != null)
+  {
+      <a href="@Context.GetLink("/")"><h1>@Context.String(BlogKeys.Description)</h1> </a>
+  }
+  @if(Context.String(BlogKeys.Intro) != null)
+  {            
+      @if(Context.String(BlogKeys.Description) != null)
+      {
+          <hr>
+      }
+      <span>@Context.String(BlogKeys.Intro)</span>
+  }
+  -->
+
+  <!-- if index page -->
+  <div class="intro-header"></div>
+
+  <div role="main" class="container">
+    @RenderBody()
+  </div>
+
+  <script src="/assets/js/jquery-1.11.2.min.js"></script>
+  <script src="/assets/js/bootstrap.min.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
 </html>
