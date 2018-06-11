@@ -1,209 +1,128 @@
 ﻿
 <!DOCTYPE html>
-<html lang="en">
-        <head>
-        <!-- Global Site Tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-57647909-1"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments)};
-          gtag('js', new Date());
+<html>
+  <head>
+      <!-- Global Site Tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-57647909-1"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments)};
+        gtag('js', new Date());
 
-          gtag('config', 'UA-57647909-1');
-        </script>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+        gtag('config', 'UA-57647909-1');
+      </script>
 
-        <title>Bojan&#x27;s Notes - code smells</title>
-        <meta name="description" content="Hi, I&#x27;m Bojan Veljanovski" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">        
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Bojan Veljanovski - code smells</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="I write about design, development, and delivery of software." />
+    <meta name="application-name" content="Bojan Veljanovski" />
+    <meta name="msapplication-tooltip" content="Bojan Veljanovski" />
+    <meta name="msapplication-starturl" content="/" />
+    <meta property="og:title" content="Bojan Veljanovski - code smells" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://bojanv91.github.io/tags/code-smells" />
+    <!-- TODO: More social graph meta tags -->
 
-        <link type="application/rss+xml" rel="alternate" title="Bojan&#x27;s Notes" href="/feed.rss" />
-                <link type="application/atom+xml" rel="alternate" title="Bojan&#x27;s Notes" href="/feed.atom" />
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link type="application/rss+xml" rel="alternate" title="Bojan Veljanovski" href="/feed.rss" />
+        <link type="application/atom+xml" rel="alternate" title="Bojan Veljanovski" href="/feed.atom" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-        <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
-        <link href="/assets/css/highlight.css" rel="stylesheet">
-        <link href="/assets/css/clean-blog.css" rel="stylesheet" />
-        <link href="/assets/css/master.css" rel="stylesheet" />
-        <link href="/assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-        <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-        <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-        <link href="/assets/css/override.css" rel="stylesheet" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/css/bootstrap-social.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+</head>
+<body>
 
+  <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">Bojan Veljanovski</a>
+      </div>
 
-        <meta name="application-name" content="Bojan&#x27;s Notes" />
-        <meta name="msapplication-tooltip" content="Bojan&#x27;s Notes" />
-        <meta name="msapplication-starturl" content="/" />
+      <div class="collapse navbar-collapse" id="main-navbar">
+        <ul class="nav navbar-nav navbar-right">
+              <li><a href="/posts">Archive</a></li>
+              <li><a href="/tags">Tags</a></li>
+              <li><a href="/about">About</a></li>
+        </ul>
+      </div>
 
-        <meta property="og:title" content="Bojan&#x27;s Notes - code smells" />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="http://bojanv91.github.io/tags/code-smells" />
-        <!-- TODO: More social graph meta tags -->
-
-        <script src="/assets/js/jquery.min.js"></script>
-        <script src="/assets/js/bootstrap.min.js"></script>     
-        <script src="/assets/js/highlight.pack.js"></script>   
-        <script src="/assets/js/clean-blog.js"></script>
-        <script src="/assets/js/d3.v3.min.js"></script>
-        <script src="/assets/js/trianglify.min.js"></script>
-        <script src="/assets/js/Please-compressed.js"></script>
-        <script src="/assets/js/background-check.min.js"></script>
-                
-        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 9]>
-                <script src="/assets/js/html5shiv.js"></script>
-                <script src="/assets/js/respond.min.js"></script>
-        <![endif]-->
-        
-        
-
-
-        </head>
-        <body>
-                
-                <!-- Navigation -->
-                <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
-                        <div class="container-fluid">
-                                <!-- Brand and toggle get grouped for better mobile display -->
-                                <div class="navbar-header page-scroll">
-                                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
-                                        <span class="sr-only">Toggle navigation</span>
-                                        <span class="icon-bar"></span>
-                                        <span class="icon-bar"></span>
-                                        <span class="icon-bar"></span>
-                                        </button>
-                                        <a class="navbar-brand" href="/">Bojan&#x27;s Notes</a>
-                                </div>
-                        
-                                <!-- Collect the nav links, forms, and other content for toggling -->
-                                <div class="collapse navbar-collapse" id="navbar-collapse">
-                                        <ul class="nav navbar-nav navbar-right">
-                                                        <li><a href="/posts">Archive</a></li>
-        <li><a href="/tags">Tags</a></li>
-        <li><a href="/about">About Me</a></li>
- 
-                                        </ul>
-                                </div>
-                                <!-- /.navbar-collapse -->
-                        </div>
-                        <!-- /.container -->
-                </nav>
-                
-                <!-- Page Header -->
-                <header class="intro-header" id="intro-header">
-                        <div class="container">
-                                <div class="row">
-                                        <div class="col-md-12">
-<div class="site-heading">
-    <h1>code smells</h1>
-</div>                                            </div>
-                                </div>
-                        </div>
-                </header>
-                
-                <!-- Main Content -->
-                <div class="container">
-                        <div class="row">
-                                <div id="content" class="col-md-12">
-                                        <div class="container-sm-height">
-    <div class="row row-sm-height">
-        <div class="col-sm-8 right-border col-sm-height">
-                    <div class="post-list">
-            <a href="/posts/2017/07/refactoring-a-feature-envy-code">
-                <h3 class="post-title">Refactoring a feature envy code</h3>
-                    <h4 class="post-subtitle">Towards less coupled code, adhering to the Tell Don&#x27;t Ask principle</h4>
-            </a>
-            <p class="post-meta">Posted on 
-                Saturday, July 29, 2017
-in                            <a role="button" href="/tags/code-smells">code smells</a>
-                                <span>,</span>
-                            <a role="button" href="/tags/refactoring">refactoring</a>
-            </p>      
-        </div>   
-
-
-            <nav>
-                <ul class="pager">
-                    <li class="previous">                
-                    </li>
-                    <li class="next">
-                    </li>
-                </ul>
-            </nav>
-            <hr class="visible-xs-block" />
+      <div class="avatar-container">
+        <div class="avatar-img-border">
+          <a href="/">
+            <img class="avatar-img" src="/assets/img/avatar-icon.png">
+        </a>
         </div>
-		
-        <div class="col-sm-4 col-sm-height">
-                <a role="button" href="/tags/aspnet" class="btn btn-default btn-xs">asp.net (3)</a>
-                <a role="button" href="/tags/software-design" class="btn btn-default btn-xs">software design (2)</a>
-                <a role="button" href="/tags/bad-code" class="btn btn-default btn-xs">bad code (1)</a>
-                <a role="button" href="/tags/jquery" class="btn btn-default btn-xs">jquery (1)</a>
-                <a role="button" href="/tags/code-smells" class="btn btn-primary btn-xs">code smells (1)</a>
-                <a role="button" href="/tags/refactoring" class="btn btn-default btn-xs">refactoring (1)</a>
-                <a role="button" href="/tags/tools" class="btn btn-default btn-xs">tools (1)</a>
-                <a role="button" href="/tags/meetups" class="btn btn-default btn-xs">meetups (1)</a>
-                <a role="button" href="/tags/patterns" class="btn btn-default btn-xs">patterns (1)</a>
-                <a role="button" href="/tags/security" class="btn btn-default btn-xs">security (1)</a>
-                <a role="button" href="/tags/database-migrations" class="btn btn-default btn-xs">database migrations (1)</a>
-        </div>
+      </div>
+
     </div>
-</div>
-                                </div>
-                        </div>
-                </div>
-                
-                <hr>
-                
-                <!-- Footer -->
-                <footer>
-                        <div class="container">
-        <div class="row">
-                <div class="col-md-12 text-center">
-                    <p class="copyright text-muted">
-                        Copyright © 2018
-                        <br />
-                            <a href="/feed.rss"><i class="fa fa-rss"></i> RSS Feed</a>
-                        |
-                            <a href="/feed.atom"><i class="fa fa-rss"></i> Atom Feed</a>
-                        <br />
-                        <strong><a href="https://wyam.io">Generated by Wyam</a></strong>
-                    </p>
-                </div>
+  </nav>
+
+  
+<ul>
+    <li>
+        <a href="/posts/2017/07/refactoring-a-feature-envy-code">
+            <h2>Refactoring a feature envy code</h2>
+            <p>In a design review meeting a colleague asked: "Why sometimes we directly manipulate dependent objects fields, and sometimes we put the manipulation logic behind methods in those objects? What are pros/cons in both approaches?"</p>
+        </a>
+    </li>
+</ul>
+
+<a href="/posts">Back To posts</a>
+
+  <footer>
+    <div class="container beautiful-jekyll-footer">
+      <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+          <ul class="list-inline text-center footer-links">
+            <li>
+              <a href="https://github.com/bojanv91" title="GitHub">
+                <span class="fa-stack fa-lg">
+                  <i class="fa fa-circle fa-stack-2x"></i>
+                  <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="https://twitter.com/bojanv91" title="Twitter">
+                <span class="fa-stack fa-lg">
+                  <i class="fa fa-circle fa-stack-2x"></i>
+                  <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                </span>
+              </a>
+            </li>
+          </ul>
+          <p class="copyright text-muted">
+            © Bojan Veljanovski • 2018 <br/>
+            <a href="/feed.rss"><i class="fa fa-rss"></i> RSS Feed</a>
+            |
+            <a href="/feed.atom"><i class="fa fa-rss"></i> Atom Feed</a>
+            <br />
+            <br />
+            Theme ported from <a href="http://deanattali.com/beautiful-jekyll/">beautiful-jekyll</a>
+            <br />
+            Blog generated by <a href="https://wyam.io">Wyam.io</a>
+          </p>
         </div>
-</div>
+      </div>
+    </div>
+  </footer>
 
-                </footer> 
 
-                
-                <script>hljs.initHighlightingOnLoad();</script>
-
-                        <script type="text/javascript">                
-                                // Header background          
-                                var header = document.getElementById("intro-header");              
-                                /*var colors = Please.make_color({
-                                        colors_returned: 3,
-                                        saturation: .6
-                                });
-                                var t = new Trianglify({
-                                        x_gradient: colors,
-                                        y_gradient: ["#FFFFFF"]
-                                });
-                                
-                                var pattern = t.generate(header.clientWidth, header.clientHeight);
-                                */
-                                var dataUrl = "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUxOCIgaGVpZ2h0PSI0OTkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGc+PHBhdGggZD0iTS01MiwtMTEwTC0xMDEsMTE1TDI0LC0xN1oiIGZpbGw9IiM0MzI2NjAiIHN0cm9rZT0iIzQzMjY2MCIvPjxwYXRoIGQ9Ik0tNTIsLTExMEwyNCwtMTdMMjE4LC0xMTdaIiBmaWxsPSIjM2YyNjYwIiBzdHJva2U9IiMzZjI2NjAiLz48cGF0aCBkPSJNLTUyLC0xMTBMMjE4LC0xMTdMMzgyLC0xMjVaIiBmaWxsPSIjM2IyNjYwIiBzdHJva2U9IiMzYjI2NjAiLz48cGF0aCBkPSJNMjQsLTE3TC0xMDEsMTE1TC0xNiwxODNaIiBmaWxsPSIjNDIyNjYwIiBzdHJva2U9IiM0MjI2NjAiLz48cGF0aCBkPSJNMjQsLTE3TC0xNiwxODNMMTA4LDQzWiIgZmlsbD0iIzQwMjY2MCIgc3Ryb2tlPSIjNDAyNjYwIi8+PHBhdGggZD0iTTI0LC0xN0wxMDgsNDNMMjE4LC0xMTdaIiBmaWxsPSIjM2QyNjYwIiBzdHJva2U9IiMzZDI2NjAiLz48cGF0aCBkPSJNMjE4LC0xMTdMMTA4LDQzTDE3OSwzOFoiIGZpbGw9IiMzYjI2NjAiIHN0cm9rZT0iIzNiMjY2MCIvPjxwYXRoIGQ9Ik0yMTgsLTExN0wxNzksMzhMMzgyLC0xMjVaIiBmaWxsPSIjMzgyNjYwIiBzdHJva2U9IiMzODI2NjAiLz48cGF0aCBkPSJNMzgyLC0xMjVMMTc5LDM4TDQyMiw2NloiIGZpbGw9IiMzNTI2NjAiIHN0cm9rZT0iIzM1MjY2MCIvPjxwYXRoIGQ9Ik0zODIsLTEyNUw0MjIsNjZMNTA3LC04NloiIGZpbGw9IiMzMTI2NjAiIHN0cm9rZT0iIzMxMjY2MCIvPjxwYXRoIGQ9Ik0zODIsLTEyNUw1MDcsLTg2TDgyNywtMTM0WiIgZmlsbD0iIzJlMmQ2MCIgc3Ryb2tlPSIjMmUyZDYwIi8+PHBhdGggZD0iTTUwNywtODZMNDIyLDY2TDU3Niw2MloiIGZpbGw9IiMyZjI2NjAiIHN0cm9rZT0iIzJmMjY2MCIvPjxwYXRoIGQ9Ik01MDcsLTg2TDU3Niw2Mkw3MTcsLTM4WiIgZmlsbD0iIzJkMzA2MCIgc3Ryb2tlPSIjMmQzMDYwIi8+PHBhdGggZD0iTTUwNywtODZMNzE3LC0zOEw4MjcsLTEzNFoiIGZpbGw9IiMyYzM5NjAiIHN0cm9rZT0iIzJjMzk2MCIvPjxwYXRoIGQ9Ik03MTcsLTM4TDU3Niw2Mkw2NTIsMTA4WiIgZmlsbD0iIzJjMzU2MCIgc3Ryb2tlPSIjMmMzNTYwIi8+PHBhdGggZD0iTTcxNywtMzhMNjUyLDEwOEw4NDUsMzZaIiBmaWxsPSIjMmIzZTYwIiBzdHJva2U9IiMyYjNlNjAiLz48cGF0aCBkPSJNNzE3LC0zOEw4NDUsMzZMODI3LC0xMzRaIiBmaWxsPSIjMmE0NDYwIiBzdHJva2U9IiMyYTQ0NjAiLz48cGF0aCBkPSJNODI3LC0xMzRMODQ1LDM2TDkyMiwtMTEwWiIgZmlsbD0iIzI5NGI2MCIgc3Ryb2tlPSIjMjk0YjYwIi8+PHBhdGggZD0iTTgyNywtMTM0TDkyMiwtMTEwTDExMzksLTEzNFoiIGZpbGw9IiMyNzU1NjAiIHN0cm9rZT0iIzI3NTU2MCIvPjxwYXRoIGQ9Ik05MjIsLTExMEw4NDUsMzZMOTg2LDM2WiIgZmlsbD0iIzI4NTE2MCIgc3Ryb2tlPSIjMjg1MTYwIi8+PHBhdGggZD0iTTkyMiwtMTEwTDk4NiwzNkwxMTM5LC0xMzRaIiBmaWxsPSIjMjY1YjYwIiBzdHJva2U9IiMyNjViNjAiLz48cGF0aCBkPSJNMTEzOSwtMTM0TDk4NiwzNkwxMTM2LDczWiIgZmlsbD0iIzI1NjI2MCIgc3Ryb2tlPSIjMjU2MjYwIi8+PHBhdGggZD0iTTExMzksLTEzNEwxMTM2LDczTDEyNjksMjNaIiBmaWxsPSIjMjM2YzYwIiBzdHJva2U9IiMyMzZjNjAiLz48cGF0aCBkPSJNMTEzOSwtMTM0TDEyNjksMjNMMTMyMywtMjNaIiBmaWxsPSIjMjI3MjYwIiBzdHJva2U9IiMyMjcyNjAiLz48cGF0aCBkPSJNMTEzOSwtMTM0TDEzMjMsLTIzTDEzNzAsLTMyWiIgZmlsbD0iIzIyNzY2MCIgc3Ryb2tlPSIjMjI3NjYwIi8+PHBhdGggZD0iTTExMzksLTEzNEwxMzcwLC0zMkwxNTczLC0yMVoiIGZpbGw9IiMyMDdlNjAiIHN0cm9rZT0iIzIwN2U2MCIvPjxwYXRoIGQ9Ik0xMTM5LC0xMzRMMTU3MywtMjFMMTcyNywtNTBaIiBmaWxsPSIjMWU4MDYwIiBzdHJva2U9IiMxZTgwNjAiLz48cGF0aCBkPSJNMTMyMywtMjNMMTI2OSwyM0wxMzY4LDEwMloiIGZpbGw9IiMyMTdhNjAiIHN0cm9rZT0iIzIxN2E2MCIvPjxwYXRoIGQ9Ik0xMzIzLC0yM0wxMzY4LDEwMkwxMzcwLC0zMloiIGZpbGw9IiMyMTdkNjAiIHN0cm9rZT0iIzIxN2Q2MCIvPjxwYXRoIGQ9Ik0xMzcwLC0zMkwxMzY4LDEwMkwxNTczLC0yMVoiIGZpbGw9IiMxZjgwNjAiIHN0cm9rZT0iIzFmODA2MCIvPjxwYXRoIGQ9Ik0xNTczLC0yMUwxMzY4LDEwMkwxNTkxLDgzWiIgZmlsbD0iIzFlODA2MCIgc3Ryb2tlPSIjMWU4MDYwIi8+PHBhdGggZD0iTTE1NzMsLTIxTDE1OTEsODNMMTcyNywtNTBaIiBmaWxsPSIjMWM4MDYwIiBzdHJva2U9IiMxYzgwNjAiLz48cGF0aCBkPSJNMTcyNywtNTBMMTU5MSw4M0wxNzYyLDIyWiIgZmlsbD0iIzFiODA2MCIgc3Ryb2tlPSIjMWI4MDYwIi8+PHBhdGggZD0iTS0xMDEsMTE1TC0xMjcsNTMzTC05Miw0MTNaIiBmaWxsPSIjNDUyNjYwIiBzdHJva2U9IiM0NTI2NjAiLz48cGF0aCBkPSJNLTEwMSwxMTVMLTkyLDQxM0wtMTYsMTgzWiIgZmlsbD0iIzQ0MjY2MCIgc3Ryb2tlPSIjNDQyNjYwIi8+PHBhdGggZD0iTTEwOCw0M0wtMTYsMTgzTDU5LDE4M1oiIGZpbGw9IiMzZjI2NjAiIHN0cm9rZT0iIzNmMjY2MCIvPjxwYXRoIGQ9Ik0xMDgsNDNMNTksMTgzTDE3OSwzOFoiIGZpbGw9IiMzZDI2NjAiIHN0cm9rZT0iIzNkMjY2MCIvPjxwYXRoIGQ9Ik0xNzksMzhMNTksMTgzTDE4NywyNzhaIiBmaWxsPSIjM2MyNjYwIiBzdHJva2U9IiMzYzI2NjAiLz48cGF0aCBkPSJNMTc5LDM4TDE4NywyNzhMMzMwLDE5N1oiIGZpbGw9IiMzOTI2NjAiIHN0cm9rZT0iIzM5MjY2MCIvPjxwYXRoIGQ9Ik0xNzksMzhMMzMwLDE5N0w0MjIsNjZaIiBmaWxsPSIjMzYyNjYwIiBzdHJva2U9IiMzNjI2NjAiLz48cGF0aCBkPSJNNDIyLDY2TDMzMCwxOTdMNTQwLDIzMFoiIGZpbGw9IiMzMjI2NjAiIHN0cm9rZT0iIzMyMjY2MCIvPjxwYXRoIGQ9Ik00MjIsNjZMNTQwLDIzMEw1NzYsNjJaIiBmaWxsPSIjMmYyNzYwIiBzdHJva2U9IiMyZjI3NjAiLz48cGF0aCBkPSJNNTc2LDYyTDU0MCwyMzBMNjUyLDEwOFoiIGZpbGw9IiMyZDJmNjAiIHN0cm9rZT0iIzJkMmY2MCIvPjxwYXRoIGQ9Ik02NTIsMTA4TDU0MCwyMzBMNzI0LDIyM1oiIGZpbGw9IiMyZDM0NjAiIHN0cm9rZT0iIzJkMzQ2MCIvPjxwYXRoIGQ9Ik02NTIsMTA4TDcyNCwyMjNMODQ1LDM2WiIgZmlsbD0iIzJiM2U2MCIgc3Ryb2tlPSIjMmIzZTYwIi8+PHBhdGggZD0iTTg0NSwzNkw3MjQsMjIzTDg0NCwyMDdaIiBmaWxsPSIjMmE0NTYwIiBzdHJva2U9IiMyYTQ1NjAiLz48cGF0aCBkPSJNODQ1LDM2TDg0NCwyMDdMOTc0LDE4OVoiIGZpbGw9IiMyODRkNjAiIHN0cm9rZT0iIzI4NGQ2MCIvPjxwYXRoIGQ9Ik04NDUsMzZMOTc0LDE4OUw5ODYsMzZaIiBmaWxsPSIjMjg1MjYwIiBzdHJva2U9IiMyODUyNjAiLz48cGF0aCBkPSJNOTg2LDM2TDk3NCwxODlMMTEzNiw3M1oiIGZpbGw9IiMyNjVjNjAiIHN0cm9rZT0iIzI2NWM2MCIvPjxwYXRoIGQ9Ik0xMTM2LDczTDk3NCwxODlMMTExMiwxOTZaIiBmaWxsPSIjMjU2MTYwIiBzdHJva2U9IiMyNTYxNjAiLz48cGF0aCBkPSJNMTEzNiw3M0wxMTEyLDE5NkwxMjk1LDE4NloiIGZpbGw9IiMyMzZjNjAiIHN0cm9rZT0iIzIzNmM2MCIvPjxwYXRoIGQ9Ik0xMTM2LDczTDEyOTUsMTg2TDEyNjksMjNaIiBmaWxsPSIjMjM3MTYwIiBzdHJva2U9IiMyMzcxNjAiLz48cGF0aCBkPSJNMTI2OSwyM0wxMjk1LDE4NkwxMzY4LDEwMloiIGZpbGw9IiMyMTc5NjAiIHN0cm9rZT0iIzIxNzk2MCIvPjxwYXRoIGQ9Ik0xMzY4LDEwMkwxMjk1LDE4NkwxNDc1LDE3MVoiIGZpbGw9IiMyMDgwNjAiIHN0cm9rZT0iIzIwODA2MCIvPjxwYXRoIGQ9Ik0xMzY4LDEwMkwxNDc1LDE3MUwxNTkxLDgzWiIgZmlsbD0iIzFlODA2MCIgc3Ryb2tlPSIjMWU4MDYwIi8+PHBhdGggZD0iTTE1OTEsODNMMTQ3NSwxNzFMMTUxNiwyNjhaIiBmaWxsPSIjMWU4MDYwIiBzdHJva2U9IiMxZTgwNjAiLz48cGF0aCBkPSJNMTU5MSw4M0wxNTE2LDI2OEwxNzM3LDE5MloiIGZpbGw9IiMxYzgwNjAiIHN0cm9rZT0iIzFjODA2MCIvPjxwYXRoIGQ9Ik0xNTkxLDgzTDE3MzcsMTkyTDE3NjIsMjJaIiBmaWxsPSIjMWI4MDYwIiBzdHJva2U9IiMxYjgwNjAiLz48cGF0aCBkPSJNMTc2MiwyMkwxNzM3LDE5MkwxNzIwLDQ4OFoiIGZpbGw9IiMxYTgwNjAiIHN0cm9rZT0iIzFhODA2MCIvPjxwYXRoIGQ9Ik0tMTYsMTgzTC05Miw0MTNMNDgsMzE3WiIgZmlsbD0iIzQyMjY2MCIgc3Ryb2tlPSIjNDIyNjYwIi8+PHBhdGggZD0iTS0xNiwxODNMNDgsMzE3TDU5LDE4M1oiIGZpbGw9IiM0MDI2NjAiIHN0cm9rZT0iIzQwMjY2MCIvPjxwYXRoIGQ9Ik01OSwxODNMNDgsMzE3TDE4NywyNzhaIiBmaWxsPSIjM2UyNjYwIiBzdHJva2U9IiMzZTI2NjAiLz48cGF0aCBkPSJNMTg3LDI3OEw0OCwzMTdMMTc1LDQwNFoiIGZpbGw9IiMzYzI2NjAiIHN0cm9rZT0iIzNjMjY2MCIvPjxwYXRoIGQ9Ik0xODcsMjc4TDE3NSw0MDRMMzQ1LDM4MVoiIGZpbGw9IiMzOTI2NjAiIHN0cm9rZT0iIzM5MjY2MCIvPjxwYXRoIGQ9Ik0xODcsMjc4TDM0NSwzODFMMzMwLDE5N1oiIGZpbGw9IiMzNzI2NjAiIHN0cm9rZT0iIzM3MjY2MCIvPjxwYXRoIGQ9Ik0zMzAsMTk3TDM0NSwzODFMNTQwLDIzMFoiIGZpbGw9IiMzMjI2NjAiIHN0cm9rZT0iIzMyMjY2MCIvPjxwYXRoIGQ9Ik01NDAsMjMwTDM0NSwzODFMNTYwLDM1NloiIGZpbGw9IiMzMDI2NjAiIHN0cm9rZT0iIzMwMjY2MCIvPjxwYXRoIGQ9Ik01NDAsMjMwTDU2MCwzNTZMNzI0LDIyM1oiIGZpbGw9IiMyZDMxNjAiIHN0cm9rZT0iIzJkMzE2MCIvPjxwYXRoIGQ9Ik03MjQsMjIzTDU2MCwzNTZMNzE4LDM4OVoiIGZpbGw9IiMyYzM3NjAiIHN0cm9rZT0iIzJjMzc2MCIvPjxwYXRoIGQ9Ik03MjQsMjIzTDcxOCwzODlMODA3LDMzMloiIGZpbGw9IiMyYjNmNjAiIHN0cm9rZT0iIzJiM2Y2MCIvPjxwYXRoIGQ9Ik03MjQsMjIzTDgwNywzMzJMODQ0LDIwN1oiIGZpbGw9IiMyYTQ0NjAiIHN0cm9rZT0iIzJhNDQ2MCIvPjxwYXRoIGQ9Ik04NDQsMjA3TDgwNywzMzJMOTQyLDQwN1oiIGZpbGw9IiMyOTRiNjAiIHN0cm9rZT0iIzI5NGI2MCIvPjxwYXRoIGQ9Ik04NDQsMjA3TDk0Miw0MDdMOTc0LDE4OVoiIGZpbGw9IiMyODUxNjAiIHN0cm9rZT0iIzI4NTE2MCIvPjxwYXRoIGQ9Ik05NzQsMTg5TDk0Miw0MDdMMTExMiwxOTZaIiBmaWxsPSIjMjY1YTYwIiBzdHJva2U9IiMyNjVhNjAiLz48cGF0aCBkPSJNMTExMiwxOTZMOTQyLDQwN0wxMTU0LDQwMFoiIGZpbGw9IiMyNTYwNjAiIHN0cm9rZT0iIzI1NjA2MCIvPjxwYXRoIGQ9Ik0xMTEyLDE5NkwxMTU0LDQwMEwxMjk1LDE4NloiIGZpbGw9IiMyMzZjNjAiIHN0cm9rZT0iIzIzNmM2MCIvPjxwYXRoIGQ9Ik0xMjk1LDE4NkwxMTU0LDQwMEwxMzA3LDQzNVoiIGZpbGw9IiMyMjczNjAiIHN0cm9rZT0iIzIyNzM2MCIvPjxwYXRoIGQ9Ik0xMjk1LDE4NkwxMzA3LDQzNUwxNDExLDQwNloiIGZpbGw9IiMyMTdjNjAiIHN0cm9rZT0iIzIxN2M2MCIvPjxwYXRoIGQ9Ik0xMjk1LDE4NkwxNDExLDQwNkwxNTE2LDI2OFoiIGZpbGw9IiMyMDgwNjAiIHN0cm9rZT0iIzIwODA2MCIvPjxwYXRoIGQ9Ik0xMjk1LDE4NkwxNTE2LDI2OEwxNDc1LDE3MVoiIGZpbGw9IiMxZjgwNjAiIHN0cm9rZT0iIzFmODA2MCIvPjxwYXRoIGQ9Ik0xNTE2LDI2OEwxNDExLDQwNkwxNTk4LDQwMVoiIGZpbGw9IiMxZTgwNjAiIHN0cm9rZT0iIzFlODA2MCIvPjxwYXRoIGQ9Ik0xNTE2LDI2OEwxNTk4LDQwMUwxNjcwLDM3M1oiIGZpbGw9IiMxYzgwNjAiIHN0cm9rZT0iIzFjODA2MCIvPjxwYXRoIGQ9Ik0xNTE2LDI2OEwxNjcwLDM3M0wxNzM3LDE5MloiIGZpbGw9IiMxYzgwNjAiIHN0cm9rZT0iIzFjODA2MCIvPjxwYXRoIGQ9Ik0xNzM3LDE5MkwxNjcwLDM3M0wxNzIwLDQ4OFoiIGZpbGw9IiMxYjgwNjAiIHN0cm9rZT0iIzFiODA2MCIvPjxwYXRoIGQ9Ik0tOTIsNDEzTC0xMjcsNTMzTDcyLDUzM1oiIGZpbGw9IiM0MzI2NjAiIHN0cm9rZT0iIzQzMjY2MCIvPjxwYXRoIGQ9Ik0tOTIsNDEzTDcyLDUzM0w0OCwzMTdaIiBmaWxsPSIjNDEyNjYwIiBzdHJva2U9IiM0MTI2NjAiLz48cGF0aCBkPSJNNDgsMzE3TDcyLDUzM0wxNzUsNDA0WiIgZmlsbD0iIzNlMjY2MCIgc3Ryb2tlPSIjM2UyNjYwIi8+PHBhdGggZD0iTTE3NSw0MDRMNzIsNTMzTDIyMiw0ODhaIiBmaWxsPSIjM2MyNjYwIiBzdHJva2U9IiMzYzI2NjAiLz48cGF0aCBkPSJNMTc1LDQwNEwyMjIsNDg4TDM0NSwzODFaIiBmaWxsPSIjMzgyNjYwIiBzdHJva2U9IiMzODI2NjAiLz48cGF0aCBkPSJNMzQ1LDM4MUwyMjIsNDg4TDQwMyw1MjRaIiBmaWxsPSIjMzUyNjYwIiBzdHJva2U9IiMzNTI2NjAiLz48cGF0aCBkPSJNMzQ1LDM4MUw0MDMsNTI0TDU2MCwzNTZaIiBmaWxsPSIjMzEyNjYwIiBzdHJva2U9IiMzMTI2NjAiLz48cGF0aCBkPSJNNTYwLDM1Nkw0MDMsNTI0TDUwMyw1MjlaIiBmaWxsPSIjMmYyNjYwIiBzdHJva2U9IiMyZjI2NjAiLz48cGF0aCBkPSJNNTYwLDM1Nkw1MDMsNTI5TDY2Niw0ODNaIiBmaWxsPSIjMmUyZDYwIiBzdHJva2U9IiMyZTJkNjAiLz48cGF0aCBkPSJNNTYwLDM1Nkw2NjYsNDgzTDcxOCwzODlaIiBmaWxsPSIjMmMzNTYwIiBzdHJva2U9IiMyYzM1NjAiLz48cGF0aCBkPSJNNzE4LDM4OUw2NjYsNDgzTDg0NSw1NDJaIiBmaWxsPSIjMmIzZjYwIiBzdHJva2U9IiMyYjNmNjAiLz48cGF0aCBkPSJNNzE4LDM4OUw4NDUsNTQyTDgwNywzMzJaIiBmaWxsPSIjMmE0MzYwIiBzdHJva2U9IiMyYTQzNjAiLz48cGF0aCBkPSJNODA3LDMzMkw4NDUsNTQyTDkxOSw0NzVaIiBmaWxsPSIjMjk0YTYwIiBzdHJva2U9IiMyOTRhNjAiLz48cGF0aCBkPSJNODA3LDMzMkw5MTksNDc1TDk0Miw0MDdaIiBmaWxsPSIjMjg0ZTYwIiBzdHJva2U9IiMyODRlNjAiLz48cGF0aCBkPSJNOTQyLDQwN0w5MTksNDc1TDExMzQsNDc0WiIgZmlsbD0iIzI2NTk2MCIgc3Ryb2tlPSIjMjY1OTYwIi8+PHBhdGggZD0iTTk0Miw0MDdMMTEzNCw0NzRMMTE1NCw0MDBaIiBmaWxsPSIjMjU2MTYwIiBzdHJva2U9IiMyNTYxNjAiLz48cGF0aCBkPSJNMTE1NCw0MDBMMTEzNCw0NzRMMTMwNyw0MzVaIiBmaWxsPSIjMjM2ZDYwIiBzdHJva2U9IiMyMzZkNjAiLz48cGF0aCBkPSJNMTMwNyw0MzVMMTEzNCw0NzRMMTI4MCw1NDJaIiBmaWxsPSIjMjI3MjYwIiBzdHJva2U9IiMyMjcyNjAiLz48cGF0aCBkPSJNMTMwNyw0MzVMMTI4MCw1NDJMMTQwMiw0NjlaIiBmaWxsPSIjMjE3YjYwIiBzdHJva2U9IiMyMTdiNjAiLz48cGF0aCBkPSJNMTMwNyw0MzVMMTQwMiw0NjlMMTQxMSw0MDZaIiBmaWxsPSIjMjA3ZjYwIiBzdHJva2U9IiMyMDdmNjAiLz48cGF0aCBkPSJNMTQxMSw0MDZMMTQwMiw0NjlMMTUxOSw1MjhaIiBmaWxsPSIjMWY4MDYwIiBzdHJva2U9IiMxZjgwNjAiLz48cGF0aCBkPSJNMTQxMSw0MDZMMTUxOSw1MjhMMTU5OCw0MDFaIiBmaWxsPSIjMWU4MDYwIiBzdHJva2U9IiMxZTgwNjAiLz48cGF0aCBkPSJNMTU5OCw0MDFMMTUxOSw1MjhMMTcyMCw0ODhaIiBmaWxsPSIjMWM4MDYwIiBzdHJva2U9IiMxYzgwNjAiLz48cGF0aCBkPSJNMTU5OCw0MDFMMTcyMCw0ODhMMTY3MCwzNzNaIiBmaWxsPSIjMWI4MDYwIiBzdHJva2U9IiMxYjgwNjAiLz48cGF0aCBkPSJNLTEyNyw1MzNMLTQ1LDY0MUw3Miw1MzNaIiBmaWxsPSIjNDIyNjYwIiBzdHJva2U9IiM0MjI2NjAiLz48cGF0aCBkPSJNNzIsNTMzTC00NSw2NDFMNTQsNjQwWiIgZmlsbD0iIzQwMjY2MCIgc3Ryb2tlPSIjNDAyNjYwIi8+PHBhdGggZD0iTTcyLDUzM0w1NCw2NDBMMjAzLDY4N1oiIGZpbGw9IiMzZDI2NjAiIHN0cm9rZT0iIzNkMjY2MCIvPjxwYXRoIGQ9Ik03Miw1MzNMMjAzLDY4N0wyMjIsNDg4WiIgZmlsbD0iIzNiMjY2MCIgc3Ryb2tlPSIjM2IyNjYwIi8+PHBhdGggZD0iTTIyMiw0ODhMMjAzLDY4N0wzODQsNjQ3WiIgZmlsbD0iIzM3MjY2MCIgc3Ryb2tlPSIjMzcyNjYwIi8+PHBhdGggZD0iTTIyMiw0ODhMMzg0LDY0N0w0MDMsNTI0WiIgZmlsbD0iIzM1MjY2MCIgc3Ryb2tlPSIjMzUyNjYwIi8+PHBhdGggZD0iTTQwMyw1MjRMMzg0LDY0N0w0NzEsNjc1WiIgZmlsbD0iIzMyMjY2MCIgc3Ryb2tlPSIjMzIyNjYwIi8+PHBhdGggZD0iTTQwMyw1MjRMNDcxLDY3NUw1MDMsNTI5WiIgZmlsbD0iIzMwMjY2MCIgc3Ryb2tlPSIjMzAyNjYwIi8+PHBhdGggZD0iTTUwMyw1MjlMNDcxLDY3NUw2ODcsNjQ2WiIgZmlsbD0iIzJlMmI2MCIgc3Ryb2tlPSIjMmUyYjYwIi8+PHBhdGggZD0iTTUwMyw1MjlMNjg3LDY0Nkw2NjYsNDgzWiIgZmlsbD0iIzJkMzI2MCIgc3Ryb2tlPSIjMmQzMjYwIi8+PHBhdGggZD0iTTY2Niw0ODNMNjg3LDY0Nkw4NDUsNTQyWiIgZmlsbD0iIzJiM2U2MCIgc3Ryb2tlPSIjMmIzZTYwIi8+PHBhdGggZD0iTTg0NSw1NDJMNjg3LDY0Nkw4NTcsNjYyWiIgZmlsbD0iIzJhNDQ2MCIgc3Ryb2tlPSIjMmE0NDYwIi8+PHBhdGggZD0iTTg0NSw1NDJMODU3LDY2Mkw5OTUsNjM1WiIgZmlsbD0iIzI4NGY2MCIgc3Ryb2tlPSIjMjg0ZjYwIi8+PHBhdGggZD0iTTg0NSw1NDJMOTk1LDYzNUw5MTksNDc1WiIgZmlsbD0iIzI4NTE2MCIgc3Ryb2tlPSIjMjg1MTYwIi8+PHBhdGggZD0iTTkxOSw0NzVMOTk1LDYzNUwxMTM0LDQ3NFoiIGZpbGw9IiMyNjViNjAiIHN0cm9rZT0iIzI2NWI2MCIvPjxwYXRoIGQ9Ik0xMTM0LDQ3NEw5OTUsNjM1TDExNzgsNjQ3WiIgZmlsbD0iIzI1NjQ2MCIgc3Ryb2tlPSIjMjU2NDYwIi8+PHBhdGggZD0iTTExMzQsNDc0TDExNzgsNjQ3TDEyODAsNTQyWiIgZmlsbD0iIzIzNmQ2MCIgc3Ryb2tlPSIjMjM2ZDYwIi8+PHBhdGggZD0iTTEyODAsNTQyTDExNzgsNjQ3TDEzMDUsNjQ0WiIgZmlsbD0iIzIyNzM2MCIgc3Ryb2tlPSIjMjI3MzYwIi8+PHBhdGggZD0iTTEyODAsNTQyTDEzMDUsNjQ0TDE0MDIsNDY5WiIgZmlsbD0iIzIxN2I2MCIgc3Ryb2tlPSIjMjE3YjYwIi8+PHBhdGggZD0iTTE0MDIsNDY5TDEzMDUsNjQ0TDE1MTksNTI4WiIgZmlsbD0iIzIwODA2MCIgc3Ryb2tlPSIjMjA4MDYwIi8+PHBhdGggZD0iTTE1MTksNTI4TDEzMDUsNjQ0TDE0NDcsNzIwWiIgZmlsbD0iIzFmODA2MCIgc3Ryb2tlPSIjMWY4MDYwIi8+PHBhdGggZD0iTTE1MTksNTI4TDE0NDcsNzIwTDE1NDQsNjk0WiIgZmlsbD0iIzFlODA2MCIgc3Ryb2tlPSIjMWU4MDYwIi8+PHBhdGggZD0iTTE1MTksNTI4TDE1NDQsNjk0TDE2OTQsNjQ0WiIgZmlsbD0iIzFkODA2MCIgc3Ryb2tlPSIjMWQ4MDYwIi8+PHBhdGggZD0iTTE1MTksNTI4TDE2OTQsNjQ0TDE3MjAsNDg4WiIgZmlsbD0iIzFjODA2MCIgc3Ryb2tlPSIjMWM4MDYwIi8+PHBhdGggZD0iTS00NSw2NDFMMjAzLDY4N0w1NCw2NDBaIiBmaWxsPSIjM2YyNjYwIiBzdHJva2U9IiMzZjI2NjAiLz48cGF0aCBkPSJNMjAzLDY4N0wxNDQ3LDcyMEw0NzEsNjc1WiIgZmlsbD0iIzJiM2I2MCIgc3Ryb2tlPSIjMmIzYjYwIi8+PHBhdGggZD0iTTIwMyw2ODdMNDcxLDY3NUwzODQsNjQ3WiIgZmlsbD0iIzM0MjY2MCIgc3Ryb2tlPSIjMzQyNjYwIi8+PHBhdGggZD0iTTQ3MSw2NzVMMTQ0Nyw3MjBMODU3LDY2MloiIGZpbGw9IiMyODUxNjAiIHN0cm9rZT0iIzI4NTE2MCIvPjxwYXRoIGQ9Ik00NzEsNjc1TDg1Nyw2NjJMNjg3LDY0NloiIGZpbGw9IiMyYzM3NjAiIHN0cm9rZT0iIzJjMzc2MCIvPjxwYXRoIGQ9Ik04NTcsNjYyTDE0NDcsNzIwTDExNzgsNjQ3WiIgZmlsbD0iIzI0NmE2MCIgc3Ryb2tlPSIjMjQ2YTYwIi8+PHBhdGggZD0iTTg1Nyw2NjJMMTE3OCw2NDdMOTk1LDYzNVoiIGZpbGw9IiMyNjVhNjAiIHN0cm9rZT0iIzI2NWE2MCIvPjxwYXRoIGQ9Ik0xMTc4LDY0N0wxNDQ3LDcyMEwxMzA1LDY0NFoiIGZpbGw9IiMyMTc5NjAiIHN0cm9rZT0iIzIxNzk2MCIvPjwvZz48L3N2Zz4=')";
-                                
-                                header.setAttribute('style', 'background-image: ' + dataUrl);
-                        </script>
-
-                <script>
-                        BackgroundCheck.init({
-                                targets: '.intro-header,.navbar',
-                                images: '.intro-header'
-                        });
-                </script>
-        </body>
+  <script src="/assets/js/jquery-1.11.2.min.js"></script>
+  <script src="/assets/js/bootstrap.min.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
 </html>

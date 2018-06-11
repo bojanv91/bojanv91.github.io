@@ -1,21 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
 	<channel>
-		<title>Bojan's Notes</title>
+		<title>Bojan Veljanovski</title>
 		<link>http://bojanv91.github.io/</link>
-		<description>Hi, I'm Bojan Veljanovski</description>
+		<description>I write about design, development, and delivery of software.</description>
 		<copyright>2018</copyright>
-		<pubDate>Sun, 10 Jun 2018 03:03:38 GMT</pubDate>
-		<lastBuildDate>Sun, 10 Jun 2018 03:03:38 GMT</lastBuildDate>
+		<pubDate>Mon, 11 Jun 2018 16:13:02 GMT</pubDate>
+		<lastBuildDate>Mon, 11 Jun 2018 16:13:02 GMT</lastBuildDate>
 		<item>
-			<title>Select N+1 Problem with Examples</title>
-			<link>http://bojanv91.github.io/posts/2018/06/select-n-1-problem-with-examples</link>
+			<title>Select N+1 Problem</title>
+			<link>http://bojanv91.github.io/posts/2018/06/select-n-1-problem</link>
 			<description>&lt;p&gt;Select N+1 is a data-access performance problem. Any code that iterates thru a collection of elements, and executes additional query for each element, has this problem. Thought, this behavior is avoidable.&lt;/p&gt;</description>
-			<guid>http://bojanv91.github.io/posts/2018/06/select-n-1-problem-with-examples</guid>
+			<guid>http://bojanv91.github.io/posts/2018/06/select-n-1-problem</guid>
 			<pubDate>Sun, 10 Jun 2018 00:00:00 GMT</pubDate>
-			<content:encoded>&lt;p&gt;Select N+1 is a data-access performance problem. Any code that iterates thru a collection of elements, and executes additional query for each element, has this problem. Thought, this behavior is avoidable.&lt;/p&gt;
+			<content:encoded>&lt;p&gt;Select N+1 is a data-access performance problem. Any code that iterates thru a collection of elements, and executes additional query for each element, has this problem. Thought, this behavior is avoidable.&lt;!--excerpt--&gt;&lt;/p&gt;
 &lt;p&gt;Let's look at this sample code:&lt;/p&gt;
-&lt;p&gt;&lt;img src="..%5Cimages%5Cdata-model.png" class="img-fluid" alt="1528580795195" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/data-model.png" class="img-fluid" alt="1528580795195" /&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code class="language-c#"&gt;var books = LoadBooks();        // 1st query
 foreach (var book in books)
 {
@@ -128,11 +128,10 @@ foreach (var book in books)
 		<item>
 			<title>Extending Select2 with Adapters</title>
 			<link>http://bojanv91.github.io/posts/2017/10/extending-select2-with-adapters-and-decorators</link>
-			<description>&lt;p&gt;Starting from version 4.0, the Select2 jQuery plugin uses the adapter pattern as a way for developers to extend its features and behavior. Having implemented very custom select-based components, I can assure you that this is very powerful and useful feature.&lt;/p&gt;
-&lt;p&gt;Unfortunately, the docs about this feature do not include concrete usage examples, so it's quite difficult to get started, to understand how to use it, and how to build on top of it - especially if you haven't worked with jQuery plugins for a while. So, this article offers usage examples and describes how to use Select2 &lt;a href="https://select2.org/advanced/adapters-and-decorators"&gt;adapters and decorators&lt;/a&gt; feature.&lt;/p&gt;</description>
+			<description>&lt;p&gt;Starting from version 4.0, the Select2 jQuery plugin uses the adapter pattern as a way for developers to extend its features and behavior. Having implemented very custom select-based components, I can assure you that this is very powerful and useful feature.&lt;/p&gt;</description>
 			<guid>http://bojanv91.github.io/posts/2017/10/extending-select2-with-adapters-and-decorators</guid>
 			<pubDate>Tue, 24 Oct 2017 00:00:00 GMT</pubDate>
-			<content:encoded>&lt;p&gt;Starting from version 4.0, the Select2 jQuery plugin uses the adapter pattern as a way for developers to extend its features and behavior. Having implemented very custom select-based components, I can assure you that this is very powerful and useful feature.&lt;/p&gt;
+			<content:encoded>&lt;p&gt;Starting from version 4.0, the Select2 jQuery plugin uses the adapter pattern as a way for developers to extend its features and behavior. Having implemented very custom select-based components, I can assure you that this is very powerful and useful feature.&lt;!--excerpt--&gt;&lt;/p&gt;
 &lt;p&gt;Unfortunately, the docs about this feature do not include concrete usage examples, so it's quite difficult to get started, to understand how to use it, and how to build on top of it - especially if you haven't worked with jQuery plugins for a while. So, this article offers usage examples and describes how to use Select2 &lt;a href="https://select2.org/advanced/adapters-and-decorators"&gt;adapters and decorators&lt;/a&gt; feature.&lt;!--excerpt--&gt;&lt;/p&gt;
 &lt;h2 id="what-are-adapters-and-decorators-in-select2"&gt;What are adapters and decorators in Select2?&lt;/h2&gt;
 &lt;p&gt;Adapter, adapts interface of an existing class to another interface. For example replacing the appearance of the selection input element with icon element.&lt;/p&gt;
@@ -297,10 +296,10 @@ foreach (var book in books)
 		<item>
 			<title>Refactoring a feature envy code</title>
 			<link>http://bojanv91.github.io/posts/2017/07/refactoring-a-feature-envy-code</link>
-			<description>&lt;p&gt;In a design review meeting a colleague asked: &lt;em&gt;Why sometimes we directly manipulate dependent objects fields, and sometimes we put the manipulation logic behind methods in those objects? What are pros/cons in both approaches?&lt;/em&gt; This was a great question, because it opened a productive discussion. Checking the &lt;a href="https://blog.codinghorror.com/code-smells/"&gt;code smells taxonomy&lt;/a&gt;, and analyzing the code under review deeper, we identified it belongs to the &lt;strong&gt;feature envy&lt;/strong&gt; code smells category. And this is how we refactored it.&lt;/p&gt;</description>
+			<description>&lt;p&gt;In a design review meeting a colleague asked: "Why sometimes we directly manipulate dependent objects fields, and sometimes we put the manipulation logic behind methods in those objects? What are pros/cons in both approaches?"&lt;/p&gt;</description>
 			<guid>http://bojanv91.github.io/posts/2017/07/refactoring-a-feature-envy-code</guid>
 			<pubDate>Sat, 29 Jul 2017 00:00:00 GMT</pubDate>
-			<content:encoded>&lt;p&gt;In a design review meeting a colleague asked: &lt;em&gt;Why sometimes we directly manipulate dependent objects fields, and sometimes we put the manipulation logic behind methods in those objects? What are pros/cons in both approaches?&lt;/em&gt; This was a great question, because it opened a productive discussion. Checking the &lt;a href="https://blog.codinghorror.com/code-smells/"&gt;code smells taxonomy&lt;/a&gt;, and analyzing the code under review deeper, we identified it belongs to the &lt;strong&gt;feature envy&lt;/strong&gt; code smells category. And this is how we refactored it.&lt;!--excerpt--&gt;&lt;/p&gt;
+			<content:encoded>&lt;p&gt;In a design review meeting a colleague asked: &amp;quot;Why sometimes we directly manipulate dependent objects fields, and sometimes we put the manipulation logic behind methods in those objects? What are pros/cons in both approaches?&amp;quot;&lt;!--excerpt--&gt; This was a great question, because it opened a productive discussion. Checking the &lt;a href="https://blog.codinghorror.com/code-smells/"&gt;code smells taxonomy&lt;/a&gt;, and analyzing the code under review deeper, we identified it belongs to the feature envy code smells category. And this is how we refactored it.&lt;!--excerpt--&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;What is feature envy code?&lt;/strong&gt;
 &lt;em&gt;Feature envy&lt;/em&gt; is a code smell describing when an object accesses fields of another object to execute some operation, instead of just telling the object what to do.&lt;/p&gt;
 &lt;p&gt;Let's analyze the following code segment, and try to refactor it.
@@ -577,11 +576,10 @@ Short story to working view compilation functionality is to add the following pi
 		<item>
 			<title>Extensions I use with Visual Studio 2015</title>
 			<link>http://bojanv91.github.io/posts/2016/12/vs2016-extensions</link>
-			<description>&lt;p&gt;Rich IDEs are a great asset to enhance productivity in writing and reading code.&lt;/p&gt;
-&lt;p&gt;Visual Studio 2015 as a rich IDE helps a lot when navigating through code and files, refactoring, smart searching classes/methods/properties and much more. But still there are some useful or improved functionalities not baked in, that can be easily found as extensions.&lt;/p&gt;</description>
+			<description>&lt;p&gt;Rich IDEs are a great asset to enhance productivity in writing and reading code.&lt;/p&gt;</description>
 			<guid>http://bojanv91.github.io/posts/2016/12/vs2016-extensions</guid>
 			<pubDate>Sat, 31 Dec 2016 00:00:00 GMT</pubDate>
-			<content:encoded>&lt;p&gt;Rich IDEs are a great asset to enhance productivity in writing and reading code.&lt;/p&gt;
+			<content:encoded>&lt;p&gt;Rich IDEs are a great asset to enhance productivity in writing and reading code.&lt;!--excerpt--&gt;&lt;/p&gt;
 &lt;p&gt;Visual Studio 2015 as a rich IDE helps a lot when navigating through code and files, refactoring, smart searching classes/methods/properties and much more. But still there are some useful or improved functionalities not baked in, that can be easily found as extensions.&lt;!--excerpt--&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Here is the list of extensions that I use every day:&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -839,7 +837,7 @@ _ViewStart.cshtml
 			<description>&lt;p&gt;The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the &lt;code&gt;Specification Pattern&lt;/code&gt; &lt;/p&gt;</description>
 			<guid>http://bojanv91.github.io/posts/2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern</guid>
 			<pubDate>Tue, 29 Sep 2015 00:00:00 GMT</pubDate>
-			<content:encoded>&lt;p&gt;The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the &lt;code&gt;Specification Pattern&lt;/code&gt; &lt;!--excerpt--&gt;. Have in mind that, I choose a very basic example in order to keep things simple and avoid confusion that can be arouse from domain complexity.&lt;/p&gt;
+			<content:encoded>&lt;p&gt;The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the &lt;code&gt;Specification Pattern&lt;/code&gt; &lt;!--excerpt--&gt;. Have in mind that, I choose a very basic example in order to keep things simple and avoid confusion that can be arouse from domain complexity.&lt;!--excerpt--&gt;&lt;/p&gt;
 &lt;p&gt;Here is the original code:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;//..
 
