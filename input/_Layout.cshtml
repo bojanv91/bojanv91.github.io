@@ -1,7 +1,8 @@
-@{
+﻿@{
     string Title = Model.WithoutSettings.String(BlogKeys.Title);
     string BlogTitle = Context.String(BlogKeys.Title);
     string PageTitle = BlogTitle + (string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title);
+    string GoogleAnalytics = Context.String("Custom.GoogleAnalytics");
 
     List<Tuple<string, string>> pages = Context
         .Documents[Blog.Pages]
@@ -24,15 +25,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- Global Site Tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-57647909-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments)};
-      gtag('js', new Date());
+    @if(!string.IsNullOrEmpty(GoogleAnalytics))
+    {
+      <!-- Global Site Tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=@GoogleAnalytics"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments)};
+        gtag('js', new Date());
 
-      gtag('config', 'UA-57647909-1');
-    </script>
+        gtag('config', '@GoogleAnalytics');
+      </script>
+    }
 
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -97,23 +101,6 @@
     </div>
   </nav>
 
-  <!-- 
-  @if(Context.String(BlogKeys.Description) != null)
-  {
-      <a href="@Context.GetLink("/")"><h1>@Context.String(BlogKeys.Description)</h1> </a>
-  }
-  @if(Context.String(BlogKeys.Intro) != null)
-  {            
-      @if(Context.String(BlogKeys.Description) != null)
-      {
-          <hr>
-      }
-      <span>@Context.String(BlogKeys.Intro)</span>
-  }
-  if index page
-  <div class="intro-header"></div>
-  -->
-
   @RenderBody()
 
   <footer>
@@ -122,7 +109,7 @@
         <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
           <ul class="list-inline text-center footer-links">
             <li>
-              <a href="https://github.com/bojanv91" title="GitHub">
+              <a href="@Context.String("Custom.Social.GitHub")" title="GitHub">
                 <span class="fa-stack fa-lg">
                   <i class="fa fa-circle fa-stack-2x"></i>
                   <i class="fa fa-github fa-stack-1x fa-inverse"></i>
@@ -130,7 +117,7 @@
               </a>
             </li>
             <li>
-              <a href="https://twitter.com/bojanv91" title="Twitter">
+              <a href="@Context.String("Custom.Social.Twitter")" title="Twitter">
                 <span class="fa-stack fa-lg">
                   <i class="fa fa-circle fa-stack-2x"></i>
                   <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
@@ -139,7 +126,7 @@
             </li>
           </ul>
           <p class="copyright text-muted">
-            © Bojan Veljanovski • @DateTime.Now.Year <br/>
+            © @Context.String(BlogKeys.Title) • @DateTime.Now.Year <br/>
             <a href="/feed.rss"><i class="fa fa-rss"></i> RSS Feed</a>
             |
             <a href="/feed.atom"><i class="fa fa-rss"></i> Atom Feed</a>

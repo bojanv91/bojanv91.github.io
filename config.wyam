@@ -4,13 +4,18 @@
 // Customize your settings and add new ones here
 Settings[Keys.Host] = "bojanv91.github.io";	// BojansNotes.com"
 Settings[BlogKeys.Title] = "Bojan Veljanovski";
-Settings[BlogKeys.Description] = "Hi, I'm Bojan Veljanovski";
-Settings[BlogKeys.Intro] = "This is my personal blog, where I share notes about my journey in software development and what I'm learning.";
+Settings[BlogKeys.Description] = "I write about design, development, and delivery of software.";
+Settings[BlogKeys.Intro] = "I write about design, development, and delivery of software.";
 
-Settings[BlogKeys.CaseInsensitiveTags] = true;
+Settings[BlogKeys.CaseInsensitiveTags] = false;
 Settings[BlogKeys.IncludeDateInPostPath] = true;
 Settings[BlogKeys.IndexPageSize] = 9;
 Settings[BlogKeys.IndexPaging] = true;
+
+Settings["Custom.Social.GitHub"] = "https://github.com/bojanv91";
+Settings["Custom.Social.Twitter"] = "https://twitter.com/bojanv91";
+Settings["Custom.GoogleAnalytics"] = "UA-57647909-1";
+Settings["Custom.Disqus"] = "bojanveljanovski";
 
 // Add any pipeline customizations here
 

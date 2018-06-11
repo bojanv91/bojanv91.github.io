@@ -1,9 +1,25 @@
 @{
     Layout = "_Layout";
+    string Title = Model.WithoutSettings.String(BlogKeys.Title);
+    string BlogTitle = Context.String(BlogKeys.Title);
+    string PageTitle = BlogTitle + (string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title);
+    string Description = Context.String(BlogKeys.Description) ?? "";
 }
 
-<div class="intro-header"></div>
+<div class="intro-header no-img">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="page-heading">
+          <h1>@Title</h1>
+          <span class="page-subheading">@Description</span>
+          <hr class="small">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div role="main" class="container">
-    @RenderBody()
+  @RenderBody()
 </div>
