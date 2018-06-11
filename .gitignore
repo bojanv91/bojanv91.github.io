@@ -5,3 +5,6 @@ output/**/*
 config.wyam.hash
 config.wyam.dll
 config.wyam.packages.xml
+.vs/bojanv91.github.io/v15/.suo
+.vs/config/applicationhost.config
+.vs/slnx.sqlite
