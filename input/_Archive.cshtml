@@ -1,20 +1,48 @@
-<ul>
-    @foreach(var post in Model.DocumentList(Keys.PageDocuments)){
-
-    <li>
-        <a href="@Context.GetLink(post)">
-            <h2>@post.WithoutSettings.String(BlogKeys.Title)</h2>
-        </a>
-        @Html.Raw(post.String(BlogKeys.Excerpt))
-    </li>
-
-    }
-</ul>
-
-@if(Model.Bool(Keys.HasPreviousPage)) {
-    <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))"><span aria-hidden="true">&larr;</span> Newer</a> 
-} 
-
-@if(Model.Bool(Keys.HasNextPage)) {
-    <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older <span aria-hidden="true">&rarr;</span></a> 
+Title: Archive
+---
+@{
+    Layout = "_Default";
 }
+
+
+<div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="posts-list">
+            @foreach(IGrouping<int, IDocument> group in Model.DocumentList(Keys.PageDocuments)
+                .Where(x => x.ContainsKey(BlogKeys.Published))
+                .OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published))
+                .GroupBy(x => x.Get<DateTime>(BlogKeys.Published).Year)
+                .OrderByDescending(x => x.Key))
+            {
+                <h1>@group.Key</h1>
+                <hr />
+                <ul>
+                @foreach (var post in group)
+                {
+                    <li>
+                        <a href="@Context.GetLink(post)">@post.WithoutSettings.String(BlogKeys.Title)</a>
+                        <span>(@(post.Get<DateTime>(BlogKeys.Published).ToShortDateString(Context)))</span>
+                    </li>
+                }
+                </ul>
+            }            
+        </div>
+
+        <ul class="pager main-pager">
+
+            @if(Model.Bool(Keys.HasPreviousPage)) {
+            <li class="previous">
+                <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))">&larr; Newer Posts</a>
+            </li>
+            } 
+
+            @if(Model.Bool(Keys.HasNextPage)) {
+            <li class="next">
+                <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older Posts &rarr;</a>
+            </li>
+            }
+
+        </ul>
+
+    </div>
+</div>

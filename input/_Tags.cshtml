@@ -1,10 +1,64 @@
 Title: All Tags
 ---
-@foreach (IDocument tagDocument in Documents[Blog.Tags]
-    .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
-    .OrderByDescending(x => x.Get<int>(Keys.TotalItems)))
-{
-    string tag = tagDocument.String(BlogKeys.Tag);
-    string postCount = tagDocument.String(Keys.TotalItems);
-    <a role="button" href="@Context.GetLink(tagDocument)" > @tag (@postCount)</a>
+@{
+    Layout = "_Default";
+    var tagDocuments = Documents[Blog.Tags]
+        .GroupBy(x => x.String(BlogKeys.Tag))
+        .Select(x => x.First())
+        .OrderBy(x => x.String(BlogKeys.Tag));
+    //var posts = Model.DocumentList(Keys.PageDocuments); //.OrderBy(x => x.WithoutSettings.String(BlogKeys.Title));
+    //IDocument root = Document;
+	//IDocument parent = root.Document(Keys.Parent);
+    //var children = root.DocumentList(Keys.Children);
 }
+
+<div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        Tags: 
+        @foreach (IDocument tagDocument in tagDocuments)
+        {
+            string tag = tagDocument.String(BlogKeys.Tag);
+            string postCount = tagDocument.String(Keys.TotalItems);
+            <a role="button" href="@Context.GetLink(tagDocument)" > @tag (@postCount)</a>
+        }
+        <br />
+
+        <div class="posts-list">
+            @foreach (IDocument tagDocument in tagDocuments)
+            {
+                string tag = tagDocument.String(BlogKeys.Tag);
+                var tagPosts = tagDocument.DocumentList(Keys.PageDocuments).OrderBy(x => x.WithoutSettings.String(BlogKeys.Title));
+                
+                <h1>@tag</h1>
+                <hr />
+                <ul>
+                @foreach (var post in tagPosts)
+                {
+                    <li>
+                        <a href="@Context.GetLink(post)">@post.WithoutSettings.String(BlogKeys.Title)</a>
+                        <span>(@(post.Get<DateTime>(BlogKeys.Published).ToShortDateString(Context)))</span>
+                    </li>
+                }
+                </ul>
+            }
+        </div>
+
+
+        <ul class="pager main-pager">
+
+            @if(Model.Bool(Keys.HasPreviousPage)) {
+            <li class="previous">
+                <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))">&larr; Newer Posts</a>
+            </li>
+            } 
+
+            @if(Model.Bool(Keys.HasNextPage)) {
+            <li class="next">
+                <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older Posts &rarr;</a>
+            </li>
+            }
+
+        </ul>
+
+    </div>
+</div>
