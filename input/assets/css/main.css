@@ -24,7 +24,7 @@ body {
 
 p {
   line-height: 1.5;
-  margin: 30px 0;
+  margin: 20px 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -732,7 +732,7 @@ table {
 /* --- Code blocks --- */
 
 pre {
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.5em;
 }
 
