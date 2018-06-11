@@ -3,79 +3,29 @@
 }
 
 <div class="row">
-    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+  <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
 
-        <div class="posts-list">
-            @foreach(IDocument post in Model.DocumentList(Keys.PageDocuments))
-            {
-                var tags = post.Get<string[]>(BlogKeys.Tags);
+    @Html.Partial("_PostsGrid", Model.DocumentList(Keys.PageDocuments))
 
-                <article class="post-preview">
-                    <a href="@Context.GetLink(post)">
-                        <h2 class="post-title">@post.WithoutSettings.String(BlogKeys.Title)</h2>
+    <ul class="pager main-pager">
 
-                        @if (!string.IsNullOrEmpty(post.String(BlogKeys.Lead)))
-                        {
-                            <h3 class="post-subtitle">
-                                @post.String(BlogKeys.Lead)
-                            </h3>
-                        }
-                    </a>
+      @if(Model.Bool(Keys.HasPreviousPage))
+      {
+      <li class="previous">
+        <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))">&larr; Newer Posts</a>
+      </li>
+      }
 
-                    <p class="post-meta">
-                        Posted on @(post.Get<DateTime>(BlogKeys.Published).ToShortDateString(Context))
-                        @if (tags != null && tags.Any())
-                        {
-                          <text>in </text>
-                          @foreach (string tag in tags){ 
-                            IDocument tagDocument = Documents[Blog.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag)== tag); 
-                            if(tagDocument != null) {
-                              <a href="@Context.GetLink(tagDocument)">@tag</a>
-                              @if (tag != tags.Last())
-                              {
-                                <text>, </text>
-                              }
-                            }
-                          }
-                        }
-                    </p>
+      @if(Model.Bool(Keys.HasNextPage))
+      {
+      <li class="next">
+        <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older Posts &rarr;</a>
+      </li>
+      }
 
-                    <div class="post-entry-container">
+    </ul>
 
-                        <div class="post-entry">
-                            @if(Context.Bool(BlogKeys.IndexFullPosts))
-                            {
-                                @Html.Raw(post.Content)
-                            }
-                            else
-                            {
-                                @Html.Raw(post.String(BlogKeys.Excerpt))
-                            }
-                            <a href="@Context.GetLink(post)" class="post-read-more">[Read&nbsp;More]</a>
-                        </div>
-                    </div>
-                </article>
-            }
-        </div>
-
-
-        <ul class="pager main-pager">
-
-            @if(Model.Bool(Keys.HasPreviousPage)) {
-            <li class="previous">
-                <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))">&larr; Newer Posts</a>
-            </li>
-            } 
-
-            @if(Model.Bool(Keys.HasNextPage)) {
-            <li class="next">
-                <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older Posts &rarr;</a>
-            </li>
-            }
-
-        </ul>
-
-    </div>
+  </div>
 </div>
 
 

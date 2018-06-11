@@ -1,0 +1,61 @@
+@model IEnumerable<IDocument>
+  @{
+  Layout = null;
+  const int ITEMS_PER_GROUP = 3;
+  var posts = Model;
+  }
+
+  <div class="posts-list">
+    @foreach(IDocument post in posts)
+      {
+          var tags = post.Get<string[]>(BlogKeys.Tags);
+
+    <article class="post-preview">
+      <a href="@Context.GetLink(post)">
+        <h2 class="post-title">@post.WithoutSettings.String(BlogKeys.Title)</h2>
+
+        @if (!string.IsNullOrEmpty(post.String(BlogKeys.Lead)))
+          {
+        <h3 class="post-subtitle">
+          @post.String(BlogKeys.Lead)
+        </h3>
+          }
+      </a>
+
+      <p class="post-meta">
+        Posted on @(post.Get<DateTime>(BlogKeys.Published).ToShortDateString(Context))
+        @if (tags != null && tags.Any())
+          {
+        <text>in </text>
+        @foreach (string tag in tags)
+            {
+              IDocument tagDocument = Documents[Blog.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag)== tag);
+              if(tagDocument != null)
+              {
+        <a href="@Context.GetLink(tagDocument)">@tag</a>
+        @if (tag != tags.Last())
+                {
+        <text>, </text>
+                }
+              }
+            }
+          }
+      </p>
+
+      <div class="post-entry-container">
+
+        <div class="post-entry">
+          @if(Context.Bool(BlogKeys.IndexFullPosts))
+            {
+          @Html.Raw(post.Content)
+            }
+            else
+            {
+          @Html.Raw(post.String(BlogKeys.Excerpt))
+            }
+          <a href="@Context.GetLink(post)" class="post-read-more">[Read&nbsp;More]</a>
+        </div>
+      </div>
+    </article>
+      }
+  </div>

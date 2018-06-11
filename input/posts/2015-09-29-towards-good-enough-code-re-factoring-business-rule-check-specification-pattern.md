@@ -4,7 +4,7 @@ Lead: A refactoring session towards good enough code
 Title: Refactoring business rules with the Specification Pattern
 ---
 
-The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the `Specification Pattern` <!--excerpt-->. Have in mind that, I choose a very basic example in order to keep things simple and avoid confusion that can be arouse from domain complexity.
+The other day, one of my colleges asked me for code review on a specific part of code and I said let's dig a little deeper into the options that we have. In this article, I demonstrate the re-factoring steps in detail that we've taken and eventually how we employed the `Specification Pattern` <!--excerpt-->. Have in mind that, I choose a very basic example in order to keep things simple and avoid confusion that can be arouse from domain complexity.<!--excerpt-->
 
 Here is the original code:  
   	

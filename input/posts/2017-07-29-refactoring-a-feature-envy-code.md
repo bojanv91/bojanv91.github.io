@@ -4,7 +4,7 @@ Lead: Towards less coupled code, adhering to the Tell Don't Ask principle
 Title: Refactoring a feature envy code
 ---
 
-In a design review meeting a colleague asked: *Why sometimes we directly manipulate dependent objects fields, and sometimes we put the manipulation logic behind methods in those objects? What are pros/cons in both approaches?* This was a great question, because it opened a productive discussion. Checking the [code smells taxonomy](https://blog.codinghorror.com/code-smells/), and analyzing the code under review deeper, we identified it belongs to the **feature envy** code smells category. And this is how we refactored it.<!--excerpt--> 
+In a design review meeting a colleague asked: "Why sometimes we directly manipulate dependent objects fields, and sometimes we put the manipulation logic behind methods in those objects? What are pros/cons in both approaches?"<!--excerpt--> This was a great question, because it opened a productive discussion. Checking the [code smells taxonomy](https://blog.codinghorror.com/code-smells/), and analyzing the code under review deeper, we identified it belongs to the feature envy code smells category. And this is how we refactored it.<!--excerpt--> 
 
 **What is feature envy code?**
 *Feature envy* is a code smell describing when an object accesses fields of another object to execute some operation, instead of just telling the object what to do.

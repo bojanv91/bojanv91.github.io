@@ -1,13 +1,13 @@
 Tags: [bad code]
 Lead: Identifying, understanding and fixing Select N+1 problems
-Title: Select N+1 Problem with Examples
+Title: Select N+1 Problem
 ---
 
-Select N+1 is a data-access performance problem. Any code that iterates thru a collection of elements, and executes additional query for each element, has this problem. Thought, this behavior is avoidable.
+Select N+1 is a data-access performance problem. Any code that iterates thru a collection of elements, and executes additional query for each element, has this problem. Thought, this behavior is avoidable.<!--excerpt-->
 
 Let's look at this sample code:
 
-![1528580795195](..\images\data-model.png)
+![1528580795195](/images/data-model.png)
 
 ```c#
 var books = LoadBooks();        // 1st query

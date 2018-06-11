@@ -1,0 +1,69 @@
+@model IEnumerable<IDocument>
+@{
+  Layout = null;
+  const int ITEMS_PER_GROUP = 3;
+  var groupedPosts = Model
+      .Select((post, index) => new { post, index })
+      .GroupBy(x => x.index / ITEMS_PER_GROUP)
+      .Select(g => g.Select(x => x.post));
+}
+
+<div class="posts-list grid-override">
+  @foreach (var group in groupedPosts)
+  {
+    <div class="row">
+
+      @foreach(IDocument post in group)
+      {
+        <div class="col-md-4">
+          <article class="post-preview">
+            <a href="@Context.GetLink(post)">
+              @* TODO: Thumb image? *@
+              <h2 class="post-title">@post.WithoutSettings.String(BlogKeys.Title)</h2>
+            </a>
+
+            <div class="post-entry-container">
+              <div class="post-entry">
+                @{
+                  var excerptString = post.String(BlogKeys.Excerpt);
+                }
+                @if (excerptString.Length >= 120)
+                {
+                  <text>@Html.Raw(excerptString.Substring(0, 130) + "...")</text>
+                }
+                else
+                {
+                  <text>@Html.Raw(excerptString)</text>
+                }
+              </div>
+            </div>
+
+            <p class="post-meta">
+              @(post.Get<DateTime>(BlogKeys.Published).ToString("dd MMM yyyy"))
+              @{
+                var tags = post.Get<string[]>(BlogKeys.Tags);
+              }
+              @if (tags != null && tags.Any())
+              {
+                <text><br />tags: </text>
+                @foreach (string tag in tags)
+                {
+                  IDocument tagDocument = Documents[Blog.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag)== tag);
+                  if(tagDocument != null)
+                  {
+                    <a href="@Context.GetLink(tagDocument)">@tag</a>
+                    @if (tag != tags.Last())
+                    {
+                      <text>, </text>
+                    }
+                  }
+                }
+              }
+            </p>
+          </article>
+        </div>
+      }
+
+    </div>
+  }
+</div>
