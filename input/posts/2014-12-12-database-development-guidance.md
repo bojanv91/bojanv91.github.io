@@ -1,4 +1,4 @@
-Tags: [database migrations]
+Tags: [Database, .NET]
 RedirectFrom: 2014/12/database-development-guidance
 Title: Database Development Guide for .NET teams with FluentMigrator
 ---

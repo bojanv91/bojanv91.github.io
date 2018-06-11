@@ -1,4 +1,4 @@
-Tags: [tools]
+Tags: [Tools]
 RedirectFrom: 2017/03/visual-studio-2017-notes/
 Title: Visual Studio 2017 Notes
 ---

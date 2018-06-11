@@ -1,4 +1,4 @@
-Tags: [security]
+Tags: [Security, .NET]
 RedirectFrom: 2015/01/getting-started-with-rhino-security-structuremap/
 Lead: A guide for setting up Rhino Security library
 Title: Getting Started with Rhino Security and Structure Map

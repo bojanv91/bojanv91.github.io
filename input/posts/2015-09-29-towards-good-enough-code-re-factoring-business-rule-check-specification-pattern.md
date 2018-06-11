@@ -1,6 +1,5 @@
-Tags: [software design, patterns]
+Tags: [Software Design]
 RedirectFrom: 2015/09/towards-good-enough-code-re-factoring-business-rule-check-specification-pattern/
-Lead: A refactoring session towards good enough code
 Title: Refactoring business rules with the Specification Pattern
 ---
 

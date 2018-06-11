@@ -1,6 +1,5 @@
-Tags: [asp.net, software design]
+Tags: [Software Design, ASP.NET]
 RedirectFrom: 2016/05/feature-folders-structure-in-asp-net/
-Lead: Structuring files by domain cocerns, instead of technical concerns
 Title: Feature by Folder Structure in ASP.NET MVC5
 ---
 

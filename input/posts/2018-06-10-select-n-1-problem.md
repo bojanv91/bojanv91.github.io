@@ -1,5 +1,4 @@
-Tags: [bad code]
-Lead: Identifying, understanding and fixing Select N+1 problems
+Tags: [Software Design]
 Title: Select N+1 Problem
 ---
 

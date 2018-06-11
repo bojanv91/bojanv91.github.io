@@ -1,6 +1,5 @@
-Tags: [code smells, refactoring]
+Tags: [Software Design]
 RedirectFrom: 2017/07/refactoring-a-feature-envy-code/
-Lead: Towards less coupled code, adhering to the Tell Don't Ask principle
 Title: Refactoring a feature envy code
 ---
 

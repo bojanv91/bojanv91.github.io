@@ -1,4 +1,4 @@
-Tags: [meetups]
+Tags: [Meetups]
 RedirectFrom: 2016/10/global-day-of-coderetreat-2016-haselt-macedonia/
 Lead: Celebrating passion and software craftsmanship
 Title: Global Day of Coderetreat 2016 in Skopje, Macedonia

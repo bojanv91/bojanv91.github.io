@@ -1,4 +1,4 @@
-Tags: asp.net
+Tags: [ASP.NET]
 RedirectFrom: 2017/01/snippet-fix-razor-views-compilation/
 Title: Fix Razor Views Compilation in ASP.NET MVC
 ---

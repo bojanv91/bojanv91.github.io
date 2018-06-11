@@ -1,4 +1,4 @@
-Tags: [jquery]
+Tags: [Frontend]
 Lead: How to extend Select2 appearance and behavior using its adapters and decorators feature
 Title: Extending Select2 with Adapters
 ---
