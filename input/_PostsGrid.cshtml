@@ -48,15 +48,7 @@
                 <text><br />tags: </text>
                 @foreach (string tag in tags)
                 {
-                  IDocument tagDocument = Documents[Blog.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag)== tag);
-                  if(tagDocument != null)
-                  {
-                    <a href="@Context.GetLink(tagDocument)">@tag</a>
-                    @if (tag != tags.Last())
-                    {
-                      <text>, </text>
-                    }
-                  }
+                  <a href="/tags/#@tag">@tag</a>@if (tag != tags.Last()){<text>,</text>}
                 }
               }
             </p>

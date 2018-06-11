@@ -15,7 +15,13 @@ Title: All Tags
     {
       string tag = tagDocument.String(BlogKeys.Tag);
       string postCount = tagDocument.String(Keys.TotalItems);
-    <a role="button" href="@Context.GetLink(tagDocument)"> @tag (@postCount)</a>
+
+      @*<a role="button" href="@Context.GetLink(tagDocument)">@tag (@postCount)</a>*@
+      <a role="button" href="#@tag">@tag (@postCount)</a>
+      @if (tagDocument != tagDocuments.Last())
+      {
+        <text>&bull;</text>
+      }
     }
     <br />
 
@@ -25,14 +31,14 @@ Title: All Tags
         string tag = tagDocument.String(BlogKeys.Tag);
         var tagPosts = tagDocument.DocumentList(Keys.PageDocuments).OrderBy(x => x.WithoutSettings.String(BlogKeys.Title));
 
-      <h1>@tag</h1>
+      <h1 id="@tag">@tag</h1>
       <hr />
       <ul>
         @foreach (var post in tagPosts)
         {
         <li>
           <a href="@Context.GetLink(post)">@post.WithoutSettings.String(BlogKeys.Title)</a>
-          <span>(@(post.Get<DateTime>(BlogKeys.Published).ToShortDateString(Context)))</span>
+          <span>(@(post.Get<DateTime>(BlogKeys.Published).ToString("dd MMM yyyy")))</span>
         </li>
         }
       </ul>

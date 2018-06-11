@@ -27,18 +27,15 @@
               <span class="post-subheading">@Lead</span>
             }
             <span class="post-meta">
-              Posted on @Published.ToShortDateString()
+              Published on @Published.ToString("dd MMM yyyy")
               @if (Tags != null && Tags.Any())
               {
                 <text>in </text>
                 @foreach (string tag in Tags){ 
-                  IDocument tagDocument = Documents[Blog.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag)== tag && x.Get<int>(Keys.CurrentPage) == 1); 
-                  if(tagDocument != null) {
-                      <a href="@Context.GetLink(tagDocument)">@tag</a>
-                      @if (tag != Tags.Last())
-                      {
-                        <text>, </text>
-                      }
+                  <a href="/tags/#@tag">@tag</a>
+                  @if (tag != Tags.Last())
+                  {
+                    <text>, </text>
                   }
                 }
               }

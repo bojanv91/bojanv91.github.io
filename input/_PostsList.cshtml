@@ -23,23 +23,19 @@
       </a>
 
       <p class="post-meta">
-        Posted on @(post.Get<DateTime>(BlogKeys.Published).ToShortDateString(Context))
+        @(post.Get<DateTime>(BlogKeys.Published).ToString("dd MMM yyyy"))
         @if (tags != null && tags.Any())
+        {
+          <text>in </text>
+          @foreach (string tag in tags)
           {
-        <text>in </text>
-        @foreach (string tag in tags)
+            <a href="/tags/#@tag">@tag</a>
+            @if (tag != tags.Last())
             {
-              IDocument tagDocument = Documents[Blog.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag)== tag);
-              if(tagDocument != null)
-              {
-        <a href="@Context.GetLink(tagDocument)">@tag</a>
-        @if (tag != tags.Last())
-                {
-        <text>, </text>
-                }
-              }
+              <text>, </text>
             }
           }
+        }
       </p>
 
       <div class="post-entry-container">

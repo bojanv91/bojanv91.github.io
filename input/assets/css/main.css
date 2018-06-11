@@ -846,8 +846,18 @@ td.gutter {
       font-size: 16px;
     }
 
+/* https://stackoverflow.com/questions/10732690/offsetting-an-html-anchor-to-adjust-for-fixed-header */
+[id]:before {
+  display: block;
+  content: " ";
+  margin-top: -75px;
+  height: 75px;
+  visibility: hidden;
+}
 
-/* Overrides */
+/*
+  Overrides
+*/
 .post-preview .post-entry > p {
   margin: 0;
 }

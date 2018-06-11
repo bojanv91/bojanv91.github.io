@@ -21,7 +21,7 @@ Title: Archive
                 {
         <li>
           <a href="@Context.GetLink(post)">@post.WithoutSettings.String(BlogKeys.Title)</a>
-          <span>(@(post.Get<DateTime>(BlogKeys.Published).ToShortDateString(Context)))</span>
+          <span>(@(post.Get<DateTime>(BlogKeys.Published).ToString("dd MMM yyyy")))</span>
         </li>
                 }
       </ul>
